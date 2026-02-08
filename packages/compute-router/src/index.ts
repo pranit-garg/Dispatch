@@ -5,11 +5,11 @@ import {
   resolvePolicy,
 } from "@openclaw/protocol";
 import type { ComputeAdapter, ComputeResult, LLMRequest, TaskRequest } from "./adapters/types.js";
-import { DecentralizedAdapter } from "./adapters/decentralized.js";
+import { DecentralizedAdapter, type X402ClientLike } from "./adapters/decentralized.js";
 import { OpenAIAdapter } from "./adapters/openai.js";
 import { AnthropicAdapter } from "./adapters/anthropic.js";
 
-export type { ComputeResult, LLMRequest, TaskRequest };
+export type { ComputeResult, LLMRequest, TaskRequest, X402ClientLike };
 
 export interface ComputeRouterConfig {
   coordinatorUrls: {
@@ -17,6 +17,11 @@ export interface ComputeRouterConfig {
     solana: string;
   };
   preferredHosted?: "openai" | "anthropic";
+  /** Optional x402 HTTP clients for automatic payment handling per chain */
+  x402Clients?: {
+    monad?: X402ClientLike;
+    solana?: X402ClientLike;
+  };
 }
 
 /**
@@ -34,10 +39,12 @@ export class ComputeRouter {
       monad: new DecentralizedAdapter({
         coordinatorUrl: config.coordinatorUrls.monad,
         networkLabel: "monad",
+        x402Client: config.x402Clients?.monad,
       }),
       solana: new DecentralizedAdapter({
         coordinatorUrl: config.coordinatorUrls.solana,
         networkLabel: "solana",
+        x402Client: config.x402Clients?.solana,
       }),
     };
 

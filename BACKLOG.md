@@ -1,18 +1,22 @@
 # OpenClaw Compute Network — Backlog
+<!-- Updated: 2026-02-09 — Removed completed items, added new ones -->
 
 ## Post-MVP Features
 
-### x402-monad
-Enable real x402 payment gating on Monad coordinator with ExactEvmScheme.
+### og-image
+Generate Open Graph image for social sharing on the landing page.
 
-### x402-solana
-Enable real x402 payment gating on Solana coordinator with ExactSvmScheme.
+### custom-domain
+Set up custom domain (openclaw.xyz or similar) on Vercel for the landing page.
 
-### x402-client-payments
-Implement client-side x402 payment signing in ComputeRouter SDK. Handle 402 → decode PAYMENT-REQUIRED → sign with wallet → retry with PAYMENT-SIGNATURE.
+### api-documentation
+Generate OpenAPI/Swagger documentation for the coordinator REST API endpoints.
 
-### receipt-verification
-Verify ed25519 receipt signatures server-side in coordinator (currently stored as unverified).
+### worker-dashboard
+Simple web dashboard showing connected workers, job counts, average latency, and receipt verification rates.
+
+### load-testing
+Run load tests against coordinators to identify bottlenecks and document capacity limits.
 
 ### receipt-anchoring
 Wire receipt anchor contracts (Monad + Solana) into coordinator post-execution flow. Deploy contracts to testnets.

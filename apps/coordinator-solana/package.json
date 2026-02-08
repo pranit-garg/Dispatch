@@ -6,9 +6,7 @@
   "main": "dist/index.js",
   "dependencies": {
     "@openclaw/coordinator-core": "workspace:*",
-    "@openclaw/protocol": "workspace:*"
-  },
-  "optionalDependencies": {
+    "@openclaw/protocol": "workspace:*",
     "@x402/express": "^2.0.0",
     "@x402/svm": "^2.0.0",
     "@x402/core": "^2.0.0"

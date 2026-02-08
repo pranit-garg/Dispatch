@@ -5,6 +5,8 @@ import { createDb } from "../db.js";
 import { WorkerHub } from "./workerHub.js";
 import { JobType, Policy, PrivacyClass } from "@openclaw/protocol";
 import fs from "node:fs";
+import nacl from "tweetnacl";
+import crypto from "node:crypto";
 
 const TEST_DB = "./data/test-hub.db";
 
@@ -158,6 +160,163 @@ describe("WorkerHub", () => {
     // Second claim fails (worker is busy)
     const second = hub.claimWorker(JobType.TASK, Policy.FAST, PrivacyClass.PUBLIC, "user2");
     expect(second).toBeNull();
+
+    ws.close();
+  });
+
+  it("verifies a valid ed25519 receipt signature and stores verified=1", async () => {
+    // Generate a real ed25519 keypair
+    const keypair = nacl.sign.keyPair();
+    const pubkeyHex = Buffer.from(keypair.publicKey).toString("hex");
+
+    const ws = new WebSocket(`ws://localhost:${port}`);
+    await new Promise<void>((r) => ws.on("open", r));
+
+    // Register with real pubkey
+    ws.send(JSON.stringify({
+      type: "register",
+      provider_pubkey: pubkeyHex,
+      provider_type: "DESKTOP",
+      capabilities: ["TASK"],
+    }));
+
+    // Wait for register_ack and extract worker_id
+    const ack = await new Promise<Record<string, unknown>>((resolve) => {
+      ws.on("message", (raw) => resolve(JSON.parse(raw.toString())));
+    });
+    expect(ack.type).toBe("register_ack");
+
+    // Claim the worker and assign a job
+    const jobId = "test-job-sig-valid";
+    db.prepare(`
+      INSERT INTO jobs (id, type, policy, privacy_class, user_id, status, payload)
+      VALUES (?, 'TASK', 'FAST', 'PUBLIC', 'user1', 'running', '{}')
+    `).run(jobId);
+
+    const worker = hub.claimWorker(JobType.TASK, Policy.FAST, PrivacyClass.PUBLIC, "user1");
+    expect(worker).not.toBeNull();
+    hub.assignJob(worker!, jobId, {
+      type: "job_assign",
+      job_id: jobId,
+      job_type: JobType.TASK,
+      payload: { input: "test" },
+      policy: Policy.FAST,
+      privacy_class: PrivacyClass.PUBLIC,
+      user_id: "user1",
+    });
+
+    // Drain the job_assign message
+    await new Promise<void>((resolve) => {
+      ws.on("message", () => resolve());
+    });
+
+    // Build receipt and sign it (same logic as worker-desktop/receipts.ts)
+    const output = { result: "hello" };
+    const outputHash = crypto.createHash("sha256").update(JSON.stringify(output)).digest("hex");
+    const receipt = {
+      job_id: jobId,
+      provider_pubkey: pubkeyHex,
+      output_hash: outputHash,
+      completed_at: new Date().toISOString(),
+      payment_ref: null,
+    };
+    const canonical = JSON.stringify(receipt);
+    const signature = nacl.sign.detached(new TextEncoder().encode(canonical), keypair.secretKey);
+    const signatureBase64 = Buffer.from(signature).toString("base64");
+
+    // Send job_complete with valid receipt
+    ws.send(JSON.stringify({
+      type: "job_complete",
+      job_id: jobId,
+      output,
+      output_hash: outputHash,
+      receipt,
+      receipt_signature: signatureBase64,
+    }));
+
+    await new Promise((r) => setTimeout(r, 300));
+
+    // Check receipt is stored with verified=1
+    const row = db.prepare(`SELECT verified FROM receipts WHERE job_id = ?`).get(jobId) as { verified: number } | undefined;
+    expect(row).toBeDefined();
+    expect(row!.verified).toBe(1);
+
+    ws.close();
+  });
+
+  it("stores verified=0 for an invalid receipt signature", async () => {
+    // Generate two keypairs — register with one, sign with the other
+    const realKeypair = nacl.sign.keyPair();
+    const realPubkeyHex = Buffer.from(realKeypair.publicKey).toString("hex");
+    const wrongKeypair = nacl.sign.keyPair();
+
+    const ws = new WebSocket(`ws://localhost:${port}`);
+    await new Promise<void>((r) => ws.on("open", r));
+
+    ws.send(JSON.stringify({
+      type: "register",
+      provider_pubkey: realPubkeyHex,
+      provider_type: "DESKTOP",
+      capabilities: ["TASK"],
+    }));
+
+    const ack = await new Promise<Record<string, unknown>>((resolve) => {
+      ws.on("message", (raw) => resolve(JSON.parse(raw.toString())));
+    });
+    expect(ack.type).toBe("register_ack");
+
+    const jobId = "test-job-sig-invalid";
+    db.prepare(`
+      INSERT INTO jobs (id, type, policy, privacy_class, user_id, status, payload)
+      VALUES (?, 'TASK', 'FAST', 'PUBLIC', 'user1', 'running', '{}')
+    `).run(jobId);
+
+    const worker = hub.claimWorker(JobType.TASK, Policy.FAST, PrivacyClass.PUBLIC, "user1");
+    expect(worker).not.toBeNull();
+    hub.assignJob(worker!, jobId, {
+      type: "job_assign",
+      job_id: jobId,
+      job_type: JobType.TASK,
+      payload: { input: "test" },
+      policy: Policy.FAST,
+      privacy_class: PrivacyClass.PUBLIC,
+      user_id: "user1",
+    });
+
+    // Drain the job_assign message
+    await new Promise<void>((resolve) => {
+      ws.on("message", () => resolve());
+    });
+
+    // Build receipt but sign with WRONG key
+    const output = { result: "hello" };
+    const outputHash = crypto.createHash("sha256").update(JSON.stringify(output)).digest("hex");
+    const receipt = {
+      job_id: jobId,
+      provider_pubkey: realPubkeyHex,
+      output_hash: outputHash,
+      completed_at: new Date().toISOString(),
+      payment_ref: null,
+    };
+    const canonical = JSON.stringify(receipt);
+    const badSignature = nacl.sign.detached(new TextEncoder().encode(canonical), wrongKeypair.secretKey);
+    const badSignatureBase64 = Buffer.from(badSignature).toString("base64");
+
+    ws.send(JSON.stringify({
+      type: "job_complete",
+      job_id: jobId,
+      output,
+      output_hash: outputHash,
+      receipt,
+      receipt_signature: badSignatureBase64,
+    }));
+
+    await new Promise((r) => setTimeout(r, 300));
+
+    // Check receipt is stored with verified=0
+    const row = db.prepare(`SELECT verified FROM receipts WHERE job_id = ?`).get(jobId) as { verified: number } | undefined;
+    expect(row).toBeDefined();
+    expect(row!.verified).toBe(0);
 
     ws.close();
   });

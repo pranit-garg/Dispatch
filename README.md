@@ -2,6 +2,8 @@
 
 Decentralized compute network where **Seekers** (mobile/simulated) and **Desktop Workers** handle TASK and LLM jobs. Two blockchain tracks: **Monad testnet** (EVM) and **Solana devnet** for x402 payment gating.
 
+**Landing page:** [landing-pi-ashen-62.vercel.app](https://landing-pi-ashen-62.vercel.app) | **API Docs:** [docs/openapi.yaml](docs/openapi.yaml)
+
 ## Architecture
 
 ```
@@ -75,6 +77,7 @@ apps/
   worker-desktop/     — Desktop worker (LLM + TASK execution)
   seeker-simulator/   — Mobile seeker simulator (TASK only)
   cloudbot-demo/      — CLI demo running 3 scenarios
+  landing/            — Next.js landing page (Vercel)
 chain/
   monad/contracts/    — Solidity receipt anchor (STUB)
   solana/receipt-anchor/ — Anchor program receipt anchor (STUB)
@@ -103,7 +106,6 @@ Private jobs require trusted workers. Flow:
 ## Known Limitations (MVP)
 
 - Payment not refunded if no worker available
-- Receipt signature not verified server-side (stored for future verification)
 - No streaming (polling only — 500ms interval)
 - Fixed pricing (no dynamic per-job pricing)
 - On-chain receipt anchoring contracts are stubs (not wired into coordinator)

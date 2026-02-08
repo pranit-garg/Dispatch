@@ -1,0 +1,783 @@
+openapi: "3.0.3"
+info:
+  title: OpenClaw Compute Network — Coordinator API
+  version: "1.0.0"
+  description: |
+    REST API for the OpenClaw Compute Network coordinator.
+
+    Seekers submit AI inference and data-processing jobs to coordinators, which
+    match them with available workers over WebSocket.  Two coordinator instances
+    run in production — one on Monad testnet (port 4010) and one on Solana
+    devnet (port 4020).  Both expose the same REST surface.
+
+    **Payment:** The `POST /v1/jobs/commit/*` endpoints are gated by x402
+    micropayments (Coinbase's HTTP-native payment protocol).  When x402 is
+    enabled the coordinator returns `402 Payment Required` with an `accepts`
+    header; the client signs a stablecoin payment and retries with an
+    `X-PAYMENT` header.  In testnet mode (`TESTNET_MODE=true`) payment gating
+    is disabled and these endpoints accept requests directly.
+
+servers:
+  - url: http://localhost:4010
+    description: Monad testnet coordinator
+  - url: http://localhost:4020
+    description: Solana devnet coordinator
+
+tags:
+  - name: Health
+    description: Liveness / readiness check
+  - name: Quote
+    description: Price quoting (free, no payment required)
+  - name: Jobs
+    description: Job submission and status polling
+  - name: Trust
+    description: Trust-pairing between users and workers
+
+paths:
+  # ──────────────────────────────────────────────
+  # Health
+  # ──────────────────────────────────────────────
+  /v1/health:
+    get:
+      operationId: getHealth
+      tags: [Health]
+      summary: Health check
+      description: Returns coordinator status, online worker count, network, and current timestamp.
+      responses:
+        "200":
+          description: Coordinator is healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthResponse"
+              example:
+                status: ok
+                workers_online: 3
+                network: "eip155:10143"
+                timestamp: "2026-02-09T12:00:00.000Z"
+
+  # ──────────────────────────────────────────────
+  # Quote
+  # ──────────────────────────────────────────────
+  /v1/quote:
+    get:
+      operationId: getQuote
+      tags: [Quote]
+      summary: Get a price quote for a job
+      description: |
+        Returns the price, resolved policy tier, and the endpoint to commit the
+        job to.  This endpoint is free (no x402 payment required).
+      parameters:
+        - name: job_type
+          in: query
+          required: true
+          description: The type of job to quote.
+          schema:
+            $ref: "#/components/schemas/JobType"
+        - name: policy
+          in: query
+          required: false
+          description: |
+            Desired policy tier.  `AUTO` (default) resolves to `FAST` for
+            `LLM_INFER` and `CHEAP` for `TASK`.
+          schema:
+            $ref: "#/components/schemas/Policy"
+      responses:
+        "200":
+          description: Price quote
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Quote"
+              example:
+                price: "$0.010"
+                endpoint: /v1/jobs/commit/fast
+                policy_resolved: FAST
+                network: "eip155:10143"
+                expires_at: null
+        "400":
+          description: Invalid or missing `job_type`
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                error: "Invalid job_type. Use LLM_INFER or TASK"
+
+  # ──────────────────────────────────────────────
+  # Jobs — commit (FAST)
+  # ──────────────────────────────────────────────
+  /v1/jobs/commit/fast:
+    post:
+      operationId: commitJobFast
+      tags: [Jobs]
+      summary: Submit a FAST tier job
+      description: |
+        Submit a job to the FAST tier.  When x402 is enabled the first request
+        will receive a `402` response with payment details; the client signs a
+        stablecoin payment and retries with the `X-PAYMENT` header.
+
+        The coordinator immediately attempts to match the job with an online
+        worker.  If no worker is available the job enters a background retry
+        loop (every 2 s for up to 30 s).  PRIVATE jobs with no trusted worker
+        fail immediately with `422`.
+      parameters:
+        - $ref: "#/components/parameters/XPaymentHeader"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/JobCommitRequest"
+            examples:
+              llm_infer:
+                summary: LLM inference job
+                value:
+                  job_type: LLM_INFER
+                  user_id: "user_abc123"
+                  privacy_class: PUBLIC
+                  payload:
+                    job_type: LLM_INFER
+                    prompt: "Explain quantum computing in one paragraph."
+                    max_tokens: 256
+              task:
+                summary: Task job (summarize)
+                value:
+                  job_type: TASK
+                  user_id: "user_abc123"
+                  privacy_class: PUBLIC
+                  payload:
+                    job_type: TASK
+                    task_type: summarize
+                    input: "OpenClaw is a decentralized compute network..."
+      responses:
+        "201":
+          description: Job accepted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JobCommitResponse"
+              example:
+                job_id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+        "400":
+          description: Missing or invalid required fields
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                missing_fields:
+                  summary: Missing required fields
+                  value:
+                    error: "Missing required fields: job_type, payload, user_id"
+                invalid_type:
+                  summary: Invalid job type
+                  value:
+                    error: "Invalid job_type"
+        "402":
+          description: x402 payment required (only when payment gating is enabled)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/X402PaymentRequired"
+              example:
+                error: "X-PAYMENT header is required"
+                accepts:
+                  - scheme: exact
+                    price: "$0.010"
+                    network: "eip155:10143"
+                    payTo: "0x0000000000000000000000000000000000000000"
+        "422":
+          description: No trusted worker available for PRIVATE job
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NoTrustedWorkerError"
+              example:
+                error: no_trusted_worker
+                job_id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+
+  # ──────────────────────────────────────────────
+  # Jobs — commit (CHEAP)
+  # ──────────────────────────────────────────────
+  /v1/jobs/commit/cheap:
+    post:
+      operationId: commitJobCheap
+      tags: [Jobs]
+      summary: Submit a CHEAP tier job
+      description: |
+        Submit a job to the CHEAP tier.  Identical behaviour to the FAST
+        endpoint but priced lower.  x402 payment required when payment gating
+        is enabled.
+      parameters:
+        - $ref: "#/components/parameters/XPaymentHeader"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/JobCommitRequest"
+            examples:
+              task:
+                summary: Classify task
+                value:
+                  job_type: TASK
+                  user_id: "user_abc123"
+                  privacy_class: PUBLIC
+                  payload:
+                    job_type: TASK
+                    task_type: classify
+                    input: "This product is amazing and works perfectly."
+      responses:
+        "201":
+          description: Job accepted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JobCommitResponse"
+              example:
+                job_id: "f9e8d7c6-b5a4-3210-fedc-ba9876543210"
+        "400":
+          description: Missing or invalid required fields
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                missing_fields:
+                  summary: Missing required fields
+                  value:
+                    error: "Missing required fields: job_type, payload, user_id"
+                invalid_type:
+                  summary: Invalid job type
+                  value:
+                    error: "Invalid job_type"
+        "402":
+          description: x402 payment required (only when payment gating is enabled)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/X402PaymentRequired"
+              example:
+                error: "X-PAYMENT header is required"
+                accepts:
+                  - scheme: exact
+                    price: "$0.001"
+                    network: "eip155:10143"
+                    payTo: "0x0000000000000000000000000000000000000000"
+        "422":
+          description: No trusted worker available for PRIVATE job
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NoTrustedWorkerError"
+              example:
+                error: no_trusted_worker
+                job_id: "f9e8d7c6-b5a4-3210-fedc-ba9876543210"
+
+  # ──────────────────────────────────────────────
+  # Jobs — poll status
+  # ──────────────────────────────────────────────
+  /v1/jobs/{id}:
+    get:
+      operationId: getJobStatus
+      tags: [Jobs]
+      summary: Get job status and result
+      description: |
+        Poll a job by ID.  Returns the current status, result (if completed),
+        and a cryptographic receipt signed by the worker.  This endpoint is
+        free (no x402 payment required).
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The UUID of the job.
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Job found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JobStatusResponse"
+              examples:
+                pending:
+                  summary: Job still pending
+                  value:
+                    id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+                    status: pending
+                    result: null
+                    receipt: null
+                    created_at: "2026-02-09T12:00:00.000Z"
+                    completed_at: null
+                completed:
+                  summary: Completed job with result and receipt
+                  value:
+                    id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+                    status: completed
+                    result:
+                      output: "Quantum computing leverages quantum mechanical phenomena..."
+                    receipt:
+                      job_id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+                      provider_pubkey: "0xabc123..."
+                      output_hash: "sha256:abcdef1234567890"
+                      completed_at: "2026-02-09T12:00:05.000Z"
+                      payment_ref: null
+                      signature: "0xdeadbeef..."
+                    created_at: "2026-02-09T12:00:00.000Z"
+                    completed_at: "2026-02-09T12:00:05.000Z"
+                failed:
+                  summary: Failed job — no worker available
+                  value:
+                    id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+                    status: failed
+                    result:
+                      error: no_eligible_worker
+                    receipt: null
+                    created_at: "2026-02-09T12:00:00.000Z"
+                    completed_at: null
+        "404":
+          description: Job not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                error: "Job not found"
+
+  # ──────────────────────────────────────────────
+  # Trust — create pairing code
+  # ──────────────────────────────────────────────
+  /v1/trust/create:
+    post:
+      operationId: createTrustPairing
+      tags: [Trust]
+      summary: Create a trust pairing code
+      description: |
+        Generates a 6-character hex pairing code that a worker can claim to
+        become a trusted provider for the given user.  The code expires after
+        1 hour.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [user_id]
+              properties:
+                user_id:
+                  type: string
+                  description: The ID of the user requesting trust pairing.
+            example:
+              user_id: "user_abc123"
+      responses:
+        "201":
+          description: Pairing code created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TrustCreateResponse"
+              example:
+                pairing_code: "A3F2B1"
+                expires_at: "2026-02-09T13:00:00.000Z"
+        "400":
+          description: Missing user_id
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                error: "Missing user_id"
+
+  # ──────────────────────────────────────────────
+  # Trust — claim pairing code
+  # ──────────────────────────────────────────────
+  /v1/trust/claim:
+    post:
+      operationId: claimTrustPairing
+      tags: [Trust]
+      summary: Claim a trust pairing code as a worker
+      description: |
+        A worker claims a pairing code to become a trusted provider for the
+        user who created it.  Once claimed, the worker can receive PRIVATE
+        jobs from that user.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [pairing_code, provider_pubkey]
+              properties:
+                pairing_code:
+                  type: string
+                  description: The 6-character hex pairing code.
+                provider_pubkey:
+                  type: string
+                  description: The public key of the claiming worker.
+            example:
+              pairing_code: "A3F2B1"
+              provider_pubkey: "0xabc123def456..."
+      responses:
+        "200":
+          description: Pairing claimed successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TrustClaimResponse"
+              example:
+                user_id: "user_abc123"
+                paired_at: "2026-02-09T12:30:00.000Z"
+        "400":
+          description: Invalid, already claimed, or expired code
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                invalid_code:
+                  summary: Code does not exist
+                  value:
+                    error: invalid_code
+                already_claimed:
+                  summary: Code already claimed by another worker
+                  value:
+                    error: already_claimed
+                expired:
+                  summary: Code has expired
+                  value:
+                    error: expired
+
+  # ──────────────────────────────────────────────
+  # Trust — list trusted providers
+  # ──────────────────────────────────────────────
+  /v1/trust/list:
+    get:
+      operationId: listTrustedProviders
+      tags: [Trust]
+      summary: List trusted workers for a user
+      description: Returns all workers that have claimed a pairing code for the given user.
+      parameters:
+        - name: user_id
+          in: query
+          required: true
+          description: The user ID to list trusted providers for.
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of trusted providers
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TrustListResponse"
+              example:
+                providers:
+                  - provider_pubkey: "0xabc123def456..."
+                    paired_at: "2026-02-09T12:30:00.000Z"
+                  - provider_pubkey: "0x789xyz..."
+                    paired_at: "2026-02-08T10:15:00.000Z"
+        "400":
+          description: Missing user_id query param
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                error: "Missing user_id query param"
+
+# ════════════════════════════════════════════════
+# Components
+# ════════════════════════════════════════════════
+components:
+  parameters:
+    XPaymentHeader:
+      name: X-PAYMENT
+      in: header
+      required: false
+      description: |
+        x402 payment signature header.  Required when x402 payment gating is
+        enabled.  The client obtains the payment details from an initial `402`
+        response, signs a stablecoin transfer, and passes the signed payload
+        in this header on retry.  Not required in testnet mode.
+      schema:
+        type: string
+
+  schemas:
+    # ── Enums ────────────────────────────────────
+    JobType:
+      type: string
+      enum: [LLM_INFER, TASK]
+      description: The type of compute job.
+
+    Policy:
+      type: string
+      enum: [FAST, CHEAP, AUTO]
+      description: |
+        Policy tier.  `AUTO` resolves to `FAST` for LLM_INFER and `CHEAP`
+        for TASK.
+
+    ResolvedPolicy:
+      type: string
+      enum: [FAST, CHEAP]
+      description: The resolved policy tier (never AUTO).
+
+    PrivacyClass:
+      type: string
+      enum: [PUBLIC, PRIVATE]
+      description: |
+        Privacy classification.  `PRIVATE` jobs are only routed to workers
+        the user has explicitly trust-paired with.
+
+    JobStatus:
+      type: string
+      enum: [pending, assigned, running, completed, failed]
+      description: Current status of a job.
+
+    TaskType:
+      type: string
+      enum: [summarize, classify, extract_json]
+      description: Sub-type for TASK jobs.
+
+    # ── Request / Response Schemas ───────────────
+    HealthResponse:
+      type: object
+      required: [status, workers_online, network, timestamp]
+      properties:
+        status:
+          type: string
+          enum: [ok]
+        workers_online:
+          type: integer
+          description: Number of workers currently connected via WebSocket.
+        network:
+          type: string
+          description: Chain identifier (e.g. `eip155:10143` for Monad).
+        timestamp:
+          type: string
+          format: date-time
+
+    Quote:
+      type: object
+      required: [price, endpoint, policy_resolved, network, expires_at]
+      properties:
+        price:
+          type: string
+          description: Price in USD (e.g. `$0.010`).
+        endpoint:
+          type: string
+          description: The commit endpoint to use (e.g. `/v1/jobs/commit/fast`).
+        policy_resolved:
+          $ref: "#/components/schemas/ResolvedPolicy"
+        network:
+          type: string
+          description: Chain identifier.
+        expires_at:
+          type: string
+          nullable: true
+          description: Reserved for future dynamic pricing. Always `null` currently.
+
+    LLMPayload:
+      type: object
+      required: [job_type, prompt]
+      properties:
+        job_type:
+          type: string
+          enum: [LLM_INFER]
+        prompt:
+          type: string
+          description: The prompt to send to the LLM.
+        max_tokens:
+          type: integer
+          description: Maximum tokens in the response (optional).
+
+    TaskPayload:
+      type: object
+      required: [job_type, task_type, input]
+      properties:
+        job_type:
+          type: string
+          enum: [TASK]
+        task_type:
+          $ref: "#/components/schemas/TaskType"
+        input:
+          type: string
+          description: The input text for the task.
+
+    JobPayload:
+      oneOf:
+        - $ref: "#/components/schemas/LLMPayload"
+        - $ref: "#/components/schemas/TaskPayload"
+      discriminator:
+        propertyName: job_type
+        mapping:
+          LLM_INFER: "#/components/schemas/LLMPayload"
+          TASK: "#/components/schemas/TaskPayload"
+
+    JobCommitRequest:
+      type: object
+      required: [job_type, payload, user_id]
+      properties:
+        job_type:
+          $ref: "#/components/schemas/JobType"
+        payload:
+          $ref: "#/components/schemas/JobPayload"
+        user_id:
+          type: string
+          description: Identifier for the requesting user.
+        privacy_class:
+          $ref: "#/components/schemas/PrivacyClass"
+          default: PUBLIC
+
+    JobCommitResponse:
+      type: object
+      required: [job_id]
+      properties:
+        job_id:
+          type: string
+          format: uuid
+          description: The assigned job ID. Use this to poll for status.
+
+    Receipt:
+      type: object
+      required: [job_id, provider_pubkey, output_hash, completed_at, payment_ref]
+      properties:
+        job_id:
+          type: string
+          format: uuid
+        provider_pubkey:
+          type: string
+          description: Public key of the worker that executed the job.
+        output_hash:
+          type: string
+          description: SHA-256 hash of the output for integrity verification.
+        completed_at:
+          type: string
+          format: date-time
+        payment_ref:
+          type: string
+          nullable: true
+          description: On-chain payment reference (null if no payment).
+        signature:
+          type: string
+          description: Worker's cryptographic signature over the receipt.
+
+    JobStatusResponse:
+      type: object
+      required: [id, status, result, receipt, created_at, completed_at]
+      properties:
+        id:
+          type: string
+          format: uuid
+        status:
+          $ref: "#/components/schemas/JobStatus"
+        result:
+          type: object
+          nullable: true
+          description: |
+            Job output (shape depends on job type).  `null` while pending/assigned.
+            On failure contains `{ "error": "..." }`.
+        receipt:
+          allOf:
+            - $ref: "#/components/schemas/Receipt"
+          nullable: true
+          description: Cryptographic receipt from the worker.  `null` until completed.
+        created_at:
+          type: string
+          format: date-time
+        completed_at:
+          type: string
+          format: date-time
+          nullable: true
+
+    TrustCreateResponse:
+      type: object
+      required: [pairing_code, expires_at]
+      properties:
+        pairing_code:
+          type: string
+          description: 6-character uppercase hex code for the worker to claim.
+          pattern: "^[0-9A-F]{6}$"
+        expires_at:
+          type: string
+          format: date-time
+          description: When the pairing code expires (1 hour from creation).
+
+    TrustClaimResponse:
+      type: object
+      required: [user_id, paired_at]
+      properties:
+        user_id:
+          type: string
+          description: The user ID the worker is now trusted by.
+        paired_at:
+          type: string
+          format: date-time
+
+    TrustListResponse:
+      type: object
+      required: [providers]
+      properties:
+        providers:
+          type: array
+          items:
+            type: object
+            required: [provider_pubkey, paired_at]
+            properties:
+              provider_pubkey:
+                type: string
+              paired_at:
+                type: string
+                format: date-time
+
+    # ── Error Schemas ────────────────────────────
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string
+          description: Human-readable error message.
+
+    NoTrustedWorkerError:
+      type: object
+      required: [error, job_id]
+      properties:
+        error:
+          type: string
+          enum: [no_trusted_worker]
+        job_id:
+          type: string
+          format: uuid
+          description: The job ID that was created but immediately failed.
+
+    X402PaymentRequired:
+      type: object
+      description: |
+        Returned by x402 payment middleware when payment gating is enabled.
+        Contains the payment details the client must sign and resubmit.
+      properties:
+        error:
+          type: string
+        accepts:
+          type: array
+          items:
+            type: object
+            properties:
+              scheme:
+                type: string
+                enum: [exact]
+              price:
+                type: string
+                description: Price in USD.
+              network:
+                type: string
+                description: Chain identifier (e.g. `eip155:10143`).
+              payTo:
+                type: string
+                description: Address to pay.
+              asset:
+                type: string
+                description: Token contract address (e.g. USDC on Monad).

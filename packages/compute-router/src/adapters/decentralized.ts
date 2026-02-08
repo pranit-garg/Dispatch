@@ -10,15 +10,36 @@ import { fetchJson, sleep } from "../util.js";
 export interface DecentralizedConfig {
   coordinatorUrl: string;
   networkLabel: string; // "monad" | "solana"
+  /**
+   * Optional x402 client for automatic payment handling.
+   * When provided, 402 responses will be handled transparently.
+   * When omitted, 402 responses throw an error (testnet mode).
+   */
+  x402Client?: X402ClientLike;
+}
+
+/**
+ * Minimal interface for x402 HTTP client — avoids hard dependency on @x402/core.
+ * Matches the x402HTTPClient API shape.
+ */
+export interface X402ClientLike {
+  getPaymentRequiredResponse(
+    getHeader: (name: string) => string | null | undefined,
+    body?: unknown,
+  ): unknown; // PaymentRequired
+  createPaymentPayload(paymentRequired: unknown): Promise<unknown>; // PaymentPayload
+  encodePaymentSignatureHeader(paymentPayload: unknown): Record<string, string>;
 }
 
 export class DecentralizedAdapter implements ComputeAdapter {
   name: string;
   private url: string;
+  private x402Client?: X402ClientLike;
 
   constructor(private config: DecentralizedConfig) {
     this.name = `decentralized:${config.networkLabel}`;
     this.url = config.coordinatorUrl;
+    this.x402Client = config.x402Client;
   }
 
   async runLLM(req: LLMRequest): Promise<ComputeResult> {
@@ -53,27 +74,51 @@ export class DecentralizedAdapter implements ComputeAdapter {
       `${this.url}/v1/quote?job_type=${jobType}&policy=${policy}`
     );
 
-    // 2. Submit job (in MVP mode without x402, the commit endpoint works directly)
-    // When x402 is enabled, we'd get a 402 → sign payment → retry
+    // 2. Submit job
     const tier = policy === Policy.FAST ? "fast" : "cheap";
     const commitUrl = `${this.url}/v1/jobs/commit/${tier}`;
+    const body = JSON.stringify({
+      job_type: jobType,
+      payload,
+      privacy_class: privacyClass,
+      user_id: userId,
+    });
 
     let commitRes = await fetch(commitUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        job_type: jobType,
-        payload,
-        privacy_class: privacyClass,
-        user_id: userId,
-      }),
+      body,
     });
 
-    // Handle x402 402 response (for future: sign and retry)
+    // Handle x402 402 response
     if (commitRes.status === 402) {
-      // STUB — TODO: Implement x402 client-side payment signing — See BACKLOG.md#x402-client-payments
-      // For now, this means x402 is enabled but we can't pay. Throw clear error.
-      throw new Error("x402 payment required but client-side signing not implemented yet. Disable x402 on coordinator for testing.");
+      if (!this.x402Client) {
+        throw new Error(
+          "x402 payment required but no x402Client configured. " +
+          "Set TESTNET_MODE=true on coordinator or provide an x402Client."
+        );
+      }
+
+      // Extract payment requirements from 402 response
+      const resBody = await commitRes.json().catch(() => undefined);
+      const paymentRequired = this.x402Client.getPaymentRequiredResponse(
+        (name) => commitRes.headers.get(name),
+        resBody,
+      );
+
+      // Create and sign payment payload
+      const paymentPayload = await this.x402Client.createPaymentPayload(paymentRequired);
+      const paymentHeaders = this.x402Client.encodePaymentSignatureHeader(paymentPayload);
+
+      // Retry with payment header
+      commitRes = await fetch(commitUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...paymentHeaders,
+        },
+        body,
+      });
     }
 
     if (commitRes.status === 422) {

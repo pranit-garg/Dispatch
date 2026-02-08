@@ -3,6 +3,7 @@ import type { IncomingMessage } from "node:http";
 import type { Server } from "node:http";
 import type Database from "better-sqlite3";
 import { v4 as uuid } from "uuid";
+import nacl from "tweetnacl";
 import {
   JobType,
   Policy,
@@ -139,10 +140,15 @@ export class WorkerHub {
       `).run(JSON.stringify(msg.output), msg.job_id);
 
       if (msg.receipt && msg.receipt_signature) {
+        const verified = this.verifyReceiptSignature(
+          msg.receipt,
+          msg.receipt_signature,
+          worker.pubkey
+        );
         this.db.prepare(`
           INSERT INTO receipts (id, job_id, provider_pubkey, receipt_json, signature, verified)
-          VALUES (?, ?, ?, ?, ?, 0)
-        `).run(uuid(), msg.receipt.job_id, msg.receipt.provider_pubkey, JSON.stringify(msg.receipt), msg.receipt_signature);
+          VALUES (?, ?, ?, ?, ?, ?)
+        `).run(uuid(), msg.receipt.job_id, msg.receipt.provider_pubkey, JSON.stringify(msg.receipt), msg.receipt_signature, verified ? 1 : 0);
       }
     });
     txn();
@@ -167,11 +173,13 @@ export class WorkerHub {
   }
 
   private handleReceiptSubmit(msg: ReceiptSubmitMsg): void {
-    // Store receipt (verified=false for MVP — TODO: verify ed25519 sig — See BACKLOG.md#receipt-verification)
+    const worker = this.findByPubkey(msg.receipt.provider_pubkey);
+    const pubkey = worker?.pubkey ?? msg.receipt.provider_pubkey;
+    const verified = this.verifyReceiptSignature(msg.receipt, msg.signature, pubkey);
     this.db.prepare(`
       INSERT INTO receipts (id, job_id, provider_pubkey, receipt_json, signature, verified)
-      VALUES (?, ?, ?, ?, ?, 0)
-    `).run(uuid(), msg.receipt.job_id, msg.receipt.provider_pubkey, JSON.stringify(msg.receipt), msg.signature);
+      VALUES (?, ?, ?, ?, ?, ?)
+    `).run(uuid(), msg.receipt.job_id, msg.receipt.provider_pubkey, JSON.stringify(msg.receipt), msg.signature, verified ? 1 : 0);
   }
 
   private handleDisconnect(workerId: string): void {
@@ -260,6 +268,28 @@ export class WorkerHub {
   }
 
   // ── Helpers ────────────────────────────────
+
+  /** Verify ed25519 signature over canonical JSON of a receipt. */
+  private verifyReceiptSignature(
+    receipt: { job_id: string; provider_pubkey: string; output_hash: string; completed_at: string; payment_ref: string | null },
+    signatureBase64: string,
+    pubkeyHex: string
+  ): boolean {
+    try {
+      const canonical = JSON.stringify(receipt);
+      const message = new TextEncoder().encode(canonical);
+      const signature = Uint8Array.from(Buffer.from(signatureBase64, "base64"));
+      const publicKey = Uint8Array.from(Buffer.from(pubkeyHex, "hex"));
+      const valid = nacl.sign.detached.verify(message, signature, publicKey);
+      if (!valid) {
+        console.warn(`[WorkerHub] Receipt signature verification FAILED for job ${receipt.job_id}`);
+      }
+      return valid;
+    } catch (err) {
+      console.warn(`[WorkerHub] Receipt signature verification error for job ${receipt.job_id}:`, err);
+      return false;
+    }
+  }
 
   private findByPubkey(pubkey: string): TrackedWorker | undefined {
     for (const w of this.workers.values()) {

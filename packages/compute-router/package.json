@@ -9,5 +9,10 @@
     "@openclaw/protocol": "workspace:*",
     "openai": "^4.77.0",
     "@anthropic-ai/sdk": "^0.37.0"
+  },
+  "optionalDependencies": {
+    "@x402/core": "^2.0.0",
+    "@x402/evm": "^2.0.0",
+    "@x402/svm": "^2.0.0"
   }
 }

@@ -23,12 +23,16 @@ const globalTimeout = setTimeout(() => {
 async function main() {
   console.log("[E2E] Starting end-to-end test...\n");
 
-  // 1. Start Monad coordinator
-  const monad = spawnProcess("Monad Coord", "npx", ["tsx", "apps/coordinator-monad/src/index.ts"]);
+  // 1. Start Monad coordinator (testnet mode — skip x402 payment gating)
+  const monad = spawnProcess("Monad Coord", "npx", ["tsx", "apps/coordinator-monad/src/index.ts"], {
+    TESTNET_MODE: "true",
+  });
   await waitForOutput(monad, "Listening on port", 10_000);
 
-  // 2. Start Solana coordinator
-  const solana = spawnProcess("Solana Coord", "npx", ["tsx", "apps/coordinator-solana/src/index.ts"]);
+  // 2. Start Solana coordinator (testnet mode — skip x402 payment gating)
+  const solana = spawnProcess("Solana Coord", "npx", ["tsx", "apps/coordinator-solana/src/index.ts"], {
+    TESTNET_MODE: "true",
+  });
   await waitForOutput(solana, "Listening on port", 10_000);
 
   // 3. Start desktop worker (connects to Monad)

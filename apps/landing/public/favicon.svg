@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- Hexagon background -->
+  <polygon points="16,1 29,8.5 29,23.5 16,31 3,23.5 3,8.5" fill="#6366f1"/>
+  <!-- Three claw lines -->
+  <line x1="10" y1="10" x2="14" y2="22" stroke="#0a0a0f" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="16" y1="8" x2="16" y2="22" stroke="#0a0a0f" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="22" y1="10" x2="18" y2="22" stroke="#0a0a0f" stroke-width="2.5" stroke-linecap="round"/>
+</svg>
