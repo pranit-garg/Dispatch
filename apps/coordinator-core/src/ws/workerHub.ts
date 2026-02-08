@@ -131,11 +131,21 @@ export class WorkerHub {
     const worker = this.findByActiveJob(msg.job_id);
     if (!worker) return;
 
-    // Update DB
-    this.db.prepare(`
-      UPDATE jobs SET status = 'completed', result = ?, completed_at = datetime('now')
-      WHERE id = ?
-    `).run(JSON.stringify(msg.output), msg.job_id);
+    // Atomic: store job result + receipt in a single transaction
+    const txn = this.db.transaction(() => {
+      this.db.prepare(`
+        UPDATE jobs SET status = 'completed', result = ?, completed_at = datetime('now')
+        WHERE id = ?
+      `).run(JSON.stringify(msg.output), msg.job_id);
+
+      if (msg.receipt && msg.receipt_signature) {
+        this.db.prepare(`
+          INSERT INTO receipts (id, job_id, provider_pubkey, receipt_json, signature, verified)
+          VALUES (?, ?, ?, ?, ?, 0)
+        `).run(uuid(), msg.receipt.job_id, msg.receipt.provider_pubkey, JSON.stringify(msg.receipt), msg.receipt_signature);
+      }
+    });
+    txn();
 
     worker.status = "idle";
     worker.activeJobId = null;

@@ -10,7 +10,6 @@ import {
   type HeartbeatMsg,
   type RegisterMsg,
   type RegisterAckMsg,
-  type ReceiptSubmitMsg,
   type TaskType,
 } from "@openclaw/protocol";
 
@@ -147,12 +146,8 @@ function handleJob(
   const elapsed = Date.now() - start;
   console.log(`[Seeker Sim] Job ${job.job_id} completed in ${elapsed}ms`);
 
-  // Send job complete
+  // Build receipt + sign, then send bundled in job_complete (atomic storage on coordinator)
   const outputHash = crypto.createHash("sha256").update(JSON.stringify(output)).digest("hex");
-  const completeMsg: JobCompleteMsg = { type: "job_complete", job_id: job.job_id, output, output_hash: outputHash };
-  ws.send(JSON.stringify(completeMsg));
-
-  // Send receipt
   const receipt = {
     job_id: job.job_id,
     provider_pubkey: keys.pubkeyHex,
@@ -162,12 +157,16 @@ function handleJob(
   };
   const canonical = JSON.stringify(receipt);
   const sig = nacl.sign.detached(new TextEncoder().encode(canonical), keys.secretKey);
-  const receiptMsg: ReceiptSubmitMsg = {
-    type: "receipt_submit",
+
+  const completeMsg: JobCompleteMsg = {
+    type: "job_complete",
+    job_id: job.job_id,
+    output,
+    output_hash: outputHash,
     receipt,
-    signature: Buffer.from(sig).toString("base64"),
+    receipt_signature: Buffer.from(sig).toString("base64"),
   };
-  ws.send(JSON.stringify(receiptMsg));
+  ws.send(JSON.stringify(completeMsg));
 }
 
 main().catch((err) => {

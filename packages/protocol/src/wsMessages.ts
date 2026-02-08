@@ -25,6 +25,16 @@ export interface JobCompleteMsg {
   job_id: string;
   output: unknown;
   output_hash: string;
+  /** Bundled receipt — coordinator stores atomically with job completion */
+  receipt?: {
+    job_id: string;
+    provider_pubkey: string;
+    output_hash: string;
+    completed_at: string;
+    payment_ref: string | null;
+  };
+  /** ed25519 signature over canonical JSON of receipt (base64) */
+  receipt_signature?: string;
 }
 
 export interface JobRejectMsg {

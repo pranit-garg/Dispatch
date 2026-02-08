@@ -91,19 +91,18 @@ async function handleJob(
   const elapsed = Date.now() - start;
   console.log(`[Desktop Worker] Job ${job.job_id} completed in ${elapsed}ms`);
 
-  // Send job complete
+  // Build receipt, then send job_complete with receipt bundled (atomic storage on coordinator)
+  const receipt = buildReceipt(job.job_id, output, keys.pubkeyHex, keys.secretKey);
   const outputHash = crypto.createHash("sha256").update(JSON.stringify(output)).digest("hex");
   const completeMsg: JobCompleteMsg = {
     type: "job_complete",
     job_id: job.job_id,
     output,
     output_hash: outputHash,
+    receipt: receipt.receipt,
+    receipt_signature: receipt.signature,
   };
   ws.send(JSON.stringify(completeMsg));
-
-  // Send receipt
-  const receipt = buildReceipt(job.job_id, output, keys.pubkeyHex, keys.secretKey);
-  ws.send(JSON.stringify(receipt));
 }
 
 async function claimTrust(pubkey: string): Promise<void> {
