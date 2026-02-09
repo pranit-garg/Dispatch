@@ -27,6 +27,7 @@ import {
   type CompletedJob,
 } from "../services/WebSocketService";
 import { DeviceKeyProvider } from "../services/DeviceKeyProvider";
+import { MWAProvider } from "../services/MWAProvider";
 import type { SigningProvider } from "../services/SigningProvider";
 
 // ── Context Shape ─────────────────────────────
@@ -46,7 +47,7 @@ interface WalletContextType {
   disconnect: () => void;
   setCoordinatorUrl: (url: string) => void;
   connectWallet: () => Promise<void>;
-  disconnectWallet: () => void;
+  disconnectWallet: () => Promise<void>;
   switchSigningMode: (mode: SigningMode) => void;
   isLoading: boolean;
 }
@@ -77,6 +78,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
 
   // Signing providers (persisted across renders)
   const deviceKeyProvider = useRef(new DeviceKeyProvider()).current;
+  const mwaProvider = useRef(new MWAProvider()).current;
 
   // Load persisted state on mount and set up device key provider as default
   useEffect(() => {
@@ -182,28 +184,49 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     void AsyncStorage.setItem(STORAGE_COORDINATOR_URL, url);
   }, []);
 
-  // MWA wallet connection (placeholder — MWAProvider added in Phase 2)
+  // Connect to wallet via MWA (opens Phantom for authorization)
   const connectWallet = useCallback(async () => {
-    // Will be implemented with MWAProvider in Phase 2
-    console.warn("[Wallet] MWA not yet integrated — use device key mode");
-  }, []);
+    try {
+      const available = await mwaProvider.isAvailable();
+      if (!available) {
+        console.warn("[Wallet] MWA not available on this platform — Android only");
+        return;
+      }
 
-  const disconnectWallet = useCallback(() => {
+      await mwaProvider.connect();
+      const address = mwaProvider.getWalletAddress();
+      setWalletAddress(address);
+      setSigningMode("wallet");
+      wsService.setSigningProvider(mwaProvider);
+
+      console.log(`[Wallet] Connected: ${address}`);
+    } catch (err) {
+      console.error("[Wallet] MWA connection failed:", err);
+      // Fallback to device key
+      wsService.setSigningProvider(deviceKeyProvider);
+      setSigningMode("device-key");
+    }
+  }, [mwaProvider, deviceKeyProvider]);
+
+  const disconnectWallet = useCallback(async () => {
+    await mwaProvider.disconnect();
     setWalletAddress(null);
     // Switch back to device key
     wsService.setSigningProvider(deviceKeyProvider);
     setSigningMode("device-key");
-  }, [deviceKeyProvider]);
+  }, [deviceKeyProvider, mwaProvider]);
 
   const switchSigningMode = useCallback((mode: SigningMode) => {
     if (mode === "device-key") {
       wsService.setSigningProvider(deviceKeyProvider);
       setSigningMode("device-key");
+      setWalletAddress(null);
     } else {
-      // Wallet mode — will be fully wired in Phase 2
+      // Switch to wallet mode — user must call connectWallet() separately
       setSigningMode("wallet");
+      wsService.setSigningProvider(mwaProvider);
     }
-  }, [deviceKeyProvider]);
+  }, [deviceKeyProvider, mwaProvider]);
 
   return (
     <WalletContext.Provider

@@ -13,6 +13,9 @@
       "resizeMode": "contain",
       "backgroundColor": "#0a0a0f"
     },
+    "plugins": [
+      "expo-dev-client"
+    ],
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.openclaw.seeker"
@@ -24,7 +27,19 @@
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.openclaw.seeker"
+      "package": "com.openclaw.seeker",
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "openclaw"
+            }
+          ],
+          "category": ["DEFAULT", "BROWSABLE"]
+        }
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
