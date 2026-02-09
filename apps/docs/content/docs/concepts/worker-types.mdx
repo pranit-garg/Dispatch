@@ -1,11 +1,11 @@
 ---
 title: Worker Types
-description: Desktop workers vs seeker workers — capabilities, registration, and how the coordinator routes jobs to each.
+description: Desktop workers vs seeker workers — capabilities, registration, and how the coordinator routes jobs to each type.
 ---
 
 # Worker Types
 
-Dispatch has two worker types that serve different roles in the network. The coordinator routes jobs based on each worker's declared capabilities.
+Dispatch has two worker types. The coordinator routes jobs based on each worker's declared capabilities.
 
 ## Overview
 
@@ -20,7 +20,7 @@ Dispatch has two worker types that serve different roles in the network. The coo
 
 ## Desktop Worker
 
-The desktop worker is the full-capability node. It handles both LLM inference (through a local Ollama instance) and lightweight TASK jobs.
+The desktop worker is the full-capability node. It runs LLM inference through a local Ollama instance and handles lightweight TASK jobs.
 
 ### Registration
 
@@ -106,7 +106,7 @@ enum ProviderType {
 }
 ```
 
-This is sent in the `register` message and stored by the coordinator to understand each worker's role in the network.
+Sent in the `register` message and stored by the coordinator to track each worker's role.
 
 ## How the coordinator routes jobs
 

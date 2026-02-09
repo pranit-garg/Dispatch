@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://dispatch.computer"),
   title: "Dispatch — Idle Compute for AI Agents | x402 + ERC-8004",
   description:
-    "Dispatch routes AI jobs to idle phones and desktops. Workers earn USDC via x402 micropayments and build on-chain reputation through ERC-8004 on Monad. Live on Monad and Solana testnet.",
+    "Dispatch routes AI jobs to idle phones and desktops. Workers earn USDC via x402 micropayments and build onchain reputation through ERC-8004. Live on Monad and Solana testnet.",
   keywords: [
     "Dispatch",
     "AI compute network",
@@ -22,7 +22,7 @@ export const metadata: Metadata = {
     "Solana",
     "decentralized compute",
     "AI inference",
-    "on-chain reputation",
+    "onchain reputation",
     "DePIN",
     "Solana Seeker",
     "distributed computing",
@@ -32,18 +32,18 @@ export const metadata: Metadata = {
     canonical: "https://dispatch.computer",
   },
   openGraph: {
-    title: "Dispatch — Dispatch Idle Compute to AI Agents",
+    title: "Dispatch — Turn Idle Devices into AI Compute Nodes",
     description:
-      "Your hardware processes AI jobs while idle. Agents pay in USDC over x402. Workers build on-chain reputation via ERC-8004. Live on Monad and Solana testnet.",
+      "Your phone or laptop runs AI jobs while idle. Agents pay USDC over x402, workers build onchain reputation via ERC-8004. Try it on Monad and Solana testnet.",
     type: "website",
     siteName: "Dispatch",
     url: "https://dispatch.computer",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Dispatch — Dispatch Idle Compute to AI Agents",
+    title: "Dispatch — Turn Idle Devices into AI Compute Nodes",
     description:
-      "Your hardware processes AI jobs while idle. Agents pay in USDC over x402. Workers build on-chain reputation via ERC-8004. Live on Monad and Solana testnet.",
+      "Your phone or laptop runs AI jobs while idle. Agents pay USDC over x402, workers build onchain reputation via ERC-8004. Try it on Monad and Solana testnet.",
     creator: "@pranit",
   },
 };
@@ -54,7 +54,7 @@ const jsonLd = {
   name: "Dispatch",
   alternateName: "Dispatch Compute Network",
   description:
-    "The dispatch layer where AI agents buy compute from idle hardware — paid in USDC over x402, verified with ERC-8004 reputation on Monad and Solana.",
+    "AI agents buy compute from idle phones and laptops — paid in USDC over x402, verified with ERC-8004 onchain reputation. Live on Monad and Solana.",
   applicationCategory: "DeveloperApplication",
   operatingSystem: "Cross-platform",
   url: "https://dispatch.computer",

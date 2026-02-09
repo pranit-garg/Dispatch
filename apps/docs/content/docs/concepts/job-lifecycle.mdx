@@ -1,11 +1,11 @@
 ---
 title: Job Lifecycle
-description: How jobs flow through the Dispatch network — from submission to completion, with every status transition explained.
+description: Every status transition a job goes through in Dispatch — from submission to completion, including timeouts and failures.
 ---
 
 # Job Lifecycle
 
-Every job in Dispatch moves through a defined set of statuses. Understanding this lifecycle is key to building reliable integrations.
+Every Dispatch job moves through a defined set of statuses. Understanding this lifecycle is key to building reliable integrations.
 
 ## Status transitions
 
@@ -39,7 +39,7 @@ enum JobStatus {
 
 ### pending
 
-The job has been accepted by the coordinator and stored in the database. The coordinator is looking for an available worker.
+The coordinator accepted the job and stored it in the database. It's now looking for an available worker.
 
 - Entry: `POST /v1/jobs/commit/fast` or `/cheap` returns `201` with a `job_id`
 - Duration: typically under 2 seconds if workers are online
@@ -47,13 +47,13 @@ The job has been accepted by the coordinator and stored in the database. The coo
 
 ### assigned
 
-A worker has been matched to the job. The coordinator sent a `job_assign` message over WebSocket.
+A worker matched to the job. The coordinator sent a `job_assign` message over WebSocket.
 
-- The coordinator uses atomic `claimWorker()` — a synchronous select-and-mark-busy operation that prevents race conditions when multiple jobs arrive simultaneously
+- The coordinator uses atomic `claimWorker()` — a synchronous select-and-mark-busy that prevents race conditions when multiple jobs arrive at once
 
 ### running
 
-The worker has begun executing the job.
+The worker started executing the job.
 
 - For `LLM_INFER` jobs: the worker calls Ollama (local LLM) with the prompt
 - For `TASK` jobs: the worker runs built-in logic (summarize, classify, extract_json)
@@ -68,7 +68,7 @@ The worker sent a `job_complete` message with the output and a signed receipt. T
 
 ### failed
 
-The job could not be completed. Common reasons:
+The job didn't complete. Common reasons:
 
 | Failure reason | When it happens |
 |---------------|-----------------|
@@ -90,7 +90,7 @@ The coordinator's background retry loop (for finding workers) runs for up to 30 
 
 ## Privacy enforcement during assignment
 
-During the assignment phase, the coordinator enforces privacy rules:
+During assignment, the coordinator enforces privacy rules:
 
 - **PUBLIC** jobs: any online worker with matching capabilities can be assigned
 - **PRIVATE** jobs: only workers that the submitting user has trust-paired with are eligible

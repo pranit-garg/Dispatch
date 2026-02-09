@@ -1,11 +1,11 @@
 ---
 title: WebSocket Protocol
-description: Complete WebSocket message reference — all message types between workers and the coordinator.
+description: Full WebSocket message reference — register, heartbeat, job_assign, job_complete, and all coordinator-worker messages.
 ---
 
 # WebSocket Protocol
 
-Workers communicate with the coordinator over WebSocket. The WebSocket connection runs on the same port as the HTTP server (4010 for Monad, 4020 for Solana).
+Workers talk to the coordinator over WebSocket. The connection runs on the same port as the HTTP server (4010 for Monad, 4020 for Solana).
 
 ## Connection
 
@@ -28,7 +28,7 @@ All messages are JSON-encoded strings. Each message has a `type` field that iden
 
 ### register
 
-Sent immediately after connection. Declares the worker's identity, type, and capabilities.
+Sent right after connection. Declares the worker's identity, type, and capabilities.
 
 ```json
 {
@@ -75,7 +75,7 @@ Sent every 10 seconds to keep the connection alive and report metrics.
 
 ### job_complete
 
-Sent when a worker finishes executing a job. Includes the output and a bundled receipt for atomic storage on the coordinator.
+Sent when a worker finishes a job. Includes the output and a bundled receipt for atomic storage on the coordinator.
 
 ```json
 {
@@ -126,7 +126,7 @@ Sent when a worker cannot execute an assigned job.
 
 ### receipt_submit
 
-Alternative to bundling the receipt in `job_complete`. Submits a receipt separately.
+Alternative to bundling the receipt in `job_complete`. Sends a receipt separately.
 
 ```json
 {
@@ -222,7 +222,7 @@ Sent when the coordinator assigns a job to this worker.
 
 ### error
 
-Sent when the coordinator encounters an error related to this worker.
+Sent when the coordinator hits an error related to this worker.
 
 ```json
 {

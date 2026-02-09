@@ -1,11 +1,11 @@
 ---
 title: Privacy Model
-description: How Dispatch enforces privacy through trust pairing and prompt/result stripping for untrusted workers.
+description: How Dispatch enforces privacy at the routing layer — trust pairing, private job routing, and what untrusted workers see.
 ---
 
 # Privacy Model
 
-Dispatch treats privacy as a routing-layer concern, not an application-level flag. The coordinator enforces privacy rules — private jobs are only routed to workers you have explicitly trust-paired with.
+Privacy in Dispatch is a routing-layer concern, not an application-level flag. The coordinator enforces it — private jobs only route to workers you have explicitly trust-paired with.
 
 ## Privacy classes
 
@@ -45,7 +45,7 @@ See the [Trust Pairing guide](/docs/guides/trust-pairing) for step-by-step instr
 
 ## Enforcement at the coordinator
 
-Privacy enforcement lives in the coordinator, not in the SDK or worker code. This is a deliberate design choice — single source of truth, no opt-out.
+Privacy enforcement lives in the coordinator, not the SDK or worker code. Single source of truth, no opt-out.
 
 When a job is submitted:
 
@@ -60,7 +60,7 @@ Job arrives → coordinator checks privacy_class
                └─ No trusted worker   → return 422 { error: "no_trusted_worker" }
 ```
 
-The `claimWorker()` function runs atomically (synchronous select + mark-busy) to prevent race conditions. For PRIVATE jobs, it adds an additional filter:
+The `claimWorker()` function runs atomically (synchronous select + mark-busy) to prevent race conditions. For PRIVATE jobs, it adds a filter:
 
 - Check the `trust_pairings` table for rows matching the job's `user_id`
 - Only consider workers whose `provider_pubkey` appears in those pairings
@@ -68,7 +68,7 @@ The `claimWorker()` function runs atomically (synchronous select + mark-busy) to
 
 ## What untrusted workers see
 
-For **PUBLIC** jobs, the assigned worker sees the full payload — prompt, input, parameters. This is by design: public jobs prioritize speed and availability over confidentiality.
+For **PUBLIC** jobs, the assigned worker sees the full payload — prompt, input, parameters. By design: public jobs prioritize speed and availability over confidentiality.
 
 For **PRIVATE** jobs, only trust-paired workers receive the assignment at all. Untrusted workers never see the job_assign message, the prompt, or the result.
 

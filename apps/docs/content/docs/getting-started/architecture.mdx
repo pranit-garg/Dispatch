@@ -1,11 +1,11 @@
 ---
 title: Architecture
-description: Deep-dive into the Dispatch Compute Network architecture — coordinators, workers, seekers, and the data flow between them.
+description: Dispatch system architecture — coordinators, workers, seekers, SQLite storage, and the full job data flow.
 ---
 
 # Architecture
 
-Dispatch is a three-role system: **seekers** request compute, **coordinators** match and route jobs, and **workers** execute them. Everything communicates over standard HTTP and WebSocket.
+Three roles: **seekers** request compute, **coordinators** match and route jobs, **workers** execute them. All communication runs over standard HTTP and WebSocket.
 
 ## System overview
 
@@ -31,7 +31,7 @@ Dispatch is a three-role system: **seekers** request compute, **coordinators** m
 
 ### Seeker
 
-The **seeker** is any client that submits jobs. This can be:
+A **seeker** is any client that submits jobs:
 
 - A backend service using the `ComputeRouter` SDK
 - A mobile app making REST calls
@@ -41,9 +41,9 @@ Seekers interact exclusively over HTTP. They never open WebSocket connections.
 
 ### Coordinator
 
-The **coordinator** is the central routing node. It runs an Express HTTP server and a WebSocket server on the same port (using Node.js `server.on('upgrade')`).
+The **coordinator** is the central routing node. It runs an Express HTTP server and a WebSocket server on the same port (via `server.on('upgrade')`).
 
-Responsibilities:
+What it does:
 - Accepts job submissions via REST
 - Gates paid endpoints with x402 middleware (when enabled)
 - Maintains a live WebSocket connection pool of workers (the `WorkerHub`)
@@ -59,7 +59,7 @@ Each has its own SQLite database (`monad.db` / `solana.db`).
 
 ### Worker
 
-**Workers** connect to a coordinator via WebSocket and execute assigned jobs. Two types exist:
+**Workers** connect to a coordinator via WebSocket and execute assigned jobs:
 
 | Type | Capabilities | Use case |
 |------|-------------|----------|
@@ -172,4 +172,4 @@ const httpServer = http.createServer(app);
 const hub = new WorkerHub(httpServer, db);
 ```
 
-This simplifies deployment — one port, one process, one URL for both REST and WebSocket.
+One port, one process, one URL for both REST and WebSocket.

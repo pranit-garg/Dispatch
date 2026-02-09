@@ -1,11 +1,11 @@
 ---
 title: Submit a Job
-description: End-to-end guide for submitting a compute job to the Dispatch network — from quoting to polling the result.
+description: Submit a compute job to Dispatch step by step — get a quote, commit with payment, poll for the signed result.
 ---
 
 # Submit a Job
 
-This guide walks through the complete flow of submitting a job, from getting a price quote to receiving the result with a cryptographic receipt.
+The full flow: get a price quote, commit the job, poll for the result with a cryptographic receipt.
 
 ## Prerequisites
 
@@ -162,7 +162,7 @@ curl http://localhost:4010/v1/jobs/a1b2c3d4-e5f6-7890-abcd-ef1234567890
 
 ## Using the SDK
 
-The SDK wraps all three steps into a single call:
+The SDK wraps all three steps into one call:
 
 ```typescript
 import { ComputeRouter } from "@dispatch/compute-router";
@@ -191,10 +191,10 @@ const taskResult = await router.runTask({
 ```
 
 The SDK:
-1. Gets a quote automatically
+1. Gets a quote
 2. Submits to the correct tier endpoint
 3. Handles x402 payment if an x402Client is configured
-4. Polls every 500ms until completed
+4. Polls every 500ms until complete
 5. Returns a `ComputeResult` with output, route, price, latency, and receipt
 
 ## Job types reference

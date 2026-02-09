@@ -1,11 +1,11 @@
 ---
 title: Run a Seeker
-description: How to use the SDK as a seeker to submit jobs to the Dispatch network.
+description: Submit compute jobs to the Dispatch network using the ComputeRouter SDK — LLM inference, tasks, and private jobs.
 ---
 
 # Run a Seeker
 
-A seeker is any client that submits jobs to the network. This can be a backend service, a script, or a mobile app. This guide shows how to use the `ComputeRouter` SDK to submit jobs programmatically.
+A seeker is any client that submits jobs. Backend service, script, mobile app — anything that talks HTTP. This guide shows how to use the `ComputeRouter` SDK.
 
 ## Installation
 
@@ -44,9 +44,9 @@ console.log(result.latency_ms);  // 3421
 console.log(result.receipt);     // { job_id, provider_pubkey, output_hash, ... }
 ```
 
-The SDK handles the full flow automatically:
+The SDK handles the full flow:
 1. Gets a price quote from the coordinator
-2. Submits the job to the appropriate tier endpoint
+2. Submits the job to the right tier endpoint
 3. Handles x402 payment if configured
 4. Polls for the result every 500ms
 5. Returns when complete (or throws on timeout/failure)
@@ -97,7 +97,7 @@ const result = await router.runTask({
 });
 ```
 
-This requires a prior trust pairing between `my-app-user-001` and at least one online worker. If no trusted worker is available, the SDK throws an error with `Privacy enforcement: no_trusted_worker`.
+Requires a prior trust pairing between `my-app-user-001` and at least one online worker. If no trusted worker is available, the SDK throws `Privacy enforcement: no_trusted_worker`.
 
 ## Policy selection
 
@@ -152,7 +152,7 @@ Default is `"monad"`.
 
 ## Hosted fallback
 
-If the decentralized network is unavailable (no workers online, coordinator down), the SDK automatically falls back to hosted BYOK providers:
+If the decentralized network is unavailable (no workers online, coordinator down), the SDK falls back to hosted BYOK providers:
 
 ```bash
 OPENAI_API_KEY=sk-...
@@ -174,7 +174,7 @@ if (result.route.startsWith("hosted:")) {
 
 ## Using REST directly
 
-You can also submit jobs without the SDK using curl or any HTTP client:
+You can also submit jobs without the SDK, using curl or any HTTP client:
 
 ```bash
 # 1. Get a quote

@@ -1,11 +1,11 @@
 ---
 title: x402 Payments
-description: How Dispatch uses Coinbase's x402 protocol for HTTP-native stablecoin micropayments on every job.
+description: HTTP-native USDC micropayments on every compute job via Coinbase's x402 protocol. No custom token, no staking.
 ---
 
 # x402 Payments
 
-Dispatch uses [x402](https://www.x402.org/) — Coinbase's open HTTP-native payment protocol — to settle stablecoin micropayments on every compute job. No custom token, no staking, no bridging. Workers get paid in USDC the moment a job completes.
+Dispatch uses [x402](https://www.x402.org/) — Coinbase's open HTTP-native payment protocol — to settle USDC micropayments on every compute job. No custom token, no staking, no bridging. Workers get paid the moment a job completes.
 
 ## How x402 works
 
@@ -107,7 +107,7 @@ TESTNET_MODE=true pnpm --filter coordinator-monad start
 
 ## SDK payment handling
 
-The `ComputeRouter` SDK handles x402 payments transparently when configured with an x402 client:
+The `ComputeRouter` SDK handles x402 payments automatically when configured with an x402 client:
 
 ```typescript
 const router = new ComputeRouter({
@@ -142,7 +142,7 @@ When the SDK receives a `402` response, it:
 3. Encodes it as an `X-PAYMENT` header
 4. Retries the request
 
-If no `x402Client` is configured and the coordinator returns `402`, the SDK throws an error suggesting you either enable testnet mode or provide an x402 client.
+If no `x402Client` is configured and the coordinator returns `402`, the SDK throws an error. Either enable testnet mode or provide an x402 client.
 
 ## x402 packages
 

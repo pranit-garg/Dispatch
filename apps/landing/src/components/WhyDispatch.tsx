@@ -55,7 +55,7 @@ export function WhyDispatch() {
             Why Dispatch?
           </h2>
           <p className="mx-auto mt-4 max-w-xl text-text-muted">
-            Every architectural decision is a competitive advantage.
+            We made different tradeoffs than every other compute network.
           </p>
         </motion.div>
 

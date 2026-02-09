@@ -1,11 +1,11 @@
 ---
 title: SDK Reference
-description: ComputeRouter SDK reference — route AI jobs to decentralized workers or hosted BYOK providers.
+description: ComputeRouter SDK reference — submit AI jobs to decentralized workers with automatic hosted BYOK fallback.
 ---
 
 # SDK Reference
 
-The `@dispatch/compute-router` package is the main SDK for submitting jobs to the Dispatch network. It routes jobs to decentralized workers first, then falls back to hosted BYOK providers (OpenAI, Anthropic) if the decentralized network is unavailable.
+The `@dispatch/compute-router` package is the main SDK for submitting jobs. It routes to decentralized workers first, then falls back to hosted BYOK providers (OpenAI, Anthropic) if the network is unavailable.
 
 ## Installation
 
@@ -192,4 +192,4 @@ ANTHROPIC_API_KEY=sk-ant-...
 PREFERRED_HOSTED_PROVIDER=openai
 ```
 
-The hosted adapters call the provider APIs directly — no coordinator involvement, no x402 payments. The `route` field in the result indicates which hosted provider was used.
+The hosted adapters call provider APIs directly — no coordinator, no x402 payments. The `route` field in the result shows which hosted provider was used.

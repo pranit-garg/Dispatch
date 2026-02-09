@@ -1,11 +1,11 @@
 ---
 title: Run a Worker
-description: How to run a desktop worker node on the Dispatch network — from setup to trust pairing.
+description: Set up and run a desktop worker node on the Dispatch network — keypair generation, registration, and trust pairing.
 ---
 
 # Run a Worker
 
-Workers execute jobs assigned by the coordinator. This guide walks through setting up and running a desktop worker node.
+Workers execute jobs assigned by the coordinator. This guide covers setting up and running a desktop worker node.
 
 ## Prerequisites
 
@@ -128,9 +128,9 @@ The worker's ed25519 keypair is persisted at `./data/worker-key.json` (or the pa
 }
 ```
 
-The public key (hex-encoded) serves as the worker's identity across the network — it appears in receipts, trust pairings, and job assignments.
+The public key (hex-encoded) is the worker's identity across the network — it appears in receipts, trust pairings, and job assignments.
 
-**Keep this file safe.** If you lose the key file, you lose the worker's identity and all its trust pairings.
+**Keep this file safe.** Lose the key file and you lose the worker's identity and all its trust pairings.
 
 ## Environment variables
 
