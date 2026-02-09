@@ -89,7 +89,9 @@ function printResult(r: ComputeResult): void {
   console.log(`    Latency: ${r.latency_ms}ms`);
   if (r.receipt) {
     const receipt = r.receipt as Record<string, unknown>;
+    const verified = receipt.verified === true ? "VERIFIED" : "unverified";
     console.log(`    Receipt: hash=${String(receipt.output_hash ?? "").slice(0, 16)}... worker=${String(receipt.provider_pubkey ?? "").slice(0, 16)}...`);
+    console.log(`    Sig:     ${verified} (ed25519)`);
   } else {
     console.log(`    Receipt: N/A (hosted)`);
   }

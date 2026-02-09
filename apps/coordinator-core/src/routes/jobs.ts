@@ -44,8 +44,8 @@ export function jobsRouter(db: Database.Database, hub: WorkerHub): Router {
     // Attach receipt if completed
     let receipt = null;
     if (row.status === "completed") {
-      const r = db.prepare(`SELECT receipt_json, signature FROM receipts WHERE job_id = ?`).get(row.id as string) as Record<string, unknown> | undefined;
-      if (r) receipt = { ...JSON.parse(r.receipt_json as string), signature: r.signature };
+      const r = db.prepare(`SELECT receipt_json, signature, verified FROM receipts WHERE job_id = ?`).get(row.id as string) as Record<string, unknown> | undefined;
+      if (r) receipt = { ...JSON.parse(r.receipt_json as string), signature: r.signature, verified: r.verified === 1 };
     }
 
     res.json({

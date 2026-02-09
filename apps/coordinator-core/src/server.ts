@@ -7,6 +7,7 @@ import { healthRouter } from "./routes/health.js";
 import { quoteRouter } from "./routes/quote.js";
 import { jobsRouter } from "./routes/jobs.js";
 import { trustRouter } from "./routes/trust.js";
+import { dashboardRouter } from "./routes/dashboard.js";
 
 export interface CoordinatorServer {
   httpServer: http.Server;
@@ -45,6 +46,7 @@ export function createServer(
   app.use(quoteRouter(config.network));
   app.use(jobsRouter(db, hub));
   app.use(trustRouter(db));
+  app.use(dashboardRouter(db, hub));
 
   return {
     httpServer,
