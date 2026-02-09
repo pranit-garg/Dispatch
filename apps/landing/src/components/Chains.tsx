@@ -6,6 +6,12 @@ const chains = [
   {
     name: "Monad",
     type: "EVM",
+    logo: (
+      <svg viewBox="0 0 32 32" className="h-6 w-6" fill="none">
+        <path d="M6 24V8l10 8-10 8z" fill="#836EF9"/>
+        <path d="M16 24V8l10 8-10 8z" fill="#836EF9" fillOpacity="0.6"/>
+      </svg>
+    ),
     network: "eip155:10143",
     scheme: "ExactEvmScheme",
     facilitator: "x402-facilitator.molandak.org",
@@ -15,6 +21,19 @@ const chains = [
   {
     name: "Solana",
     type: "SVM",
+    logo: (
+      <svg viewBox="0 0 32 32" className="h-6 w-6" fill="none">
+        <defs>
+          <linearGradient id="sol-grad" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+            <stop stopColor="#9945FF"/>
+            <stop offset="1" stopColor="#14F195"/>
+          </linearGradient>
+        </defs>
+        <path d="M6 22l3-3h17l-3 3H6z" fill="url(#sol-grad)"/>
+        <path d="M6 13l3 3h17l-3-3H6z" fill="url(#sol-grad)"/>
+        <path d="M6 10l3-3h17l-3 3H6z" fill="url(#sol-grad)"/>
+      </svg>
+    ),
     network: "solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1",
     scheme: "ExactSvmScheme",
     facilitator: "x402.org/facilitator",
@@ -56,13 +75,13 @@ export function Chains() {
             >
               <div className="mb-4 flex items-center gap-3">
                 <div
-                  className={`flex h-10 w-10 items-center justify-center rounded-lg font-mono text-sm font-bold ${
+                  className={`flex h-10 w-10 items-center justify-center rounded-lg ${
                     chain.color === "accent"
                       ? "bg-accent/10 text-accent-bright"
                       : "bg-green/10 text-green"
                   }`}
                 >
-                  {chain.type}
+                  {chain.logo}
                 </div>
                 <div>
                   <h3 className="text-lg font-semibold">{chain.name}</h3>

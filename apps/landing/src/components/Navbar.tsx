@@ -4,12 +4,12 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const navLinks = [
-  { label: "Features", href: "#features" },
+  { label: "Why Dispatch", href: "#why" },
   { label: "Architecture", href: "#architecture" },
   { label: "Code", href: "#code" },
   {
     label: "Docs",
-    href: "https://docs-theta-mocha.vercel.app/docs",
+    href: "https://docs.dispatch.computer/docs",
     external: true,
   },
 ];

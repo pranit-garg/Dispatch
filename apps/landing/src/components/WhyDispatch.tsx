@@ -11,7 +11,7 @@ const differentiators = [
   },
   {
     title: "On-chain reputation",
-    dispatch: "Your reputation follows you on-chain. Every job adds to it. Agents pick workers they can verify.",
+    dispatch: "Workers build ERC-8004 reputation on Monad. Every job adds verifiable feedback. Agents pick workers by track record.",
     others: "No on-chain identity or reputation. Workers are anonymous and interchangeable.",
     tag: "ERC-8004",
   },
@@ -23,9 +23,21 @@ const differentiators = [
   },
   {
     title: "Dual-chain from day one",
-    dispatch: "Two chains, two coordinators, two databases. Not an afterthought.",
+    dispatch: "Monad (EVM) and Solana run as parallel coordinators with separate databases and settlement rails.",
     others: "Single-chain lock-in. Cross-chain support bolted on later, if at all.",
     tag: "Monad + Solana",
+  },
+  {
+    title: "Cryptographic receipts",
+    dispatch: "Every result comes with an ed25519-signed receipt over the output hash. Verifiable proof of who computed what.",
+    others: "Trust the platform. No cryptographic proof that a specific worker produced a specific result.",
+    tag: "ed25519",
+  },
+  {
+    title: "Open source protocol",
+    dispatch: "Coordinator, worker SDK, mobile app — all open source. Fork it, extend it, audit it.",
+    others: "Closed-source infrastructure. Vendor lock-in by design.",
+    tag: "Fully open",
   },
 ];
 
@@ -43,11 +55,11 @@ export function WhyDispatch() {
             Why Dispatch?
           </h2>
           <p className="mx-auto mt-4 max-w-xl text-text-muted">
-            Built differently from day one.
+            Different decisions from the ground up.
           </p>
         </motion.div>
 
-        <div className="grid gap-6 md:grid-cols-2">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {differentiators.map((item, i) => (
             <motion.div
               key={item.title}
@@ -72,7 +84,7 @@ export function WhyDispatch() {
                     </svg>
                   </div>
                   <p className="text-sm leading-relaxed text-text-muted">
-                    <span className="font-medium text-text">Dispatch: </span>
+                    <span className="font-medium text-accent-bright">Dispatch: </span>
                     {item.dispatch}
                   </p>
                 </div>

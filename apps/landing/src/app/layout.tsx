@@ -6,7 +6,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://landing-pi-ashen-62.vercel.app"),
+  metadataBase: new URL("https://dispatch.computer"),
   title: "Dispatch — Idle Compute for AI Agents | x402 + ERC-8004",
   description:
     "Dispatch routes AI jobs to idle phones and desktops. Workers earn USDC via x402 micropayments and build on-chain reputation through ERC-8004 on Monad. Live on Monad and Solana testnet.",
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
   ],
   icons: { icon: "/favicon.svg", apple: "/favicon.svg" },
   alternates: {
-    canonical: "https://landing-pi-ashen-62.vercel.app",
+    canonical: "https://dispatch.computer",
   },
   openGraph: {
     title: "Dispatch — Dispatch Idle Compute to AI Agents",
@@ -37,7 +37,7 @@ export const metadata: Metadata = {
       "Your hardware processes AI jobs while idle. Agents pay in USDC over x402. Workers build on-chain reputation via ERC-8004. Live on Monad and Solana testnet.",
     type: "website",
     siteName: "Dispatch",
-    url: "https://landing-pi-ashen-62.vercel.app",
+    url: "https://dispatch.computer",
   },
   twitter: {
     card: "summary_large_image",
@@ -57,7 +57,7 @@ const jsonLd = {
     "The dispatch layer where AI agents buy compute from idle hardware — paid in USDC over x402, verified with ERC-8004 reputation on Monad and Solana.",
   applicationCategory: "DeveloperApplication",
   operatingSystem: "Cross-platform",
-  url: "https://landing-pi-ashen-62.vercel.app",
+  url: "https://dispatch.computer",
   author: {
     "@type": "Person",
     name: "Pranit Garg",

@@ -31,10 +31,10 @@ function formatRelativeTime(timestamp: number): string {
 }
 
 const TASK_TYPE_COLORS: Record<string, string> = {
-  summarize: "#6366f1",
+  summarize: "#d4a246",
   classify: "#8b5cf6",
   extract_json: "#ec4899",
-  TASK: "#6366f1",
+  TASK: "#d4a246",
 };
 
 // ── Components ─────────────────────────────────

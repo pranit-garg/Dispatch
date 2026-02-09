@@ -17,7 +17,7 @@ export function Footer() {
         <div className="flex flex-col items-center gap-4 md:flex-row md:gap-6">
           <div className="flex items-center gap-6">
             <a
-              href="https://docs-theta-mocha.vercel.app/docs"
+              href="https://docs.dispatch.computer/docs"
               target="_blank"
               rel="noopener noreferrer"
               className="text-sm text-text-muted transition-colors hover:text-text"
@@ -33,10 +33,10 @@ export function Footer() {
               Twitter/X
             </a>
             <a
-              href="#features"
+              href="#why"
               className="text-sm text-text-muted transition-colors hover:text-text"
             >
-              Features
+              Why Dispatch
             </a>
           </div>
           <span className="text-sm text-text-dim">

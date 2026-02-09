@@ -6,13 +6,13 @@ export function CTA() {
   return (
     <section className="relative overflow-hidden border-t border-border px-6 py-20 md:py-28">
       {/* Top accent line */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 h-px w-1/3 bg-gradient-to-r from-transparent via-[#0ea5e9]/50 to-transparent" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 h-px w-1/3 bg-gradient-to-r from-transparent via-[#d4a246]/50 to-transparent" />
 
       {/* Radial grid glow */}
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 h-[500px] w-full max-w-3xl"
           style={{
-            background: "radial-gradient(ellipse at center top, rgba(14, 165, 233, 0.08) 0%, rgba(14, 165, 233, 0.02) 50%, transparent 80%)",
+            background: "radial-gradient(ellipse at center top, rgba(212, 162, 70, 0.08) 0%, rgba(212, 162, 70, 0.02) 50%, transparent 80%)",
           }}
         />
       </div>
@@ -46,10 +46,10 @@ export function CTA() {
           className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center"
         >
           <a
-            href="https://docs-theta-mocha.vercel.app/docs"
+            href="https://docs.dispatch.computer/docs"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 rounded-lg bg-accent px-6 py-3 font-medium text-white transition-colors hover:bg-accent-bright"
+            className="inline-flex items-center gap-2 rounded-lg bg-accent px-6 py-3 font-medium text-[#0a0a0e] transition-colors hover:bg-accent-bright"
           >
             <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
@@ -57,7 +57,7 @@ export function CTA() {
             Start Building
           </a>
           <a
-            href="https://docs-theta-mocha.vercel.app/docs"
+            href="https://docs.dispatch.computer/docs"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 rounded-lg border border-border px-6 py-3 font-medium text-text-muted transition-colors hover:border-border-bright hover:text-text"

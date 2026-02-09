@@ -55,7 +55,7 @@ function PhoneMockup() {
               {/* Battery */}
               <div className="flex items-center gap-0.5">
                 <div className="h-2 w-4 rounded-sm border border-[#64748b] p-px">
-                  <div className="h-full w-3/4 rounded-[1px] bg-[#22c55e]" />
+                  <div className="h-full w-3/4 rounded-[1px] bg-[#34d399]" />
                 </div>
               </div>
             </div>
@@ -64,17 +64,17 @@ function PhoneMockup() {
           {/* App header — "Dispatch" + "COMPUTE NODE" */}
           <div className="mb-3 text-center">
             <div className="text-sm font-extrabold tracking-wide text-[#f8fafc]">Dispatch</div>
-            <div className="text-[8px] font-semibold uppercase tracking-[2px] text-[#818cf8]">Compute Node</div>
+            <div className="text-[8px] font-semibold uppercase tracking-[2px] text-[#e8b84a]">Compute Node</div>
           </div>
 
           {/* StatusCard */}
           <div className="mb-2 rounded-xl border border-[#2a2a45] bg-[#1a1a2e] p-2.5">
             <div className="mb-1.5 flex items-center justify-between">
               <div className="flex items-center gap-1.5">
-                <span className="inline-block h-2 w-2 rounded-full bg-[#22c55e] animate-pulse" />
-                <span className="text-[10px] font-semibold text-[#22c55e]">Online</span>
+                <span className="inline-block h-2 w-2 rounded-full bg-[#34d399] animate-pulse" />
+                <span className="text-[10px] font-semibold text-[#34d399]">Online</span>
               </div>
-              <span className="rounded bg-[#252540] px-1.5 py-0.5 text-[7px] font-bold tracking-wide text-[#6366f1]">DEVICE KEY</span>
+              <span className="rounded bg-[#252540] px-1.5 py-0.5 text-[7px] font-bold tracking-wide text-[#d4a246]">DEVICE KEY</span>
             </div>
             <div className="flex items-center justify-between text-[9px]">
               <span className="text-[#64748b]">Network</span>
@@ -87,12 +87,12 @@ function PhoneMockup() {
           </div>
 
           {/* EarningsCard */}
-          <div className="mb-2 flex items-center rounded-xl border border-[#6366f1] bg-[#1a1a2e] p-2.5">
+          <div className="mb-2 flex items-center rounded-xl border border-[#d4a246] bg-[#1a1a2e] p-2.5">
             <div className="flex-1">
               <div className="text-[7px] font-semibold uppercase tracking-wide text-[#64748b]">Earnings</div>
               <div className="flex items-baseline gap-1">
                 <span className="font-mono text-lg font-bold text-[#f8fafc]">0.0847</span>
-                <span className="text-[10px] font-semibold text-[#818cf8]">SOL</span>
+                <span className="text-[10px] font-semibold text-[#e8b84a]">SOL</span>
               </div>
             </div>
             <div className="mx-3 h-8 w-px bg-[#2a2a45]" />
@@ -104,9 +104,9 @@ function PhoneMockup() {
 
           {/* WorkerToggle — big circular "EARNING" button */}
           <div className="my-3 flex justify-center">
-            <div className="relative flex h-20 w-20 items-center justify-center rounded-full border-[2px] border-[#818cf8] bg-[#6366f1]">
+            <div className="relative flex h-20 w-20 items-center justify-center rounded-full border-[2px] border-[#e8b84a] bg-[#d4a246]">
               {/* Inner glow ring */}
-              <div className="absolute inset-1.5 rounded-full border border-[#818cf840]" />
+              <div className="absolute inset-1.5 rounded-full border border-[#e8b84a40]" />
               <div className="text-center">
                 <div className="text-[10px] font-extrabold tracking-[2px] text-[#f8fafc]">EARNING</div>
                 <div className="text-[7px] text-[#f8fafc99]">Tap to go offline</div>
@@ -120,12 +120,12 @@ function PhoneMockup() {
             {/* Job row 1 */}
             <div className="mb-1 flex items-center justify-between rounded-lg bg-[#1a1a2e] px-2 py-1.5">
               <div className="flex items-center gap-1.5">
-                <span className="rounded bg-[#6366f120] px-1 py-0.5 text-[7px] font-bold text-[#6366f1]">SUMMARIZE</span>
+                <span className="rounded bg-[#d4a24620] px-1 py-0.5 text-[7px] font-bold text-[#d4a246]">SUMMARIZE</span>
                 <span className="text-[8px] text-[#64748b]">2m ago</span>
               </div>
               <div className="flex items-center gap-1.5">
                 <span className="font-mono text-[8px] text-[#94a3b8]">340ms</span>
-                <span className="inline-block h-1.5 w-1.5 rounded-full bg-[#22c55e]" />
+                <span className="inline-block h-1.5 w-1.5 rounded-full bg-[#34d399]" />
               </div>
             </div>
             {/* Job row 2 */}
@@ -136,7 +136,7 @@ function PhoneMockup() {
               </div>
               <div className="flex items-center gap-1.5">
                 <span className="font-mono text-[8px] text-[#94a3b8]">128ms</span>
-                <span className="inline-block h-1.5 w-1.5 rounded-full bg-[#22c55e]" />
+                <span className="inline-block h-1.5 w-1.5 rounded-full bg-[#34d399]" />
               </div>
             </div>
           </div>

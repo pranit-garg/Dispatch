@@ -1,16 +1,16 @@
 /**
  * Theme constants — dark mode colors matching the Dispatch landing page.
- * Consistent with https://landing-pi-ashen-62.vercel.app
+ * Consistent with https://dispatch.computer
  */
 export const colors = {
-  background: "#0a0a0f",
-  surface: "#1a1a2e",
-  surfaceLight: "#252540",
-  border: "#2a2a45",
-  accent: "#6366f1", // Indigo
-  accentLight: "#818cf8",
-  accentDim: "#4f46e5",
-  success: "#22c55e",
+  background: "#0a0a0e",
+  surface: "#1a1a22",
+  surfaceLight: "#252535",
+  border: "#2a2a35",
+  accent: "#d4a246", // Gold
+  accentLight: "#e8b84a",
+  accentDim: "#b8922e",
+  success: "#34d399",
   error: "#ef4444",
   warning: "#eab308",
   text: "#f8fafc",

@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 import './global.css';
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://docs-theta-mocha.vercel.app'),
+  metadataBase: new URL('https://docs.dispatch.computer'),
   title: {
     template: '%s | Dispatch Docs',
     default: 'Dispatch Docs — AI Compute Network with x402 + ERC-8004',
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     'documentation',
   ],
   alternates: {
-    canonical: 'https://docs-theta-mocha.vercel.app',
+    canonical: 'https://docs.dispatch.computer',
   },
   openGraph: {
     title: 'Dispatch Docs — AI Compute Network',
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
       'Technical docs for Dispatch. x402 micropayments, ERC-8004 reputation on Monad, dual-chain architecture.',
     type: 'website',
     siteName: 'Dispatch Docs',
-    url: 'https://docs-theta-mocha.vercel.app',
+    url: 'https://docs.dispatch.computer',
   },
   twitter: {
     card: 'summary',
