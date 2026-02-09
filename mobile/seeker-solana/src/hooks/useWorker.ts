@@ -48,6 +48,8 @@ export function useWorker() {
     jobsCompleted: wallet.jobsCompleted,
     jobHistory: wallet.jobHistory,
     coordinatorUrl: wallet.coordinatorUrl,
+    signingMode: wallet.signingMode,
+    walletAddress: wallet.walletAddress,
     isLoading: wallet.isLoading,
 
     // Actions
@@ -55,5 +57,8 @@ export function useWorker() {
     disconnect: wallet.disconnect,
     toggle,
     setCoordinatorUrl: wallet.setCoordinatorUrl,
+    connectWallet: wallet.connectWallet,
+    disconnectWallet: wallet.disconnectWallet,
+    switchSigningMode: wallet.switchSigningMode,
   };
 }

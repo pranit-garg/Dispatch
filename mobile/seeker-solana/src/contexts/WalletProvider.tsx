@@ -16,6 +16,7 @@ import React, {
   useEffect,
   useState,
   useCallback,
+  useRef,
   type ReactNode,
 } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -25,8 +26,12 @@ import {
   type ConnectionStatus,
   type CompletedJob,
 } from "../services/WebSocketService";
+import { DeviceKeyProvider } from "../services/DeviceKeyProvider";
+import type { SigningProvider } from "../services/SigningProvider";
 
 // ── Context Shape ─────────────────────────────
+
+export type SigningMode = "wallet" | "device-key";
 
 interface WalletContextType {
   workerId: string | null;
@@ -35,9 +40,14 @@ interface WalletContextType {
   jobsCompleted: number;
   jobHistory: CompletedJob[];
   coordinatorUrl: string;
+  signingMode: SigningMode;
+  walletAddress: string | null;
   connect: () => Promise<void>;
   disconnect: () => void;
   setCoordinatorUrl: (url: string) => void;
+  connectWallet: () => Promise<void>;
+  disconnectWallet: () => void;
+  switchSigningMode: (mode: SigningMode) => void;
   isLoading: boolean;
 }
 
@@ -62,8 +72,13 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   const [jobHistory, setJobHistory] = useState<CompletedJob[]>([]);
   const [coordinatorUrl, setCoordinatorUrlState] = useState(DEFAULT_COORDINATOR_URL);
   const [isLoading, setIsLoading] = useState(true);
+  const [signingMode, setSigningMode] = useState<SigningMode>("device-key");
+  const [walletAddress, setWalletAddress] = useState<string | null>(null);
 
-  // Load persisted state on mount
+  // Signing providers (persisted across renders)
+  const deviceKeyProvider = useRef(new DeviceKeyProvider()).current;
+
+  // Load persisted state on mount and set up device key provider as default
   useEffect(() => {
     async function loadPersistedState() {
       try {
@@ -101,6 +116,9 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         if (storedWorkerId) {
           setWorkerId(storedWorkerId);
         }
+
+        // Set device key provider as default
+        wsService.setSigningProvider(deviceKeyProvider);
       } catch (err) {
         console.warn("[Wallet] Failed to load persisted state:", err);
       } finally {
@@ -109,7 +127,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     }
 
     void loadPersistedState();
-  }, []);
+  }, [deviceKeyProvider]);
 
   // Subscribe to WebSocketService events
   useEffect(() => {
@@ -164,6 +182,29 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     void AsyncStorage.setItem(STORAGE_COORDINATOR_URL, url);
   }, []);
 
+  // MWA wallet connection (placeholder — MWAProvider added in Phase 2)
+  const connectWallet = useCallback(async () => {
+    // Will be implemented with MWAProvider in Phase 2
+    console.warn("[Wallet] MWA not yet integrated — use device key mode");
+  }, []);
+
+  const disconnectWallet = useCallback(() => {
+    setWalletAddress(null);
+    // Switch back to device key
+    wsService.setSigningProvider(deviceKeyProvider);
+    setSigningMode("device-key");
+  }, [deviceKeyProvider]);
+
+  const switchSigningMode = useCallback((mode: SigningMode) => {
+    if (mode === "device-key") {
+      wsService.setSigningProvider(deviceKeyProvider);
+      setSigningMode("device-key");
+    } else {
+      // Wallet mode — will be fully wired in Phase 2
+      setSigningMode("wallet");
+    }
+  }, [deviceKeyProvider]);
+
   return (
     <WalletContext.Provider
       value={{
@@ -173,9 +214,14 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         jobsCompleted,
         jobHistory,
         coordinatorUrl,
+        signingMode,
+        walletAddress,
         connect,
         disconnect,
         setCoordinatorUrl,
+        connectWallet,
+        disconnectWallet,
+        switchSigningMode,
         isLoading,
       }}
     >

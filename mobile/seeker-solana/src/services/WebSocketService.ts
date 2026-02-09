@@ -13,7 +13,8 @@
  */
 import { getOrCreateKeypair, type MobileKeyPair } from "./KeyManager";
 import { executeTask } from "./TaskExecutor";
-import { buildJobCompleteWithReceipt } from "./ReceiptSigner";
+import { buildJobCompleteWithReceipt, buildJobCompleteWithProvider } from "./ReceiptSigner";
+import type { SigningProvider } from "./SigningProvider";
 import {
   type RegisterAckMsg,
   type HeartbeatAckMsg,
@@ -64,6 +65,9 @@ class WebSocketService {
   private reconnectTimeout: ReturnType<typeof setTimeout> | null = null;
   private reconnectAttempts = 0;
 
+  // Signing provider (pluggable: device key or MWA wallet)
+  private _signingProvider: SigningProvider | null = null;
+
   // Configurable
   private coordinatorUrl = "ws://localhost:4020";
   private maxReconnectDelay = 30_000;
@@ -107,6 +111,19 @@ class WebSocketService {
   }
 
   /**
+   * Set the signing provider (device key or MWA wallet).
+   * Must be set before calling connect(). If not set, falls back to
+   * direct keypair loading (legacy behavior).
+   */
+  setSigningProvider(provider: SigningProvider | null): void {
+    this._signingProvider = provider;
+  }
+
+  get signingProvider(): SigningProvider | null {
+    return this._signingProvider;
+  }
+
+  /**
    * Connect to the coordinator and register as a worker.
    * If already connected, disconnects first.
    */
@@ -118,11 +135,28 @@ class WebSocketService {
     this._shouldReconnect = true;
     this.reconnectAttempts = 0;
 
-    try {
-      this.keys = await getOrCreateKeypair();
-    } catch (err) {
-      this.emit("error", `Failed to load keypair: ${(err as Error).message}`);
-      return;
+    // If a signing provider is set, use it; otherwise fall back to direct keypair
+    if (this._signingProvider) {
+      try {
+        await this._signingProvider.connect();
+        const pubkeyHex = await this._signingProvider.getPublicKeyHex();
+        // Create a minimal keys object for registration/heartbeat compatibility
+        this.keys = {
+          publicKey: new Uint8Array(0), // not needed when using provider
+          secretKey: new Uint8Array(0), // not needed when using provider
+          pubkeyHex,
+        };
+      } catch (err) {
+        this.emit("error", `Signing provider failed: ${(err as Error).message}`);
+        return;
+      }
+    } else {
+      try {
+        this.keys = await getOrCreateKeypair();
+      } catch (err) {
+        this.emit("error", `Failed to load keypair: ${(err as Error).message}`);
+        return;
+      }
     }
 
     this.doConnect();
@@ -311,12 +345,23 @@ class WebSocketService {
 
     // Build signed receipt and send job_complete
     try {
-      const completeMsg = await buildJobCompleteWithReceipt(
-        msg.job_id,
-        output,
-        this.keys.pubkeyHex,
-        this.keys.secretKey
-      );
+      let completeMsg;
+      if (this._signingProvider) {
+        // New path: use pluggable signing provider
+        completeMsg = await buildJobCompleteWithProvider(
+          msg.job_id,
+          output,
+          this._signingProvider
+        );
+      } else {
+        // Legacy path: direct keypair signing
+        completeMsg = await buildJobCompleteWithReceipt(
+          msg.job_id,
+          output,
+          this.keys.pubkeyHex,
+          this.keys.secretKey
+        );
+      }
       this.send(completeMsg);
     } catch (err) {
       console.error("[WS] Failed to build receipt:", err);

@@ -10,6 +10,7 @@
 import * as Crypto from "expo-crypto";
 import { Buffer } from "buffer";
 import { signData } from "./KeyManager";
+import type { SigningProvider } from "./SigningProvider";
 import type { JobCompleteMsg } from "./protocol";
 
 interface Receipt {
@@ -99,5 +100,45 @@ export async function buildJobCompleteWithReceipt(
     output_hash: outputHash,
     receipt: signedReceipt.receipt,
     receipt_signature: signedReceipt.signature,
+  };
+}
+
+/**
+ * Build a job_complete message using a SigningProvider (wallet or device key).
+ * This is the new preferred API — works with any signing backend.
+ */
+export async function buildJobCompleteWithProvider(
+  jobId: string,
+  output: unknown,
+  provider: SigningProvider
+): Promise<JobCompleteMsg> {
+  const pubkeyHex = await provider.getPublicKeyHex();
+
+  const outputJson = JSON.stringify(output);
+  const outputHash = await Crypto.digestStringAsync(
+    Crypto.CryptoDigestAlgorithm.SHA256,
+    outputJson
+  );
+
+  const receipt: Receipt = {
+    job_id: jobId,
+    provider_pubkey: pubkeyHex,
+    output_hash: outputHash,
+    completed_at: new Date().toISOString(),
+    payment_ref: null,
+  };
+
+  const canonical = JSON.stringify(receipt);
+  const encoder = new TextEncoder();
+  const messageBytes = encoder.encode(canonical);
+  const signature = await provider.signMessage(messageBytes);
+
+  return {
+    type: "job_complete",
+    job_id: jobId,
+    output,
+    output_hash: outputHash,
+    receipt,
+    receipt_signature: signature,
   };
 }
