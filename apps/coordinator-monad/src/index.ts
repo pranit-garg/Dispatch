@@ -4,8 +4,8 @@ import { ExactEvmScheme } from "@x402/evm/exact/server";
 import { HTTPFacilitatorClient } from "@x402/core/server";
 
 const config = configFromEnv({
-  port: 4010,
-  dbPath: "./data/monad.db",
+  port: parseInt(process.env.PORT ?? "4010", 10),
+  dbPath: process.env.DB_PATH ?? "./data/monad.db",
   network: "eip155:10143",
   payTo: process.env.MONAD_PAY_TO ?? "0x0000000000000000000000000000000000000000",
   facilitatorUrl: process.env.MONAD_FACILITATOR ?? "https://x402-facilitator.molandak.org",

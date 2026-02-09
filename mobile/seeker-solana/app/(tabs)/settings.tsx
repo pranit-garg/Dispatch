@@ -210,7 +210,7 @@ export default function SettingsScreen() {
               style={styles.input}
               value={urlInput}
               onChangeText={setUrlInput}
-              placeholder="ws://localhost:4020"
+              placeholder="wss://openclaw-solana.up.railway.app"
               placeholderTextColor={colors.textDim}
               autoCapitalize="none"
               autoCorrect={false}

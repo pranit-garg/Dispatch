@@ -4,8 +4,8 @@ import { ExactSvmScheme } from "@x402/svm/exact/server";
 import { HTTPFacilitatorClient } from "@x402/core/server";
 
 const config = configFromEnv({
-  port: 4020,
-  dbPath: "./data/solana.db",
+  port: parseInt(process.env.PORT ?? "4020", 10),
+  dbPath: process.env.DB_PATH ?? "./data/solana.db",
   network: "solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1",
   payTo: process.env.SOLANA_PAY_TO ?? "11111111111111111111111111111111",
   facilitatorUrl: process.env.SOLANA_FACILITATOR ?? "https://www.x402.org/facilitator",
