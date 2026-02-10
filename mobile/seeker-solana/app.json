@@ -11,10 +11,11 @@
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#0a0a0f"
+      "backgroundColor": "#0a0a0e"
     },
     "plugins": [
-      "expo-dev-client"
+      "expo-dev-client",
+      "expo-font"
     ],
     "ios": {
       "supportsTablet": false,
@@ -23,7 +24,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#0a0a0f"
+        "backgroundColor": "#0a0a0e"
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,

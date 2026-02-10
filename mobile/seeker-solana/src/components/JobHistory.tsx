@@ -6,14 +6,25 @@
  * - Timestamp (relative, e.g. "2m ago")
  * - Duration in ms
  * - Success/fail status
+ * - Chevron indicator (tappable for detail modal)
  */
-import React from "react";
-import { View, Text, FlatList, StyleSheet } from "react-native";
+import React, { useState, useEffect, useRef } from "react";
+import {
+  View,
+  Text,
+  FlatList,
+  Pressable,
+  LayoutAnimation,
+  StyleSheet,
+} from "react-native";
 import type { CompletedJob } from "../services/WebSocketService";
-import { colors, spacing, borderRadius, fontSize } from "../theme";
+import { colors, spacing, borderRadius, fontSize, fontFamily } from "../theme";
+import { EmptyState } from "./EmptyState";
+import { JobDetailModal } from "./JobDetailModal";
 
 interface JobHistoryProps {
   jobs: CompletedJob[];
+  isConnected?: boolean;
 }
 
 // ── Helpers ────────────────────────────────────
@@ -39,11 +50,20 @@ const TASK_TYPE_COLORS: Record<string, string> = {
 
 // ── Components ─────────────────────────────────
 
-function JobRow({ job }: { job: CompletedJob }) {
+function JobRow({
+  job,
+  onPress,
+}: {
+  job: CompletedJob;
+  onPress: () => void;
+}) {
   const badgeColor = TASK_TYPE_COLORS[job.taskType] ?? colors.textDim;
 
   return (
-    <View style={styles.row}>
+    <Pressable
+      style={({ pressed }) => [styles.row, pressed && styles.rowPressed]}
+      onPress={onPress}
+    >
       <View style={styles.leftSection}>
         <View style={[styles.typeBadge, { backgroundColor: badgeColor + "20" }]}>
           <Text style={[styles.typeText, { color: badgeColor }]}>
@@ -61,20 +81,40 @@ function JobRow({ job }: { job: CompletedJob }) {
             { backgroundColor: job.success ? colors.success : colors.error },
           ]}
         />
+        <Text style={styles.chevron}>{"\u203A"}</Text>
       </View>
-    </View>
+    </Pressable>
   );
 }
 
-export function JobHistory({ jobs }: JobHistoryProps) {
+export function JobHistory({ jobs, isConnected = false }: JobHistoryProps) {
+  const [selectedJob, setSelectedJob] = useState<CompletedJob | null>(null);
+  const prevJobCount = useRef(jobs.length);
+
+  // Animate when new jobs arrive
+  useEffect(() => {
+    if (jobs.length !== prevJobCount.current) {
+      LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+      prevJobCount.current = jobs.length;
+    }
+  }, [jobs.length]);
+
   if (jobs.length === 0) {
+    if (isConnected) {
+      return (
+        <EmptyState
+          icon={"\u{1F50E}"}
+          title="Listening for jobs..."
+          subtitle="They'll appear here as they complete"
+        />
+      );
+    }
     return (
-      <View style={styles.emptyContainer}>
-        <Text style={styles.emptyTitle}>Ready for work</Text>
-        <Text style={styles.emptySubtitle}>
-          Tap Go Live to join the network and start earning
-        </Text>
-      </View>
+      <EmptyState
+        icon={"\u26A1"}
+        title="Ready when you are"
+        subtitle="Tap Go Live to start earning"
+      />
     );
   }
 
@@ -84,9 +124,16 @@ export function JobHistory({ jobs }: JobHistoryProps) {
       <FlatList
         data={jobs}
         keyExtractor={(item) => item.jobId}
-        renderItem={({ item }) => <JobRow job={item} />}
+        renderItem={({ item }) => (
+          <JobRow job={item} onPress={() => setSelectedJob(item)} />
+        )}
         scrollEnabled={false}
         ItemSeparatorComponent={() => <View style={styles.separator} />}
+      />
+      <JobDetailModal
+        job={selectedJob}
+        visible={selectedJob !== null}
+        onClose={() => setSelectedJob(null)}
       />
     </View>
   );
@@ -98,7 +145,7 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: fontSize.sm,
-    fontWeight: "600",
+    fontFamily: fontFamily.semibold,
     color: colors.textDim,
     textTransform: "uppercase",
     letterSpacing: 1,
@@ -110,6 +157,9 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
     borderRadius: borderRadius.md,
     padding: spacing.md,
+  },
+  rowPressed: {
+    backgroundColor: colors.surfaceLight,
   },
   leftSection: {
     flexDirection: "row",
@@ -128,40 +178,32 @@ const styles = StyleSheet.create({
   },
   typeText: {
     fontSize: fontSize.xs,
-    fontWeight: "700",
+    fontFamily: fontFamily.bold,
     textTransform: "uppercase",
     letterSpacing: 0.5,
   },
   timestamp: {
     fontSize: fontSize.sm,
+    fontFamily: fontFamily.regular,
     color: colors.textDim,
   },
   duration: {
     fontSize: fontSize.sm,
+    fontFamily: fontFamily.medium,
     color: colors.textSecondary,
-    fontFamily: "monospace",
+    fontVariant: ["tabular-nums"],
   },
   statusDot: {
     width: 8,
     height: 8,
     borderRadius: borderRadius.full,
   },
+  chevron: {
+    fontSize: fontSize.lg,
+    fontFamily: fontFamily.regular,
+    color: colors.textDim,
+  },
   separator: {
     height: spacing.sm,
-  },
-  emptyContainer: {
-    alignItems: "center",
-    paddingVertical: spacing.xl,
-    gap: spacing.sm,
-  },
-  emptyTitle: {
-    fontSize: fontSize.lg,
-    fontWeight: "600",
-    color: colors.textSecondary,
-  },
-  emptySubtitle: {
-    fontSize: fontSize.sm,
-    color: colors.textDim,
-    textAlign: "center",
   },
 });

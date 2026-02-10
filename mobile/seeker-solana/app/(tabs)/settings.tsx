@@ -18,12 +18,14 @@ import {
   ScrollView,
   StyleSheet,
   Platform,
+  Linking,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { Ionicons } from "@expo/vector-icons";
 import * as Clipboard from "expo-clipboard";
 import { useWorker } from "../../src/hooks/useWorker";
 import { resetKeypair } from "../../src/services/KeyManager";
-import { colors, spacing, borderRadius, fontSize } from "../../src/theme";
+import { colors, spacing, borderRadius, fontSize, fontFamily } from "../../src/theme";
 
 export default function SettingsScreen() {
   const worker = useWorker();
@@ -108,7 +110,10 @@ export default function SettingsScreen() {
 
         {/* Signing Mode */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Signing Mode</Text>
+          <View style={styles.sectionHeader}>
+            <Ionicons name="key-outline" size={16} color={colors.textDim} />
+            <Text style={styles.sectionTitle}>Signing Mode</Text>
+          </View>
           <Text style={styles.sectionDescription}>
             Wallet mode signs receipts with Phantom. Device key uses a local keypair for headless operation.
           </Text>
@@ -149,12 +154,19 @@ export default function SettingsScreen() {
               </Text>
             </Pressable>
           </View>
+
+          <Text style={styles.signingModeHelper}>
+            Device Key works on all platforms. Wallet mode requires Phantom on Android.
+          </Text>
         </View>
 
         {/* Wallet Connection (only shown in wallet mode) */}
         {isWalletMode && (
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Wallet</Text>
+            <View style={styles.sectionHeader}>
+              <Ionicons name="wallet-outline" size={16} color={colors.textDim} />
+              <Text style={styles.sectionTitle}>Wallet</Text>
+            </View>
 
             {worker.walletAddress ? (
               <>
@@ -201,7 +213,10 @@ export default function SettingsScreen() {
 
         {/* Coordinator URL */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Network Endpoint</Text>
+          <View style={styles.sectionHeader}>
+            <Ionicons name="globe-outline" size={16} color={colors.textDim} />
+            <Text style={styles.sectionTitle}>Network Endpoint</Text>
+          </View>
           <Text style={styles.sectionDescription}>
             Coordinator node that routes jobs to your device.
           </Text>
@@ -231,7 +246,10 @@ export default function SettingsScreen() {
         {/* Worker Identity (device key mode) */}
         {!isWalletMode && (
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Node Identity</Text>
+            <View style={styles.sectionHeader}>
+              <Ionicons name="finger-print-outline" size={16} color={colors.textDim} />
+              <Text style={styles.sectionTitle}>Node Identity</Text>
+            </View>
             <Text style={styles.sectionDescription}>
               Your ed25519 public key — used to sign compute receipts and prove work.
             </Text>
@@ -255,10 +273,13 @@ export default function SettingsScreen() {
 
         {/* Danger Zone (device key mode only) */}
         {!isWalletMode && (
-          <View style={styles.section}>
-            <Text style={[styles.sectionTitle, { color: colors.error }]}>
-              Danger Zone
-            </Text>
+          <View style={styles.dangerZone}>
+            <View style={styles.sectionHeader}>
+              <Ionicons name="warning-outline" size={16} color={colors.error} />
+              <Text style={[styles.sectionTitle, { color: colors.error }]}>
+                Danger Zone
+              </Text>
+            </View>
 
             <Pressable
               style={({ pressed }) => [
@@ -277,14 +298,17 @@ export default function SettingsScreen() {
 
         {/* App Info */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>About</Text>
+          <View style={styles.sectionHeader}>
+            <Ionicons name="information-circle-outline" size={16} color={colors.textDim} />
+            <Text style={styles.sectionTitle}>About</Text>
+          </View>
           <View style={styles.infoRow}>
             <Text style={styles.infoLabel}>App</Text>
             <Text style={styles.infoValue}>Dispatch</Text>
           </View>
           <View style={styles.infoRow}>
             <Text style={styles.infoLabel}>Version</Text>
-            <Text style={styles.infoValue}>1.0.0</Text>
+            <Text style={styles.infoValue}>1.0.0 (beta)</Text>
           </View>
           <View style={styles.infoRow}>
             <Text style={styles.infoLabel}>Network</Text>
@@ -297,6 +321,17 @@ export default function SettingsScreen() {
             </Text>
           </View>
         </View>
+
+        {/* dispatch.computer link */}
+        <Pressable
+          style={({ pressed }) => [
+            styles.linkButton,
+            { opacity: pressed ? 0.7 : 1 },
+          ]}
+          onPress={() => Linking.openURL("https://dispatch.computer")}
+        >
+          <Text style={styles.linkText}>dispatch.computer</Text>
+        </Pressable>
       </ScrollView>
     </SafeAreaView>
   );
@@ -314,22 +349,28 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: fontSize.xl,
-    fontWeight: "800",
+    fontFamily: fontFamily.bold,
     color: colors.text,
     paddingTop: spacing.sm,
   },
   section: {
     gap: spacing.md,
   },
+  sectionHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
   sectionTitle: {
     fontSize: fontSize.sm,
-    fontWeight: "700",
+    fontFamily: fontFamily.semibold,
     color: colors.textDim,
     textTransform: "uppercase",
     letterSpacing: 1,
   },
   sectionDescription: {
     fontSize: fontSize.sm,
+    fontFamily: fontFamily.regular,
     color: colors.textSecondary,
     lineHeight: 20,
   },
@@ -356,7 +397,7 @@ const styles = StyleSheet.create({
   },
   toggleLabel: {
     fontSize: fontSize.md,
-    fontWeight: "700",
+    fontFamily: fontFamily.semibold,
     color: colors.textDim,
   },
   toggleLabelActive: {
@@ -364,6 +405,12 @@ const styles = StyleSheet.create({
   },
   toggleHint: {
     fontSize: fontSize.xs,
+    fontFamily: fontFamily.regular,
+    color: colors.textDim,
+  },
+  signingModeHelper: {
+    fontSize: fontSize.xs,
+    fontFamily: fontFamily.regular,
     color: colors.textDim,
   },
   walletButton: {
@@ -374,12 +421,12 @@ const styles = StyleSheet.create({
   },
   walletButtonText: {
     color: colors.text,
-    fontWeight: "700",
+    fontFamily: fontFamily.semibold,
     fontSize: fontSize.md,
   },
   walletLabel: {
     fontSize: fontSize.xs,
-    fontWeight: "600",
+    fontFamily: fontFamily.semibold,
     color: colors.success,
     textTransform: "uppercase",
     letterSpacing: 1,
@@ -393,7 +440,7 @@ const styles = StyleSheet.create({
   },
   outlineButtonText: {
     color: colors.textSecondary,
-    fontWeight: "600",
+    fontFamily: fontFamily.semibold,
     fontSize: fontSize.sm,
   },
   inputRow: {
@@ -419,7 +466,7 @@ const styles = StyleSheet.create({
   },
   saveButtonText: {
     color: colors.text,
-    fontWeight: "700",
+    fontFamily: fontFamily.semibold,
     fontSize: fontSize.sm,
   },
   copyRow: {
@@ -439,7 +486,15 @@ const styles = StyleSheet.create({
   copyLabel: {
     fontSize: fontSize.xs,
     color: colors.accentLight,
-    fontWeight: "600",
+    fontFamily: fontFamily.semibold,
+  },
+  dangerZone: {
+    backgroundColor: colors.error + "08",
+    borderRadius: 12,
+    padding: spacing.md,
+    borderWidth: 1,
+    borderColor: colors.error + "20",
+    gap: spacing.md,
   },
   dangerButton: {
     backgroundColor: colors.surface,
@@ -451,11 +506,12 @@ const styles = StyleSheet.create({
   },
   dangerButtonText: {
     color: colors.error,
-    fontWeight: "700",
+    fontFamily: fontFamily.semibold,
     fontSize: fontSize.md,
   },
   dangerDescription: {
     fontSize: fontSize.xs,
+    fontFamily: fontFamily.regular,
     color: colors.textDim,
   },
   infoRow: {
@@ -468,10 +524,21 @@ const styles = StyleSheet.create({
   },
   infoLabel: {
     fontSize: fontSize.sm,
+    fontFamily: fontFamily.regular,
     color: colors.textDim,
   },
   infoValue: {
     fontSize: fontSize.sm,
+    fontFamily: fontFamily.medium,
     color: colors.textSecondary,
+  },
+  linkButton: {
+    alignItems: "center",
+    paddingVertical: spacing.sm,
+  },
+  linkText: {
+    fontSize: fontSize.sm,
+    fontFamily: fontFamily.medium,
+    color: colors.accent,
   },
 });

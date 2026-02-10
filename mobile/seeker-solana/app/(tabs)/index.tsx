@@ -7,25 +7,43 @@
  * 3. WorkerToggle — big start/stop button
  * 4. JobHistory — recent completed jobs
  */
-import React from "react";
-import { View, ScrollView, StyleSheet, Text } from "react-native";
+import React, { useCallback } from "react";
+import {
+  View,
+  ScrollView,
+  StyleSheet,
+  Text,
+  ActivityIndicator,
+  RefreshControl,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useWorker } from "../../src/hooks/useWorker";
 import { StatusCard } from "../../src/components/StatusCard";
 import { EarningsCard } from "../../src/components/EarningsCard";
 import { WorkerToggle } from "../../src/components/WorkerToggle";
 import { JobHistory } from "../../src/components/JobHistory";
-import { colors, spacing, fontSize } from "../../src/theme";
+import { DashboardSkeleton } from "../../src/components/Skeleton";
+import { colors, spacing, fontSize, fontFamily } from "../../src/theme";
 
 export default function DashboardScreen() {
   const worker = useWorker();
+  const [refreshing, setRefreshing] = React.useState(false);
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    try {
+      if (worker.status === "disconnected") {
+        await worker.connect();
+      }
+    } finally {
+      setTimeout(() => setRefreshing(false), 1000);
+    }
+  }, [worker]);
 
   if (worker.isLoading) {
     return (
-      <SafeAreaView style={styles.container}>
-        <View style={styles.loadingContainer}>
-          <Text style={styles.loadingText}>Loading...</Text>
-        </View>
+      <SafeAreaView style={styles.container} edges={["top"]}>
+        <DashboardSkeleton />
       </SafeAreaView>
     );
   }
@@ -35,11 +53,20 @@ export default function DashboardScreen() {
       <ScrollView
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor={colors.accent}
+            colors={[colors.accent]}
+          />
+        }
       >
         {/* Header */}
         <View style={styles.header}>
           <Text style={styles.title}>Dispatch</Text>
           <Text style={styles.subtitle}>Compute Node</Text>
+          <View style={styles.headerDivider} />
         </View>
 
         {/* Wallet connection banner */}
@@ -76,7 +103,10 @@ export default function DashboardScreen() {
         />
 
         {/* Job History */}
-        <JobHistory jobs={worker.jobHistory} />
+        <JobHistory
+          jobs={worker.jobHistory}
+          isConnected={worker.status === "connected"}
+        />
       </ScrollView>
     </SafeAreaView>
   );
@@ -98,17 +128,23 @@ const styles = StyleSheet.create({
     paddingTop: spacing.sm,
   },
   title: {
-    fontSize: fontSize.xl,
-    fontWeight: "800",
+    fontSize: fontSize.xxl,
+    fontFamily: fontFamily.bold,
     color: colors.text,
     letterSpacing: 1,
   },
   subtitle: {
     fontSize: fontSize.sm,
+    fontFamily: fontFamily.regular,
     color: colors.accentLight,
-    fontWeight: "600",
     letterSpacing: 2,
     textTransform: "uppercase",
+  },
+  headerDivider: {
+    width: "60%",
+    height: 1,
+    backgroundColor: colors.border,
+    marginTop: spacing.sm,
   },
   walletBanner: {
     backgroundColor: colors.warning + "20",
@@ -121,16 +157,12 @@ const styles = StyleSheet.create({
   walletBannerText: {
     fontSize: fontSize.sm,
     color: colors.warning,
-    fontWeight: "600",
+    fontFamily: fontFamily.semibold,
     textAlign: "center",
   },
   loadingContainer: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-  },
-  loadingText: {
-    fontSize: fontSize.lg,
-    color: colors.textSecondary,
   },
 });

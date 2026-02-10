@@ -3,6 +3,7 @@
  * Consistent with https://dispatch.computer
  */
 export const colors = {
+  /** Must match splash.backgroundColor in app.json */
   background: "#0a0a0e",
   surface: "#1a1a22",
   surfaceLight: "#252535",
@@ -41,4 +42,11 @@ export const fontSize = {
   lg: 18,
   xl: 24,
   xxl: 32,
+} as const;
+
+export const fontFamily = {
+  regular: "SpaceGrotesk_400Regular",
+  medium: "SpaceGrotesk_500Medium",
+  semibold: "SpaceGrotesk_600SemiBold",
+  bold: "SpaceGrotesk_700Bold",
 } as const;

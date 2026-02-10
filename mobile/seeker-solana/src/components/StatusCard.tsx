@@ -2,15 +2,15 @@
  * StatusCard — Shows connection status, coordinator URL, and worker ID.
  *
  * Visual indicators:
- * - Green dot = connected and processing jobs
+ * - Green dot = connected and processing jobs (pulsing)
  * - Red dot = disconnected
  * - Yellow dot = reconnecting (lost connection, trying to get back)
  * - Blue dot = connecting (initial connection attempt)
  */
-import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import React, { useEffect, useRef } from "react";
+import { View, Text, StyleSheet, Animated } from "react-native";
 import type { ConnectionStatus } from "../services/WebSocketService";
-import { colors, spacing, borderRadius, fontSize } from "../theme";
+import { colors, spacing, borderRadius, fontSize, fontFamily } from "../theme";
 
 import type { SigningMode } from "../contexts/WalletProvider";
 
@@ -41,6 +41,31 @@ export function StatusCard({
 }: StatusCardProps) {
   const config = STATUS_CONFIG[status];
   const isWalletMode = signingMode === "wallet";
+  const pulseAnim = useRef(new Animated.Value(1)).current;
+
+  // Pulsing green dot when connected
+  useEffect(() => {
+    if (status === "connected") {
+      const pulse = Animated.loop(
+        Animated.sequence([
+          Animated.timing(pulseAnim, {
+            toValue: 0.6,
+            duration: 1500,
+            useNativeDriver: true,
+          }),
+          Animated.timing(pulseAnim, {
+            toValue: 1,
+            duration: 1500,
+            useNativeDriver: true,
+          }),
+        ])
+      );
+      pulse.start();
+      return () => pulse.stop();
+    } else {
+      pulseAnim.setValue(1);
+    }
+  }, [status, pulseAnim]);
 
   // Show wallet address (base58 truncated) or worker ID (hex truncated)
   const identityLabel = isWalletMode ? "Identity" : "Node ID";
@@ -56,7 +81,16 @@ export function StatusCard({
     <View style={styles.card}>
       <View style={styles.header}>
         <View style={styles.statusRow}>
-          <View style={[styles.dot, { backgroundColor: config.color }]} />
+          {status === "connected" ? (
+            <Animated.View
+              style={[
+                styles.dot,
+                { backgroundColor: config.color, opacity: pulseAnim },
+              ]}
+            />
+          ) : (
+            <View style={[styles.dot, { backgroundColor: config.color }]} />
+          )}
           <Text style={[styles.statusLabel, { color: config.color }]}>
             {config.label}
           </Text>
@@ -109,11 +143,11 @@ const styles = StyleSheet.create({
   },
   statusLabel: {
     fontSize: fontSize.md,
-    fontWeight: "600",
+    fontFamily: fontFamily.semibold,
   },
   badge: {
     fontSize: fontSize.xs,
-    fontWeight: "700",
+    fontFamily: fontFamily.medium,
     color: colors.accent,
     backgroundColor: colors.surfaceLight,
     paddingHorizontal: spacing.sm,
@@ -129,12 +163,13 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: fontSize.sm,
+    fontFamily: fontFamily.regular,
     color: colors.textDim,
   },
   value: {
     fontSize: fontSize.sm,
+    fontFamily: fontFamily.regular,
     color: colors.textSecondary,
-    fontFamily: "monospace",
     maxWidth: "60%",
   },
 });

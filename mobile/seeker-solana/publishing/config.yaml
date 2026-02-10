@@ -1,0 +1,67 @@
+publisher:
+  name: Pranit Garg
+  website: https://dispatch.computer
+  contact: https://x.com/pranit
+
+app:
+  name: Dispatch
+  android_package: com.dispatch.seeker
+  urls:
+    privacy_policy_url: https://dispatch.computer/privacy
+    terms_of_service_url: https://dispatch.computer/terms
+    website: https://dispatch.computer
+    source_code: https://github.com/pranitgarg/dispatch
+
+release:
+  version: "1.0.0"
+  media:
+    - purpose: icon
+      width: 512
+      height: 512
+      path: media/app_icon.png
+    - purpose: banner
+      width: 1200
+      height: 600
+      path: media/banner.png
+    - purpose: screenshot
+      width: 1080
+      height: 1920
+      path: media/screenshot_dashboard_offline.png
+    - purpose: screenshot
+      width: 1080
+      height: 1920
+      path: media/screenshot_dashboard_earning.png
+    - purpose: screenshot
+      width: 1080
+      height: 1920
+      path: media/screenshot_onboarding.png
+    - purpose: screenshot
+      width: 1080
+      height: 1920
+      path: media/screenshot_settings.png
+
+catalog:
+  en-US:
+    name: Dispatch
+    short_description: Turn your idle phone into an AI compute node. Earn SOL.
+    long_description: |
+      Dispatch turns your phone into an AI compute node. When you're not
+      using your device, it picks up lightweight AI tasks from the network
+      and earns SOL for every job completed.
+
+      How it works:
+      - Connect to the Dispatch coordinator network
+      - Your phone receives and processes AI tasks
+      - Each completed job is signed with an ed25519 receipt
+      - Earn SOL for verified work
+
+      Features:
+      - Device key signing — no wallet required, works on any Android device
+      - Phantom wallet integration via Mobile Wallet Adapter (optional)
+      - Real-time job history and earnings tracking
+      - Dark theme optimized for OLED displays
+      - x402 micropayment protocol for trustless settlement
+      - ERC-8004 onchain reputation building
+
+      Currently in testnet/beta. Earnings are simulated — the protocol
+      and cryptographic signing are real.

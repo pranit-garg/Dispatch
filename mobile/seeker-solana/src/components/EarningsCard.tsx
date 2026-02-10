@@ -2,11 +2,11 @@
  * EarningsCard — Displays total SOL earnings and jobs completed count.
  *
  * For MVP these are mock values (0.001 SOL per TASK job).
- * The card has a subtle accent gradient border to draw attention.
+ * The card has a gold glow shadow and split amount display.
  */
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
-import { colors, spacing, borderRadius, fontSize } from "../theme";
+import { colors, spacing, borderRadius, fontSize, fontFamily } from "../theme";
 
 interface EarningsCardProps {
   totalEarnings: number;
@@ -14,14 +14,17 @@ interface EarningsCardProps {
 }
 
 export function EarningsCard({ totalEarnings, jobsCompleted }: EarningsCardProps) {
+  const [intPart, decPart] = totalEarnings.toFixed(4).split(".");
+
   return (
     <View style={styles.card}>
       <View style={styles.earningsSection}>
         <Text style={styles.label}>Earnings</Text>
         <View style={styles.earningsRow}>
-          <Text style={styles.amount}>
-            {totalEarnings.toFixed(4)}
-          </Text>
+          <View style={styles.amountRow}>
+            <Text style={styles.amountInt}>{intPart}</Text>
+            <Text style={styles.amountDec}>.{decPart}</Text>
+          </View>
           <Text style={styles.currency}>SOL</Text>
         </View>
       </View>
@@ -45,6 +48,11 @@ const styles = StyleSheet.create({
     padding: spacing.lg,
     flexDirection: "row",
     alignItems: "center",
+    shadowColor: colors.accent,
+    shadowRadius: 8,
+    shadowOpacity: 0.15,
+    shadowOffset: { width: 0, height: 0 },
+    elevation: 4,
   },
   earningsSection: {
     flex: 1,
@@ -52,25 +60,33 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: fontSize.xs,
+    fontFamily: fontFamily.semibold,
     color: colors.textDim,
     textTransform: "uppercase",
     letterSpacing: 1,
-    fontWeight: "600",
   },
   earningsRow: {
     flexDirection: "row",
     alignItems: "baseline",
     gap: spacing.sm,
   },
-  amount: {
+  amountRow: {
+    flexDirection: "row",
+    alignItems: "baseline",
+  },
+  amountInt: {
     fontSize: fontSize.xxl,
-    fontWeight: "700",
+    fontFamily: fontFamily.bold,
     color: colors.text,
-    fontFamily: "monospace",
+  },
+  amountDec: {
+    fontSize: fontSize.lg,
+    fontFamily: fontFamily.bold,
+    color: colors.textSecondary,
   },
   currency: {
     fontSize: fontSize.md,
-    fontWeight: "600",
+    fontFamily: fontFamily.semibold,
     color: colors.accentLight,
   },
   divider: {
@@ -85,8 +101,7 @@ const styles = StyleSheet.create({
   },
   jobCount: {
     fontSize: fontSize.xxl,
-    fontWeight: "700",
+    fontFamily: fontFamily.bold,
     color: colors.text,
-    fontFamily: "monospace",
   },
 });
