@@ -23,6 +23,7 @@ export default function TwitterImage() {
           overflow: "hidden",
         }}
       >
+        {/* Top accent border — gold gradient */}
         <div
           style={{
             position: "absolute",
@@ -30,18 +31,22 @@ export default function TwitterImage() {
             left: 0,
             right: 0,
             height: "4px",
-            background: "linear-gradient(90deg, #6366f1, #818cf8, #6366f1)",
+            background: "linear-gradient(90deg, #d4a246, #e8c06e, #d4a246)",
           }}
         />
+
+        {/* Subtle grid background */}
         <div
           style={{
             position: "absolute",
             inset: 0,
             backgroundImage:
-              "linear-gradient(rgba(99,102,241,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(99,102,241,0.05) 1px, transparent 1px)",
+              "linear-gradient(rgba(212,162,70,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(212,162,70,0.04) 1px, transparent 1px)",
             backgroundSize: "60px 60px",
           }}
         />
+
+        {/* Content */}
         <div
           style={{
             display: "flex",
@@ -51,21 +56,46 @@ export default function TwitterImage() {
             zIndex: 1,
           }}
         >
-          <div style={{ fontSize: "64px", marginBottom: "8px", display: "flex" }}>
-            {"⚡"}
+          {/* Gold hexagon "D" icon */}
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              marginBottom: "8px",
+            }}
+          >
+            <svg
+              width="64"
+              height="72"
+              viewBox="0 0 32 32"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <polygon
+                points="16,1 29,8.5 29,23.5 16,31 3,23.5 3,8.5"
+                fill="#d4a246"
+              />
+              <path
+                d="M11 9h5c4.4 0 8 3.1 8 7s-3.6 7-8 7h-5V9zm3 2.5v9h2c2.8 0 5-2 5-4.5s-2.2-4.5-5-4.5h-2z"
+                fill="#0a0a0f"
+              />
+            </svg>
           </div>
+
+          {/* Main title — full gold */}
           <div
             style={{
               fontSize: "72px",
               fontWeight: 700,
-              color: "#ffffff",
+              color: "#d4a246",
               letterSpacing: "-2px",
               display: "flex",
             }}
           >
-            Dis
-            <span style={{ color: "#6366f1" }}>patch</span>
+            Dispatch
           </div>
+
+          {/* Subtitle */}
           <div
             style={{
               fontSize: "24px",
@@ -78,13 +108,15 @@ export default function TwitterImage() {
           >
             Dispatch idle compute to AI agents. x402 payments + ERC-8004 reputation.
           </div>
+
+          {/* Tags */}
           <div style={{ display: "flex", gap: "12px", marginTop: "16px" }}>
             <div
               style={{
                 padding: "8px 20px",
                 borderRadius: "9999px",
-                border: "1px solid rgba(99,102,241,0.4)",
-                color: "#818cf8",
+                border: "1px solid rgba(212,162,70,0.3)",
+                color: "#e8c06e",
                 fontSize: "16px",
                 display: "flex",
               }}
@@ -95,8 +127,8 @@ export default function TwitterImage() {
               style={{
                 padding: "8px 20px",
                 borderRadius: "9999px",
-                border: "1px solid rgba(99,102,241,0.4)",
-                color: "#818cf8",
+                border: "1px solid rgba(212,162,70,0.3)",
+                color: "#e8c06e",
                 fontSize: "16px",
                 display: "flex",
               }}
@@ -107,8 +139,8 @@ export default function TwitterImage() {
               style={{
                 padding: "8px 20px",
                 borderRadius: "9999px",
-                border: "1px solid rgba(99,102,241,0.4)",
-                color: "#818cf8",
+                border: "1px solid rgba(212,162,70,0.3)",
+                color: "#e8c06e",
                 fontSize: "16px",
                 display: "flex",
               }}
@@ -117,6 +149,8 @@ export default function TwitterImage() {
             </div>
           </div>
         </div>
+
+        {/* Bottom domain */}
         <div
           style={{
             position: "absolute",
@@ -126,7 +160,7 @@ export default function TwitterImage() {
             fontSize: "14px",
           }}
         >
-          dispatch.network
+          dispatch.computer
         </div>
       </div>
     ),

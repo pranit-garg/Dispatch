@@ -8,11 +8,16 @@ export function CTA() {
       {/* Top accent line */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 h-px w-1/3 bg-gradient-to-r from-transparent via-[#d4a246]/50 to-transparent" />
 
-      {/* Radial grid glow */}
+      {/* Warm ambient glow — CSS only */}
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 h-[500px] w-full max-w-3xl"
           style={{
-            background: "radial-gradient(ellipse at center top, rgba(212, 162, 70, 0.08) 0%, rgba(212, 162, 70, 0.02) 50%, transparent 80%)",
+            background: "radial-gradient(ellipse at center top, rgba(212, 162, 70, 0.10) 0%, rgba(212, 162, 70, 0.03) 50%, transparent 80%)",
+          }}
+        />
+        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 h-[300px] w-full max-w-2xl"
+          style={{
+            background: "radial-gradient(ellipse at center bottom, rgba(212, 162, 70, 0.05) 0%, transparent 70%)",
           }}
         />
       </div>

@@ -31,12 +31,18 @@ export function Hero() {
 
   return (
     <section className="relative overflow-hidden px-6 pt-20 pb-16 md:pt-32 md:pb-24">
-      {/* Radial grid glow */}
+      {/* Ambient glow — CSS only */}
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 h-[500px] w-full max-w-3xl"
-          style={{
-            background: "radial-gradient(ellipse at center top, rgba(212, 162, 70, 0.08) 0%, rgba(212, 162, 70, 0.02) 50%, transparent 80%)",
-          }}
+        {/* Top-center warm glow */}
+        <div className="absolute -top-40 left-1/2 -translate-x-1/2 h-[600px] w-[800px] rounded-full opacity-[0.07]"
+          style={{ background: "radial-gradient(ellipse, #d4a246, transparent 70%)" }}
+        />
+        {/* Subtle side accents */}
+        <div className="absolute -top-20 -left-40 h-[400px] w-[400px] rounded-full opacity-[0.04]"
+          style={{ background: "radial-gradient(circle, #d4a246, transparent 70%)" }}
+        />
+        <div className="absolute -top-20 -right-40 h-[400px] w-[400px] rounded-full opacity-[0.04]"
+          style={{ background: "radial-gradient(circle, #d4a246, transparent 70%)" }}
         />
       </div>
 
@@ -52,7 +58,6 @@ export function Hero() {
           Live on Monad + Solana testnet
         </motion.div>
 
-        {/* Headline */}
         <motion.h1
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

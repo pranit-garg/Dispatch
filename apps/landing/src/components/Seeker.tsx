@@ -36,36 +36,27 @@ const features = [
 
 function PhoneMockup() {
   return (
-    <div className="relative w-[280px]">
-      {/* Solana Seeker frame — squarer Android corners, gray matte finish */}
-      <div className="rounded-[1.25rem] border-2 border-[#3a3a4a] bg-[#2a2a35] p-2 shadow-lg shadow-accent/5">
-        {/* Top bezel — Seeker branding + punch-hole camera */}
-        <div className="relative flex items-center justify-center py-1.5">
-          {/* Solana logo mark (small diamond) */}
-          <div className="absolute left-3 flex items-center gap-1">
-            <svg className="h-2.5 w-2.5" viewBox="0 0 24 24" fill="none">
-              <path d="M4 16.5l8 4.5 8-4.5M4 12l8 4.5L20 12M12 3L4 7.5 12 12l8-4.5L12 3z" stroke="#9945FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </div>
-          {/* Punch-hole camera — centered dot */}
-          <div className="h-2 w-2 rounded-full bg-[#1a1a25] ring-1 ring-[#4a4a5a]" />
-          {/* Seed Vault indicator */}
-          <div className="absolute right-3">
-            <div className="h-1.5 w-4 rounded-full bg-gradient-to-r from-[#9945FF] to-[#14F195] opacity-50" />
-          </div>
-        </div>
+    <div className="relative w-[260px]">
+      {/* Side buttons — volume (left) + power (right) */}
+      <div className="absolute -left-[3px] top-[70px] h-6 w-[3px] rounded-l-sm bg-[#3a3a4a]" />
+      <div className="absolute -left-[3px] top-[100px] h-10 w-[3px] rounded-l-sm bg-[#3a3a4a]" />
+      <div className="absolute -right-[3px] top-[90px] h-8 w-[3px] rounded-r-sm bg-[#3a3a4a]" />
 
-        {/* Screen — edge-to-edge display, thinner bezels */}
-        <div className="rounded-[0.75rem] bg-[#0a0a0f] px-3 pb-3 pt-1">
+      {/* Solana Seeker frame — modern Android proportions, gray matte */}
+      <div className="rounded-[2.5rem] border-[1.5px] border-[#4a4a5a] bg-gradient-to-b from-[#35353f] to-[#2a2a35] p-[5px] shadow-xl shadow-black/40">
+        {/* Screen — edge-to-edge display */}
+        <div className="rounded-[2rem] bg-[#0a0a0f] px-3 pb-3 pt-2 relative overflow-hidden">
+          {/* Earpiece / speaker slit */}
+          <div className="absolute top-[3px] left-1/2 -translate-x-1/2 h-[2px] w-10 rounded-full bg-[#2a2a35]" />
+          {/* Punch-hole camera */}
+          <div className="absolute top-[10px] left-1/2 -translate-x-1/2 h-[6px] w-[6px] rounded-full bg-[#15151f] ring-1 ring-[#3a3a4a]" />
+
           {/* Android status bar */}
-          <div className="mb-3 flex items-center justify-between text-[10px] text-[#64748b]">
+          <div className="mt-3 mb-3 flex items-center justify-between text-[10px] text-[#64748b]">
             <span>12:42</span>
             <div className="flex items-center gap-1.5">
-              {/* Signal bars */}
               <svg className="h-2.5 w-2.5" fill="#64748b" viewBox="0 0 24 24"><path d="M2 22h4V12H2v10zm6 0h4V7H8v15zm6 0h4V2h-4v20z" /></svg>
-              {/* WiFi */}
               <svg className="h-2.5 w-2.5" fill="#64748b" viewBox="0 0 24 24"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z" /></svg>
-              {/* Battery — Android style */}
               <div className="flex items-center gap-0.5">
                 <div className="h-2 w-4 rounded-sm border border-[#64748b] p-px">
                   <div className="h-full w-3/4 rounded-[1px] bg-[#34d399]" />
@@ -74,7 +65,7 @@ function PhoneMockup() {
             </div>
           </div>
 
-          {/* App header — "Dispatch" + "COMPUTE NODE" */}
+          {/* App header */}
           <div className="mb-3 text-center">
             <div className="text-sm font-extrabold tracking-wide text-[#f8fafc]">Dispatch</div>
             <div className="text-[8px] font-semibold uppercase tracking-[2px] text-[#e8b84a]">Compute Node</div>
@@ -91,7 +82,7 @@ function PhoneMockup() {
             </div>
             <div className="flex items-center justify-between text-[9px]">
               <span className="text-[#64748b]">Network</span>
-              <span className="font-mono text-[#94a3b8]">ws://coordinator:4010</span>
+              <span className="font-mono text-[#94a3b8]">ws://coordinator:4020</span>
             </div>
             <div className="mt-1 flex items-center justify-between text-[9px]">
               <span className="text-[#64748b]">Node ID</span>
@@ -115,10 +106,9 @@ function PhoneMockup() {
             </div>
           </div>
 
-          {/* WorkerToggle — big circular "EARNING" button */}
+          {/* WorkerToggle */}
           <div className="my-3 flex justify-center">
             <div className="relative flex h-20 w-20 items-center justify-center rounded-full border-[2px] border-[#e8b84a] bg-[#d4a246]">
-              {/* Inner glow ring */}
               <div className="absolute inset-1.5 rounded-full border border-[#e8b84a40]" />
               <div className="text-center">
                 <div className="text-[10px] font-extrabold tracking-[2px] text-[#f8fafc]">EARNING</div>
@@ -127,10 +117,9 @@ function PhoneMockup() {
             </div>
           </div>
 
-          {/* JobHistory — show 2 sample rows */}
+          {/* JobHistory */}
           <div>
             <div className="mb-1.5 text-[8px] font-semibold uppercase tracking-wide text-[#64748b]">Job History</div>
-            {/* Job row 1 */}
             <div className="mb-1 flex items-center justify-between rounded-lg bg-[#1a1a2e] px-2 py-1.5">
               <div className="flex items-center gap-1.5">
                 <span className="rounded bg-[#d4a24620] px-1 py-0.5 text-[7px] font-bold text-[#d4a246]">SUMMARIZE</span>
@@ -141,7 +130,6 @@ function PhoneMockup() {
                 <span className="inline-block h-1.5 w-1.5 rounded-full bg-[#34d399]" />
               </div>
             </div>
-            {/* Job row 2 */}
             <div className="flex items-center justify-between rounded-lg bg-[#1a1a2e] px-2 py-1.5">
               <div className="flex items-center gap-1.5">
                 <span className="rounded bg-[#8b5cf620] px-1 py-0.5 text-[7px] font-bold text-[#8b5cf6]">CLASSIFY</span>
@@ -153,11 +141,11 @@ function PhoneMockup() {
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Bottom bezel — Seeker branding (Android nav is on-screen) */}
-        <div className="mt-1.5 flex items-center justify-center gap-1.5 py-1">
-          <span className="text-[7px] font-bold uppercase tracking-[3px] text-[#64748b]">Seeker</span>
+          {/* Android nav bar */}
+          <div className="mt-3 flex items-center justify-center">
+            <div className="h-1 w-24 rounded-full bg-[#4a4a5a]" />
+          </div>
         </div>
       </div>
     </div>

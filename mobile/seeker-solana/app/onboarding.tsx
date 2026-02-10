@@ -17,6 +17,7 @@ import {
   Pressable,
   StyleSheet,
   Dimensions,
+  Image,
   NativeSyntheticEvent,
   NativeScrollEvent,
 } from "react-native";
@@ -41,9 +42,12 @@ const TOTAL_STEPS = 3;
 function StepEarn() {
   return (
     <View style={[styles.page, styles.centered]}>
-      {/* Gold circle illustration placeholder */}
+      {/* Gold circle with brand icon */}
       <View style={styles.heroCircle}>
-        <Text style={styles.heroCircleIcon}>◎</Text>
+        <Image
+          source={require("../assets/icon.png")}
+          style={{ width: 64, height: 64, borderRadius: 12 }}
+        />
       </View>
 
       <Text style={styles.headline}>Your phone{"\n"}can earn SOL</Text>

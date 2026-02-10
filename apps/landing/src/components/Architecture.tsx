@@ -37,8 +37,9 @@ const steps = [
 
 export function Architecture() {
   return (
-    <section className="border-t border-border px-6 py-20 md:py-28" id="architecture">
-      <div className="mx-auto max-w-4xl">
+    <section className="relative overflow-hidden border-t border-border px-6 py-20 md:py-28" id="architecture">
+
+      <div className="relative mx-auto max-w-4xl">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -56,7 +57,9 @@ export function Architecture() {
 
         <div className="relative">
           {/* Vertical line */}
-          <div className="absolute left-[23px] top-0 bottom-0 w-px bg-border md:left-1/2 md:-translate-x-px" />
+          <div className="absolute left-[23px] top-0 bottom-0 w-px md:left-1/2 md:-translate-x-px"
+            style={{ background: "linear-gradient(to bottom, transparent, #d4a246 20%, #d4a246 80%, transparent)" }}
+          />
 
           <div className="space-y-8">
             {steps.map((step, i) => (
@@ -73,7 +76,7 @@ export function Architecture() {
                 }`}
               >
                 {/* Number badge */}
-                <div className="relative z-10 flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-border bg-bg-card font-mono text-sm font-bold text-accent-bright md:absolute md:left-1/2 md:-translate-x-1/2">
+                <div className="relative z-10 flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-border bg-bg-card font-mono text-sm font-bold text-accent-bright shadow-[0_0_20px_rgba(212,162,70,0.15)] md:absolute md:left-1/2 md:-translate-x-1/2">
                   {step.num}
                 </div>
 

@@ -13,6 +13,7 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  Image,
   ActivityIndicator,
   RefreshControl,
 } from "react-native";
@@ -22,6 +23,7 @@ import { StatusCard } from "../../src/components/StatusCard";
 import { EarningsCard } from "../../src/components/EarningsCard";
 import { WorkerToggle } from "../../src/components/WorkerToggle";
 import { JobHistory } from "../../src/components/JobHistory";
+import { ErrorToast } from "../../src/components/ErrorToast";
 import { DashboardSkeleton } from "../../src/components/Skeleton";
 import { colors, spacing, fontSize, fontFamily } from "../../src/theme";
 
@@ -50,6 +52,7 @@ export default function DashboardScreen() {
 
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
+      <ErrorToast />
       <ScrollView
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
@@ -64,6 +67,10 @@ export default function DashboardScreen() {
       >
         {/* Header */}
         <View style={styles.header}>
+          <Image
+            source={require("../../assets/icon.png")}
+            style={{ width: 28, height: 28, borderRadius: 6 }}
+          />
           <Text style={styles.title}>Dispatch</Text>
           <Text style={styles.subtitle}>Compute Node</Text>
           <View style={styles.headerDivider} />

@@ -6,9 +6,11 @@
   "main": "dist/index.js",
   "dependencies": {
     "@dispatch/coordinator-core": "workspace:*",
+    "@dispatch/erc8004": "workspace:*",
     "@dispatch/protocol": "workspace:*",
     "@x402/express": "^2.0.0",
     "@x402/svm": "^2.0.0",
-    "@x402/core": "^2.0.0"
+    "@x402/core": "^2.0.0",
+    "viem": "^2.0.0"
   }
 }

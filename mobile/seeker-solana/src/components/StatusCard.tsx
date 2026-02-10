@@ -42,20 +42,24 @@ export function StatusCard({
   const config = STATUS_CONFIG[status];
   const isWalletMode = signingMode === "wallet";
   const pulseAnim = useRef(new Animated.Value(1)).current;
+  const ringScale = useRef(new Animated.Value(1)).current;
+  const ringOpacity = useRef(new Animated.Value(0.6)).current;
 
-  // Pulsing green dot when connected
+  const isTransitioning = status === "connecting" || status === "reconnecting";
+
+  // Pulsing dot for connected (green) and connecting/reconnecting (yellow)
   useEffect(() => {
-    if (status === "connected") {
+    if (status === "connected" || isTransitioning) {
       const pulse = Animated.loop(
         Animated.sequence([
           Animated.timing(pulseAnim, {
-            toValue: 0.6,
-            duration: 1500,
+            toValue: 0.5,
+            duration: isTransitioning ? 800 : 1500,
             useNativeDriver: true,
           }),
           Animated.timing(pulseAnim, {
             toValue: 1,
-            duration: 1500,
+            duration: isTransitioning ? 800 : 1500,
             useNativeDriver: true,
           }),
         ])
@@ -65,7 +69,33 @@ export function StatusCard({
     } else {
       pulseAnim.setValue(1);
     }
-  }, [status, pulseAnim]);
+  }, [status, isTransitioning, pulseAnim]);
+
+  // Expanding radar ring for connecting/reconnecting
+  useEffect(() => {
+    if (isTransitioning) {
+      const ring = Animated.loop(
+        Animated.parallel([
+          Animated.timing(ringScale, {
+            toValue: 3,
+            duration: 1200,
+            useNativeDriver: true,
+          }),
+          Animated.timing(ringOpacity, {
+            toValue: 0,
+            duration: 1200,
+            useNativeDriver: true,
+          }),
+        ])
+      );
+      ring.start();
+      return () => {
+        ring.stop();
+        ringScale.setValue(1);
+        ringOpacity.setValue(0.6);
+      };
+    }
+  }, [isTransitioning, ringScale, ringOpacity]);
 
   // Show wallet address (base58 truncated) or worker ID (hex truncated)
   const identityLabel = isWalletMode ? "Identity" : "Node ID";
@@ -81,15 +111,31 @@ export function StatusCard({
     <View style={styles.card}>
       <View style={styles.header}>
         <View style={styles.statusRow}>
-          {status === "connected" ? (
-            <Animated.View
-              style={[
-                styles.dot,
-                { backgroundColor: config.color, opacity: pulseAnim },
-              ]}
-            />
+          {(status === "connected" || isTransitioning) ? (
+            <View style={styles.dotContainer}>
+              {isTransitioning && (
+                <Animated.View
+                  style={[
+                    styles.ring,
+                    {
+                      borderColor: config.color,
+                      transform: [{ scale: ringScale }],
+                      opacity: ringOpacity,
+                    },
+                  ]}
+                />
+              )}
+              <Animated.View
+                style={[
+                  styles.dot,
+                  { backgroundColor: config.color, opacity: pulseAnim },
+                ]}
+              />
+            </View>
           ) : (
-            <View style={[styles.dot, { backgroundColor: config.color }]} />
+            <View style={styles.dotContainer}>
+              <View style={[styles.dot, { backgroundColor: config.color }]} />
+            </View>
           )}
           <Text style={[styles.statusLabel, { color: config.color }]}>
             {config.label}
@@ -136,10 +182,23 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: spacing.sm,
   },
+  dotContainer: {
+    width: 20,
+    height: 20,
+    alignItems: "center",
+    justifyContent: "center",
+  },
   dot: {
     width: 10,
     height: 10,
     borderRadius: borderRadius.full,
+  },
+  ring: {
+    position: "absolute",
+    width: 10,
+    height: 10,
+    borderRadius: borderRadius.full,
+    borderWidth: 2,
   },
   statusLabel: {
     fontSize: fontSize.md,

@@ -43,8 +43,15 @@ const differentiators = [
 
 export function WhyDispatch() {
   return (
-    <section className="px-6 py-20 md:py-28" id="why">
-      <div className="mx-auto max-w-6xl">
+    <section className="relative overflow-hidden px-6 py-20 md:py-28" id="why">
+      {/* Subtle center glow */}
+      <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+        <div className="h-[500px] w-[600px] rounded-full opacity-[0.06]"
+          style={{ background: "radial-gradient(ellipse, #d4a246, transparent 70%)" }}
+        />
+      </div>
+
+      <div className="relative mx-auto max-w-6xl">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}

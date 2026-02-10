@@ -6,5 +6,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
       url: "https://dispatch.computer",
       lastModified: new Date(),
     },
+    {
+      url: "https://dispatch.computer/privacy",
+      lastModified: new Date(),
+    },
+    {
+      url: "https://dispatch.computer/terms",
+      lastModified: new Date(),
+    },
   ];
 }
