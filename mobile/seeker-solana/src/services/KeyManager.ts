@@ -7,10 +7,16 @@
  *
  * Think of it like a wallet: the private key signs receipts to prove
  * this device did the work, and the public key is the worker's identity.
+ *
+ * NOTE: tweetnacl checks for crypto.getRandomValues at module init time,
+ * before our polyfill runs. So we use expo-crypto's getRandomValues to
+ * generate a seed, then pass it to nacl.sign.keyPair.fromSeed() which
+ * is deterministic and doesn't need tweetnacl's internal PRNG.
  */
 import nacl from "tweetnacl";
 import * as SecureStore from "expo-secure-store";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { getRandomValues } from "expo-crypto";
 import { Buffer } from "buffer";
 
 const SECURE_KEY = "dispatch_secret_key";
@@ -44,8 +50,11 @@ export async function getOrCreateKeypair(): Promise<MobileKeyPair> {
     };
   }
 
-  // Generate new keypair
-  const keyPair = nacl.sign.keyPair();
+  // Generate new keypair using expo-crypto for randomness
+  // (tweetnacl's built-in PRNG isn't available in React Native)
+  const seed = new Uint8Array(32);
+  getRandomValues(seed);
+  const keyPair = nacl.sign.keyPair.fromSeed(seed);
   const pubkeyHex = Buffer.from(keyPair.publicKey).toString("hex");
 
   // Store secret key in secure storage
