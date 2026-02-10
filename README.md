@@ -1,113 +1,156 @@
-# Dispatch Compute Network
+# Dispatch
 
-Decentralized compute network where **Seekers** (mobile/simulated) and **Desktop Workers** handle TASK and LLM jobs. Two blockchain tracks: **Monad testnet** (EVM) and **Solana devnet** for x402 payment gating.
+**The compute layer AI agents pay into.**
 
-**Landing page:** [dispatch.computer](https://dispatch.computer) | **API Docs:** [docs.dispatch.computer](https://docs.dispatch.computer)
+Agents submit HTTP requests with [x402](https://www.x402.org/) payment headers. Idle phones and desktops process the work. USDC settles per job. No token, no staking — just HTTP and stablecoins.
+
+[dispatch.computer](https://dispatch.computer) · [Docs](https://docs.dispatch.computer) · [Android APK](https://expo.dev/artifacts/eas/pRku9ZWEqdSGS2poEU9VjN.apk)
+
+---
+
+## How It Works
+
+```
+Agent (HTTP + x402)  →  Coordinator  →  Worker (phone/desktop)
+                            ↓                    ↓
+                     Route by reputation    Process job
+                     + device type          Sign ed25519 receipt
+                            ↓                    ↓
+                     USDC settles ←──────── Result returned
+```
+
+1. **Agent submits a job** — HTTP POST with an x402 payment header. No SDK required.
+2. **Coordinator routes it** — Matches to the best worker by device type, reputation score, and routing policy (FAST / CHEAP / PRIVATE).
+3. **Worker processes** — Summarization, classification, extraction, or LLM inference via Ollama.
+4. **Worker signs a receipt** — ed25519 signature over the output hash. Cryptographic proof of who computed what.
+5. **USDC settles** — x402 micropayment on Solana (SPL) or Monad (EVM). Worker gets paid per job.
+
+## Why Agents?
+
+AI agents need cheap inference at scale. They operate autonomously and can't negotiate GPU leases. Dispatch gives them a simple interface: HTTP request in, verified result out, payment handled inline.
+
+## What's Working (Testnet)
+
+- Full end-to-end flow: agent → coordinator → worker → receipt → settlement
+- Android app picking up jobs via WebSocket ([APK](https://expo.dev/artifacts/eas/pRku9ZWEqdSGS2poEU9VjN.apk))
+- Desktop workers with Ollama LLM inference
+- Ed25519 receipt signing and verification
+- Dual-chain coordinators (Monad + Solana)
+- Real-time dashboard showing completed jobs and earnings
+- Three routing policies: FAST, CHEAP, PRIVATE
+- Trust pairing for private job routing
+- ERC-8004 worker registration and per-job reputation on Monad
+
+## Solana + Seeker
+
+- **Mobile Wallet Adapter** for worker authentication via Phantom
+- **SPL USDC** settlement via x402 `ExactSvmScheme`
+- **150K+ Seeker pre-orders** — each device is a potential compute node
+- **Ed25519 receipts** use Solana's native signature scheme
+- Seeker app submitted to the [Solana dApp Store](https://dappstore.app/)
+
+## Monad + ERC-8004
+
+Dispatch is the first project to combine [x402](https://www.x402.org/) payments with [ERC-8004](https://github.com/erc-8004/erc-8004-contracts) reputation — both designed by the same team at Coinbase.
+
+- **Worker identity** — Workers register as ERC-8004 agents on Monad → receive an agent NFT
+- **Per-job reputation** — After every completed job, the coordinator posts onchain feedback: score, skill tag, feedback hash
+- **Reputation-aware routing** — Higher-reputation workers get priority in job matching
+- **Monad's fast finality** makes per-job reputation updates practical at scale
+
+Contracts on Monad Testnet:
+- Identity Registry: `0x8004A818BFB912233c491871b3d84c89A494BD9e`
+- Reputation Registry: `0x8004B663056A597Dffe9eCcC1965A193B7388713`
 
 ## Architecture
 
 ```
-CloudBot CLI → ComputeRouter SDK → Coordinator (x402-gated) → Worker (WS)
-                    ↓ fallback                                      ↓
-              Hosted BYOK (OpenAI/Anthropic)              Receipt (ed25519)
+packages/
+  protocol/          — Shared types, enums, WS messages, pricing
+  compute-router/    — Client SDK (decentralized + hosted adapters)
+  erc8004/           — ERC-8004 viem wrappers (identity + reputation)
+apps/
+  coordinator-core/     — Express + SQLite + WebSocket hub
+  coordinator-monad/    — Monad x402 config (port 4010)
+  coordinator-solana/   — Solana x402 config (port 4020)
+  worker-desktop/       — Desktop worker (Node.js + Ollama)
+  seeker-simulator/     — Mobile seeker simulator
+  cloudbot-demo/        — CLI demo (3 scenarios)
+  landing/              — Next.js landing page
+  docs/                 — Fumadocs API documentation
+mobile/
+  seeker-solana/        — React Native Seeker app (Expo + MWA)
+chain/
+  monad/contracts/      — Solidity receipt anchor
+  solana/receipt-anchor/ — Anchor program receipt anchor
 ```
 
-**Data flow:** Quote (free) → Commit with x402 payment → Coordinator matches worker → Worker executes → Job stored in SQLite → Client polls result + receipt
+## Tech Stack
+
+| Layer | Tech |
+|-------|------|
+| Protocol | TypeScript monorepo, 8K+ lines |
+| Coordinators | Express, SQLite, WebSocket |
+| Payments | x402 USDC micropayments (Coinbase) |
+| Verification | ed25519 signed receipts |
+| Reputation | ERC-8004 on Monad (viem) |
+| Mobile | React Native, Expo, Solana MWA |
+| Desktop Workers | Node.js + Ollama |
+| Landing + Docs | Next.js 15, Tailwind, Fumadocs |
+| Chains | Solana devnet + Monad testnet |
 
 ## Quick Start
 
 ```bash
-pnpm install
-pnpm build
+pnpm install && pnpm build
 ```
 
 ### Run Monad E2E
 
 ```bash
-# Terminal 1: Start Monad coordinator
+# Terminal 1 — Coordinator
 pnpm dev:monad
 
-# Terminal 2: Start desktop worker
+# Terminal 2 — Desktop worker
 COORDINATOR_URL=http://localhost:4010 pnpm worker:desktop
 
-# Terminal 3: Start seeker simulator
+# Terminal 3 — Seeker simulator
 COORDINATOR_URL=http://localhost:4010 pnpm worker:seeker
 
-# Terminal 4: Run demo
+# Terminal 4 — Run demo
 pnpm demo:monad
 ```
 
 ### Run Solana E2E
 
 ```bash
-# Terminal 1: Start Solana coordinator
+# Terminal 1 — Coordinator
 pnpm dev:solana
 
-# Terminal 2: Start worker (connect to Solana)
+# Terminal 2 — Worker
 COORDINATOR_URL=http://localhost:4020 pnpm worker:desktop
 
-# Terminal 3: Run demo
+# Terminal 3 — Run demo
 pnpm demo:solana
 ```
 
 ### Automated E2E
 
 ```bash
-pnpm e2e
+pnpm e2e    # Spawns coordinators + workers, runs demo scenarios, cleans up
+pnpm test   # Unit tests
 ```
 
-Spawns both coordinators + workers, runs demo scenarios, cleans up.
+## Links
 
-## Tests
+| | |
+|-|-|
+| Landing page | [dispatch.computer](https://dispatch.computer) |
+| Documentation | [docs.dispatch.computer](https://docs.dispatch.computer) |
+| Android APK | [Download](https://expo.dev/artifacts/eas/pRku9ZWEqdSGS2poEU9VjN.apk) |
+| ERC-8004 Contracts | [erc-8004/erc-8004-contracts](https://github.com/erc-8004/erc-8004-contracts) |
+| x402 Protocol | [x402.org](https://www.x402.org/) |
 
-```bash
-pnpm test
-```
+## License
 
-## Project Structure
-
-```
-packages/
-  protocol/        — Shared types, enums, WS message definitions, pricing
-  compute-router/  — Client SDK (decentralized + hosted adapters)
-apps/
-  coordinator-core/   — Express server, SQLite DB, WorkerHub (WS), routes
-  coordinator-monad/  — Monad-specific x402 configuration (port 4010)
-  coordinator-solana/ — Solana-specific x402 configuration (port 4020)
-  worker-desktop/     — Desktop worker (LLM + TASK execution)
-  seeker-simulator/   — Mobile seeker simulator (TASK only)
-  cloudbot-demo/      — CLI demo running 3 scenarios
-  landing/            — Next.js landing page (Vercel)
-chain/
-  monad/contracts/    — Solidity receipt anchor (STUB)
-  solana/receipt-anchor/ — Anchor program receipt anchor (STUB)
-mobile/
-  seeker-worker-android/ — Android seeker app skeleton (Kotlin)
-```
-
-## x402 Payment Configuration
-
-x402 payment gating is **disabled by default** (testnet mode). The coordinators run without payment middleware, accepting all job submissions directly.
-
-To enable x402:
-1. Install x402 packages: `pnpm add @x402/express @x402/evm @x402/core` (in coordinator-monad)
-2. Uncomment the x402 setup in `apps/coordinator-monad/src/index.ts`
-3. Set env vars: `MONAD_PAY_TO`, `MONAD_FACILITATOR`, `MONAD_USDC`
-4. Testnet tokens: Use Monad testnet faucet for test USDC
-
-## Trust Pairing
-
-Private jobs require trusted workers. Flow:
-1. Create pairing code: `POST /v1/trust/create { user_id: "..." }` → `{ pairing_code: "ABC123" }`
-2. Worker claims code: Set `TRUST_PAIRING_CODE=ABC123` env var on worker startup
-3. Submit PRIVATE job: Include `privacy_class: "PRIVATE"` in job payload
-4. Only paired workers can execute PRIVATE jobs
-
-## Known Limitations (MVP)
-
-- Payment not refunded if no worker available
-- No streaming (polling only — 500ms interval)
-- Fixed pricing (no dynamic per-job pricing)
-- On-chain receipt anchoring contracts are stubs (not wired into coordinator)
-- Android seeker uses stub ed25519 signing
-- x402 client-side payment signing not implemented (testnet mode bypasses)
+MIT — see [LICENSE](LICENSE).
