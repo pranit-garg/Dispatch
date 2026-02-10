@@ -50,10 +50,10 @@ Tap "Start Worker" in the app.
 
 ### Step 4: Submit a Compute Job (15s)
 
-Run the cloudbot CLI:
+Run the dispatch-demo CLI:
 
 ```bash
-pnpm --filter cloudbot-demo start -- --chain solana
+pnpm --filter dispatch-demo start -- --chain solana
 ```
 
 **Show:**

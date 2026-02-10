@@ -109,7 +109,7 @@ apps/
   coordinator-solana/   # Solana x402 config (port 4020)
   worker-desktop/       # Desktop worker (Node.js + Ollama)
   seeker-simulator/     # Mobile seeker simulator
-  cloudbot-demo/        # CLI demo (3 scenarios)
+  dispatch-demo/        # CLI demo (3 scenarios)
   landing/              # Next.js landing page
   docs/                 # Fumadocs API documentation
 mobile/

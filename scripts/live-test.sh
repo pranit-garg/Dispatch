@@ -46,10 +46,10 @@ if [ "${WORKERS:-0}" -eq 0 ]; then
   echo "  Continuing anyway (jobs will wait for workers)..."
 fi
 
-# Step 3: Submit test jobs via cloudbot-demo
+# Step 3: Submit test jobs via dispatch-demo
 echo ""
 echo "Step 3: Submitting test jobs..."
-COORDINATOR_URL_SOLANA="$RAILWAY_URL" DEMO_CHAIN=solana npx tsx apps/cloudbot-demo/src/index.ts
+COORDINATOR_URL_SOLANA="$RAILWAY_URL" DEMO_CHAIN=solana npx tsx apps/dispatch-demo/src/index.ts
 
 echo ""
 echo "══════════════════════════════════════════"

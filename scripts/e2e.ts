@@ -49,7 +49,7 @@ async function main() {
 
   // 5. Run Monad demo
   console.log("\n[E2E] Running Monad demo...");
-  const monadDemo = await runToCompletion("npx", ["tsx", "apps/cloudbot-demo/src/index.ts"], {
+  const monadDemo = await runToCompletion("npx", ["tsx", "apps/dispatch-demo/src/index.ts"], {
     DEMO_CHAIN: "monad",
     COORDINATOR_URL_MONAD: "http://localhost:4010",
     COORDINATOR_URL_SOLANA: "http://localhost:4020",
@@ -74,7 +74,7 @@ async function main() {
   await waitForOutput(seekerSol, "Registered", 10_000);
 
   console.log("\n[E2E] Running Solana demo...");
-  const solanaDemo = await runToCompletion("npx", ["tsx", "apps/cloudbot-demo/src/index.ts"], {
+  const solanaDemo = await runToCompletion("npx", ["tsx", "apps/dispatch-demo/src/index.ts"], {
     DEMO_CHAIN: "solana",
     COORDINATOR_URL_MONAD: "http://localhost:4010",
     COORDINATOR_URL_SOLANA: "http://localhost:4020",

@@ -5,7 +5,7 @@ const chain = (process.env.DEMO_CHAIN ?? process.argv.find((a) => a.startsWith("
 
 async function main() {
   console.log(`\n╔══════════════════════════════════════════╗`);
-  console.log(`║   Dispatch CloudBot Demo — ${chain.toUpperCase().padEnd(7)}      ║`);
+  console.log(`║   Dispatch Demo — ${chain.toUpperCase().padEnd(7)}              ║`);
   console.log(`╚══════════════════════════════════════════╝`);
 
   const router = new ComputeRouter({
