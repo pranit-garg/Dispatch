@@ -33,7 +33,7 @@ const features = [
     ),
     title: "Mobile Dispatch Nodes",
     description:
-      "Your phone picks up AI tasks while it's sitting on your desk — summarization, classification, extraction. No GPU needed.",
+      "Your phone picks up AI tasks while it's sitting on your desk: summarization, classification, extraction. No GPU needed.",
     tag: "Idle hardware",
   },
   {
@@ -55,7 +55,7 @@ const features = [
     ),
     title: "Cryptographic Receipts",
     description:
-      "Every result comes with a signed receipt — ed25519 over the output hash. Proof that this worker produced this result.",
+      "Every result comes with a signed receipt: ed25519 over the output hash. Proof that this worker produced this result.",
     tag: "ed25519 signed",
   },
   {

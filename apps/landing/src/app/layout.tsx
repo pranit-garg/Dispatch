@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import Script from "next/script";
 import "./globals.css";
 
 export const viewport: Viewport = {
@@ -7,7 +8,7 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://dispatch.computer"),
-  title: "Dispatch — Idle Compute for AI Agents | BOLT Token + x402 + ERC-8004",
+  title: "Dispatch: Idle Compute for AI Agents | BOLT Token + x402 + ERC-8004",
   description:
     "Dispatch routes AI jobs to idle phones and desktops. Agents pay USDC via x402, workers earn BOLT tokens and build onchain reputation through ERC-8004. Live on Monad and Solana testnet.",
   keywords: [
@@ -33,7 +34,7 @@ export const metadata: Metadata = {
     canonical: "https://dispatch.computer",
   },
   openGraph: {
-    title: "Dispatch — Turn Idle Devices into AI Compute Nodes",
+    title: "Dispatch: Turn Idle Devices into AI Compute Nodes",
     description:
       "Your phone or laptop runs AI jobs while idle. Agents pay USDC, workers earn BOLT tokens and build onchain reputation via ERC-8004. Live on Monad and Solana testnet.",
     type: "website",
@@ -42,7 +43,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Dispatch — Turn Idle Devices into AI Compute Nodes",
+    title: "Dispatch: Turn Idle Devices into AI Compute Nodes",
     description:
       "Your phone or laptop runs AI jobs while idle. Agents pay USDC, workers earn BOLT tokens and build onchain reputation via ERC-8004. Live on Monad and Solana testnet.",
     creator: "@pranit",
@@ -68,7 +69,7 @@ const jsonLd = {
     "@type": "Offer",
     price: "0",
     priceCurrency: "USD",
-    description: "Open source — testnet MVP",
+    description: "Open source, testnet MVP",
   },
   keywords: "AI compute, BOLT token, x402, ERC-8004, Monad, Solana, DePIN, idle hardware, token economics",
 };
@@ -81,6 +82,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        <meta name="google-site-verification" content="AwpOhyGmyBeMIhUiazfBs4NTelU2Rb-mp9h4MWtH9Y0" />
         <link
           href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
           rel="stylesheet"
@@ -90,7 +92,30 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body className="bg-grid bg-noise min-h-screen">{children}</body>
+      <body className="bg-grid bg-noise min-h-screen">
+        {children}
+
+        {/* Google Analytics. TODO: Pranit needs to set NEXT_PUBLIC_GA_ID env var on Vercel */}
+        {process.env.NEXT_PUBLIC_GA_ID && (
+          <>
+            <Script
+              src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}`}
+              strategy="afterInteractive"
+            />
+            <Script id="google-analytics" strategy="afterInteractive">
+              {`
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('consent', 'default', {
+                  analytics_storage: 'granted'
+                });
+                gtag('config', '${process.env.NEXT_PUBLIC_GA_ID}');
+              `}
+            </Script>
+          </>
+        )}
+      </body>
     </html>
   );
 }

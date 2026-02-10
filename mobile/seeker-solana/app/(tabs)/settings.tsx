@@ -1,5 +1,5 @@
 /**
- * Settings screen — coordinator URL, signing mode, worker identity, reset.
+ * Settings screen: coordinator URL, signing mode, worker identity, reset.
  *
  * Allows the user to:
  * - Change the coordinator URL
@@ -251,7 +251,7 @@ export default function SettingsScreen() {
               <Text style={styles.sectionTitle}>Node Identity</Text>
             </View>
             <Text style={styles.sectionDescription}>
-              Your ed25519 public key — used to sign compute receipts and prove work.
+              Your ed25519 public key, used to sign compute receipts and prove work.
             </Text>
 
             <Pressable

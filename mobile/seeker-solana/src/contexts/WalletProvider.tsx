@@ -1,5 +1,5 @@
 /**
- * WalletProvider — React context for wallet and worker state.
+ * WalletProvider: React context for wallet and worker state.
  *
  * Wraps the entire app to provide:
  * - Worker ID (public key hex)
@@ -61,7 +61,7 @@ const STORAGE_JOBS_COMPLETED = "dispatch_jobs_completed";
 const STORAGE_JOB_HISTORY = "dispatch_job_history";
 const STORAGE_COORDINATOR_URL = "dispatch_coordinator_url";
 
-// Coordinator URL — set via EXPO_PUBLIC_COORDINATOR_URL or change in Settings
+// Coordinator URL. Set via EXPO_PUBLIC_COORDINATOR_URL or change in Settings
 const DEFAULT_COORDINATOR_URL =
   process.env.EXPO_PUBLIC_COORDINATOR_URL ?? "ws://localhost:4020";
 
@@ -191,7 +191,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     try {
       const available = await mwaProvider.isAvailable();
       if (!available) {
-        console.warn("[Wallet] MWA not available on this platform — Android only");
+        console.warn("[Wallet] MWA not available on this platform, Android only");
         return;
       }
 
@@ -224,7 +224,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       setSigningMode("device-key");
       setWalletAddress(null);
     } else {
-      // Switch to wallet mode — user must call connectWallet() separately
+      // Switch to wallet mode. User must call connectWallet() separately
       setSigningMode("wallet");
       wsService.setSigningProvider(mwaProvider);
     }

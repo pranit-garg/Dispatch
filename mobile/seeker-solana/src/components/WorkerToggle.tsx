@@ -1,5 +1,5 @@
 /**
- * WorkerToggle — Big toggle switch to start/stop the worker.
+ * WorkerToggle: Big toggle switch to start/stop the worker.
  *
  * This is the main CTA on the dashboard. It's a large circular button
  * that changes color based on connection state:
@@ -141,7 +141,7 @@ export function WorkerToggle({
     ? "Tap to go offline"
     : isTransitioning
     ? "Please wait..."
-    : "Start earning SOL";
+    : "Start earning BOLT";
 
   // Combine pulse and bounce scales
   const combinedScale = Animated.multiply(pulseAnim, scaleAnim);

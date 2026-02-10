@@ -5,7 +5,7 @@ description: HTTP-native USDC micropayments on every compute job via Coinbase's 
 
 # x402 Payments
 
-Dispatch uses [x402](https://www.x402.org/) — Coinbase's open HTTP-native payment protocol — to settle USDC micropayments on every compute job. No custom token, no staking, no bridging. Workers get paid the moment a job completes.
+Dispatch uses [x402](https://www.x402.org/), Coinbase's open HTTP-native payment protocol, to settle USDC micropayments on every compute job. No custom token, no staking, no bridging. Workers get paid the moment a job completes.
 
 ## How x402 works
 
@@ -53,7 +53,7 @@ const resourceServer = new x402ResourceServer(
 - **Network**: `eip155:10143` (Monad testnet)
 - **Asset**: USDC on Monad (`0x534b2f3A21130d7a60830c2Df862319e593943A3`)
 - **Facilitator**: `https://x402-facilitator.molandak.org`
-- **Scheme**: `ExactEvmScheme` — exact-amount EVM payment
+- **Scheme**: `ExactEvmScheme`, exact-amount EVM payment
 
 ### Solana (SVM)
 
@@ -67,7 +67,7 @@ const resourceServer = new x402ResourceServer(
 
 - **Network**: `solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1` (Solana devnet)
 - **Facilitator**: `https://www.x402.org/facilitator`
-- **Scheme**: `ExactSvmScheme` — exact-amount SPL payment
+- **Scheme**: `ExactSvmScheme`, exact-amount SPL payment
 
 ## Payment middleware
 
@@ -160,10 +160,10 @@ Dispatch uses x402 v2.x packages:
 
 After x402 verifies the USDC payment, the coordinator triggers BOLT settlement:
 
-1. **USDC received** — x402 facilitator confirms payment
-2. **Jupiter swap** — USDC auto-converts to BOLT via Jupiter DEX
-3. **Protocol fee** — 5% of BOLT burned (permanently removed from supply)
-4. **Worker payment** — Remaining 95% BOLT transferred to worker's wallet
+1. **USDC received.** x402 facilitator confirms payment.
+2. **Jupiter swap.** USDC auto-converts to BOLT via Jupiter DEX.
+3. **Protocol fee.** 5% of BOLT burned (permanently removed from supply).
+4. **Worker payment.** Remaining 95% BOLT transferred to worker's wallet.
 
 This means 100% of economic activity flows through BOLT. Every job creates buy pressure on the token, not just a fee skim.
 

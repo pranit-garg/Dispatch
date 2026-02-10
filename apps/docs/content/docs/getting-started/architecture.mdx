@@ -1,6 +1,6 @@
 ---
 title: Architecture
-description: Dispatch system architecture — coordinators, workers, seekers, SQLite storage, and the full job data flow.
+description: Dispatch system architecture. Coordinators, workers, seekers, SQLite storage, and the full job data flow.
 ---
 
 # Architecture
@@ -47,13 +47,13 @@ What it does:
 - Accepts job submissions via REST
 - Gates paid endpoints with x402 middleware (when enabled)
 - Maintains a live WebSocket connection pool of workers (the `WorkerHub`)
-- Matches jobs to workers using atomic `claimWorker()` — a synchronous select-and-mark-busy that prevents time-of-check/time-of-use races
+- Matches jobs to workers using atomic `claimWorker()`, a synchronous select-and-mark-busy that prevents time-of-check/time-of-use races
 - Stores jobs, trust pairings, and receipts in SQLite
-- Enforces privacy routing — PRIVATE jobs go only to trust-paired workers
+- Enforces privacy routing: PRIVATE jobs go only to trust-paired workers
 
 Two coordinator instances run in parallel:
-- **Monad** (port 4010) — EVM chain, `eip155:10143`, uses `ExactEvmScheme`
-- **Solana** (port 4020) — `solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1`, uses `ExactSvmScheme`
+- **Monad** (port 4010): EVM chain, `eip155:10143`, uses `ExactEvmScheme`
+- **Solana** (port 4020): `solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1`, uses `ExactSvmScheme`
 
 Each has its own SQLite database (`monad.db` / `solana.db`).
 
@@ -63,8 +63,8 @@ Each has its own SQLite database (`monad.db` / `solana.db`).
 
 | Type | Capabilities | Use case |
 |------|-------------|----------|
-| **Desktop** | `LLM_INFER`, `TASK` | Full compute — runs Ollama for LLM inference + built-in task execution |
-| **Seeker** | `TASK` only | Lightweight — text summarization, classification, JSON extraction |
+| **Desktop** | `LLM_INFER`, `TASK` | Full compute: runs Ollama for LLM inference + built-in task execution |
+| **Seeker** | `TASK` only | Lightweight: text summarization, classification, JSON extraction |
 
 Workers generate an ed25519 keypair on first run, register with the coordinator, send heartbeats every 10 seconds, and sign cryptographic receipts for every completed job.
 
@@ -86,7 +86,7 @@ Seeker → POST /v1/jobs/commit/fast  (with X-PAYMENT header if x402 enabled)
        ← { job_id: "uuid" }
 ```
 
-If x402 is enabled, the first request returns `402 Payment Required` with payment details. The SDK handles this transparently — signs a stablecoin payment and retries.
+If x402 is enabled, the first request returns `402 Payment Required` with payment details. The SDK handles this transparently, signs a stablecoin payment and retries.
 
 ### 3. Worker assignment
 

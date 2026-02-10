@@ -8,7 +8,7 @@ export function CTA() {
       {/* Top accent line */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 h-px w-1/3 bg-gradient-to-r from-transparent via-[#d4a246]/50 to-transparent" />
 
-      {/* Warm ambient glow — CSS only */}
+      {/* Warm ambient glow, CSS only */}
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 h-[500px] w-full max-w-3xl"
           style={{
@@ -29,7 +29,7 @@ export function CTA() {
           viewport={{ once: true }}
           className="text-3xl font-bold md:text-4xl"
         >
-          Start earning BOLT in 15 minutes.
+          Start earning $BOLT in 15 minutes.
         </motion.h2>
 
         <motion.p
@@ -51,11 +51,13 @@ export function CTA() {
           transition={{ delay: 0.15 }}
           className="mt-6 flex items-center justify-center gap-6 text-sm text-text-dim"
         >
-          <span className="font-mono">8K+ lines</span>
+          <span className="font-mono">150K+ Seeker devices</span>
           <span className="text-border">&middot;</span>
           <span className="font-mono">2 chains</span>
           <span className="text-border">&middot;</span>
-          <span className="font-mono">MIT license</span>
+          <span className="font-mono">&lt;500ms latency</span>
+          <span className="text-border">&middot;</span>
+          <span className="font-mono">MIT licensed</span>
         </motion.div>
 
         <motion.div

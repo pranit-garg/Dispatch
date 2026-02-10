@@ -1,5 +1,5 @@
 export const metadata = {
-  title: "Privacy Policy — Dispatch",
+  title: "Privacy Policy | Dispatch",
   description: "Privacy policy for Dispatch, the decentralized compute network.",
 };
 
@@ -23,29 +23,29 @@ export default function PrivacyPage() {
               <li>
                 <strong className="text-[var(--color-text)]">
                   Ed25519 public keys
-                </strong>{" "}
-                — your device-generated worker identity or wallet address. Used
+                </strong>
+                : your device-generated worker identity or wallet address. Used
                 to route jobs and verify signed receipts.
               </li>
               <li>
                 <strong className="text-[var(--color-text)]">
                   Job metadata
-                </strong>{" "}
-                — task type, duration, timestamps, and success/failure status.
+                </strong>
+                : task type, duration, timestamps, and success/failure status.
                 Used for earnings tracking and network health.
               </li>
               <li>
                 <strong className="text-[var(--color-text)]">
                   Earnings data
-                </strong>{" "}
-                — SOL amounts credited per completed job. Stored locally on your
+                </strong>
+                : SOL amounts credited per completed job. Stored locally on your
                 device.
               </li>
               <li>
                 <strong className="text-[var(--color-text)]">
                   Connection logs
-                </strong>{" "}
-                — coordinator URL and connection timestamps. Used for
+                </strong>
+                : coordinator URL and connection timestamps. Used for
                 diagnostics.
               </li>
             </ul>
@@ -58,8 +58,8 @@ export default function PrivacyPage() {
             <ul className="list-disc list-inside space-y-2">
               <li>No name, email, phone number, or personal identifiers</li>
               <li>No location data or device fingerprinting</li>
-              <li>No private keys — these never leave your device</li>
-              <li>No job input/output content — only metadata</li>
+              <li>No private keys (these never leave your device)</li>
+              <li>No job input/output content, only metadata</li>
             </ul>
           </section>
 
@@ -83,8 +83,8 @@ export default function PrivacyPage() {
             <p>
               Dispatch does not sell, rent, or share your data with third
               parties. Job receipts signed by your device may be posted onchain
-              (Solana or Monad) as part of the ERC-8004 reputation protocol —
-              these contain only your public key and job outcome, no personal
+              (Solana or Monad) as part of the ERC-8004 reputation protocol.
+              These contain only your public key and job outcome, no personal
               information.
             </p>
           </section>
@@ -97,22 +97,22 @@ export default function PrivacyPage() {
               <li>
                 <strong className="text-[var(--color-text)]">
                   Reset identity
-                </strong>{" "}
-                — generate a new keypair at any time in Settings. This
+                </strong>
+                : generate a new keypair at any time in Settings. This
                 disassociates your device from all prior job history.
               </li>
               <li>
                 <strong className="text-[var(--color-text)]">
                   Disconnect
-                </strong>{" "}
-                — stop the worker to cease all data transmission to the
+                </strong>
+                : stop the worker to cease all data transmission to the
                 coordinator.
               </li>
               <li>
                 <strong className="text-[var(--color-text)]">
                   Uninstall
-                </strong>{" "}
-                — removes all local data. The coordinator retains public-key job
+                </strong>
+                : removes all local data. The coordinator retains public-key job
                 logs for network integrity.
               </li>
             </ul>

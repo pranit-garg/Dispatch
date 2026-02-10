@@ -1,11 +1,11 @@
 ---
 title: REST API
-description: Full REST API reference for the Dispatch coordinator — health checks, quotes, job commit/poll, and trust pairing.
+description: Full REST API reference for the Dispatch coordinator. Health checks, quotes, job commit/poll, and trust pairing.
 ---
 
 # REST API Reference
 
-The coordinator exposes a REST API for job submission, status polling, and trust management. Two instances run — Monad testnet on port 4010 and Solana devnet on port 4020. Both expose the same endpoints.
+The coordinator exposes a REST API for job submission, status polling, and trust management. Two instances run: Monad testnet on port 4010 and Solana devnet on port 4020. Both expose the same endpoints.
 
 ## Base URLs
 
@@ -75,7 +75,7 @@ Get a price quote for a job. This endpoint is free (no x402 payment required).
 | `network` | `string` | Chain identifier |
 | `expires_at` | `null` | Reserved for future dynamic pricing |
 
-**Response** `400` — Invalid or missing `job_type`
+**Response** `400` - Invalid or missing `job_type`
 
 ```json
 { "error": "Invalid job_type. Use LLM_INFER or TASK" }
@@ -139,19 +139,19 @@ Submit a job to the **FAST** pricing tier. When x402 payment gating is enabled, 
 
 Task types: `summarize`, `classify`, `extract_json`
 
-**Response** `201` — Job accepted
+**Response** `201` - Job accepted
 
 ```json
 { "job_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890" }
 ```
 
-**Response** `400` — Missing or invalid fields
+**Response** `400` - Missing or invalid fields
 
 ```json
 { "error": "Missing required fields: job_type, payload, user_id" }
 ```
 
-**Response** `402` — Payment required (x402 enabled only)
+**Response** `402` - Payment required (x402 enabled only)
 
 ```json
 {
@@ -168,7 +168,7 @@ Task types: `summarize`, `classify`, `extract_json`
 }
 ```
 
-**Response** `422` — No trusted worker for PRIVATE job
+**Response** `422` - No trusted worker for PRIVATE job
 
 ```json
 {
@@ -193,7 +193,7 @@ Poll a job by ID. Returns current status, result (if completed), and receipt.
 |-------|------|-------------|
 | `id` | `string (UUID)` | The job ID returned from commit |
 
-**Response** `200` — Pending job
+**Response** `200` - Pending job
 
 ```json
 {
@@ -206,7 +206,7 @@ Poll a job by ID. Returns current status, result (if completed), and receipt.
 }
 ```
 
-**Response** `200` — Completed job
+**Response** `200` - Completed job
 
 ```json
 {
@@ -228,7 +228,7 @@ Poll a job by ID. Returns current status, result (if completed), and receipt.
 }
 ```
 
-**Response** `200` — Failed job
+**Response** `200` - Failed job
 
 ```json
 {
@@ -241,7 +241,7 @@ Poll a job by ID. Returns current status, result (if completed), and receipt.
 }
 ```
 
-**Response** `404` — Job not found
+**Response** `404` - Job not found
 
 ```json
 { "error": "Job not found" }
@@ -298,7 +298,7 @@ Claim a pairing code as a worker to become a trusted provider for the user.
 }
 ```
 
-**Response** `400` — Invalid, claimed, or expired code
+**Response** `400` - Invalid, claimed, or expired code
 
 ```json
 { "error": "invalid_code" }

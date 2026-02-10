@@ -1,5 +1,5 @@
 /**
- * EmptyState — Reusable empty/placeholder component.
+ * EmptyState: Reusable empty/placeholder component.
  *
  * Displays a gold-tinted icon circle, a title, and a subtitle.
  * Used when there's nothing to show yet (disconnected, no jobs, etc.).

@@ -35,7 +35,7 @@ export function Tokenomics() {
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-text-muted">
             Every dollar of compute flows through $BOLT. Agents pay stablecoins.
-            Workers earn $BOLT with real upside — hold, stake for priority, or sell.
+            Workers earn $BOLT with real upside: hold, stake for priority, or sell.
           </p>
         </motion.div>
 
@@ -89,7 +89,7 @@ export function Tokenomics() {
           >
             <h3 className="mb-6 text-lg font-semibold">Staking Tiers</h3>
             <p className="mb-6 text-sm text-text-muted">
-              Staking is optional — anyone can earn $BOLT with zero stake.
+              Staking is optional. Anyone can earn $BOLT with zero stake.
               Higher tiers unlock priority matching and reputation multipliers.
             </p>
             <div className="space-y-4">

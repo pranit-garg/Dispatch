@@ -1,5 +1,5 @@
 export const metadata = {
-  title: "Terms of Service — Dispatch",
+  title: "Terms of Service | Dispatch",
   description: "Terms of service for Dispatch, the decentralized compute network.",
 };
 
@@ -21,7 +21,7 @@ export default function TermsPage() {
             </h2>
             <p>
               Dispatch is a decentralized compute network where mobile devices
-              and desktops run AI tasks for agents. Workers earn SOL for
+              and desktops run AI tasks for agents. Workers earn BOLT for
               completing jobs. The protocol uses ed25519 signed receipts to prove
               work and x402 micropayments for settlement.
             </p>

@@ -1,6 +1,6 @@
 # Dispatch: Agent-Native Compute via x402 Payment, ERC-8004 Reputation, and BOLT Token Settlement
 
-**Version 0.1 — February 2026**
+**Version 0.1, February 2026**
 
 ---
 
@@ -8,28 +8,28 @@
 
 AI agents are becoming autonomous economic actors, but they lack infrastructure to purchase compute on their own terms. They cannot negotiate GPU leases, sign enterprise contracts, or evaluate provider quality. They need compute that is purchasable via HTTP, priced per job, and backed by verifiable trust signals.
 
-Dispatch is a protocol that routes AI inference jobs from agents to idle consumer hardware — phones and desktops — using x402 micropayments for settlement and ERC-8004 on-chain reputation for trust. Agents pay in USDC via standard HTTP headers. Workers process jobs and sign ed25519 receipts over their outputs. Coordinators match jobs to workers based on device type, routing policy, and on-chain reputation scores. The system runs on a dual-chain architecture: Solana as the economic layer (BOLT token, staking, USDC payments, 150K+ Seeker devices) and Monad as the trust layer (ERC-8004 identity and reputation, governance, receipt anchoring).
+Dispatch is a protocol that routes AI inference jobs from agents to idle consumer hardware (phones and desktops) using x402 micropayments for settlement and ERC-8004 on-chain reputation for trust. Agents pay in USDC via standard HTTP headers. Workers process jobs and sign ed25519 receipts over their outputs. Coordinators match jobs to workers based on device type, routing policy, and on-chain reputation scores. The system runs on a dual-chain architecture: Solana as the economic layer (BOLT token, staking, USDC payments, 150K+ Seeker devices) and Monad as the trust layer (ERC-8004 identity and reputation, governance, receipt anchoring).
 
-Dispatch is the first protocol to combine x402 payments with ERC-8004 reputation — both co-authored by the same team at Coinbase — into a working compute marketplace built on idle consumer devices. BOLT is the settlement token that aligns network incentives: agents pay USDC, coordinators auto-swap to BOLT, workers earn BOLT, and a 5% burn on every job creates deflationary pressure. The testnet MVP is live on Monad and Solana with 8,000+ lines of TypeScript, dual-chain coordinators, mobile and desktop workers, and end-to-end cryptographic verification.
+Dispatch is the first protocol to combine x402 payments with ERC-8004 reputation, both co-authored by the same team at Coinbase, into a working compute marketplace built on idle consumer devices. BOLT is the settlement token that aligns network incentives: agents pay USDC, coordinators auto-swap to BOLT, workers earn BOLT, and a 5% burn on every job creates deflationary pressure. The testnet MVP is live on Monad and Solana with 8,000+ lines of TypeScript, dual-chain coordinators, mobile and desktop workers, and end-to-end cryptographic verification.
 
 ---
 
 ## 1. The Agent Compute Problem
 
-AI agents are proliferating across finance, research, operations, and personal assistance. These agents operate autonomously — they make decisions, execute multi-step workflows, and interact with external services without human intervention. As they scale, their demand for inference compute grows proportionally.
+AI agents are proliferating across finance, research, operations, and personal assistance. These agents operate autonomously. They make decisions, execute multi-step workflows, and interact with external services without human intervention. As they scale, their demand for inference compute grows proportionally.
 
 Current options fail agents in distinct ways:
 
 - **Centralized providers** (OpenAI, Anthropic, Google) offer high-quality inference but at premium pricing, with opaque rate limits, and through API keys that require human provisioning. An agent cannot autonomously negotiate a volume discount or switch providers based on real-time cost.
 
-- **GPU rental networks** (Akash, Render, Vast.ai) target developers who provision VMs and containers. The granularity is wrong — agents need per-job compute, not per-hour GPU leases. The barrier to entry requires wallet setup, staking, and familiarity with the provider's SDK.
+- **GPU rental networks** (Akash, Render, Vast.ai) target developers who provision VMs and containers. The granularity is wrong: agents need per-job compute, not per-hour GPU leases. The barrier to entry requires wallet setup, staking, and familiarity with the provider's SDK.
 
 - **Serverless inference** (Replicate, Modal) improves granularity but remains centralized, still requires API key provisioning, and provides no verifiable proof that a specific compute provider produced a specific result.
 
 The gap is clear: there is no per-job compute market that AI agents can access via standard HTTP requests, with built-in payment, verifiable trust, and cryptographic proof of execution. Dispatch fills this gap.
 
 **Design principles:**
-- Agents are first-class customers. The interface is HTTP — any agent that can make a web request can buy compute.
+- Agents are first-class customers. The interface is HTTP. Any agent that can make a web request can buy compute.
 - Workers are idle consumer devices. No datacenter GPU required. Phones and laptops earn by processing jobs while idle.
 - Trust is on-chain. Every worker has a verifiable identity and reputation that accumulates with each completed job.
 - Payments are atomic. USDC settles per job via the x402 HTTP payment protocol. No accounts, no invoices, no credit.
@@ -72,9 +72,9 @@ Dispatch has three actor types: **Agents** (demand side), **Coordinators** (rout
 
 ### 2.2 Dual-Chain Architecture [IMPLEMENTED]
 
-Dispatch operates on two chains simultaneously — a practical decision driven by where each protocol's strengths lie.
+Dispatch operates on two chains simultaneously, a practical decision driven by where each protocol's strengths lie.
 
-**Solana** — Economic Layer
+**Solana** (Economic Layer)
 - BOLT is a native SPL token on Solana
 - USDC payments settle via x402 `ExactSvmScheme`
 - Worker staking locks BOLT for priority matching
@@ -82,7 +82,7 @@ Dispatch operates on two chains simultaneously — a practical decision driven b
 - Ed25519 receipts align with Solana's native signature scheme
 - Coordinator network: `solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1`
 
-**Monad** — Trust Layer
+**Monad** (Trust Layer)
 - ERC-8004 contracts are EVM-only Solidity (not portable to SVM)
 - Worker identity: Identity Registry at `0x8004A818BFB912233c491871b3d84c89A494BD9e`
 - Worker reputation: Reputation Registry at `0x8004B663056A597Dffe9eCcC1965A193B7388713`
@@ -92,7 +92,7 @@ Dispatch operates on two chains simultaneously — a practical decision driven b
 - USDC payments settle via x402 `ExactEvmScheme`
 - Coordinator network: `eip155:10143`
 
-Both coordinators share the same core codebase (`@dispatch/coordinator-core`) but differ only in their x402 payment scheme and chain-specific configuration. Each coordinator is independent: its own SQLite database, its own x402 facilitator, its own worker pool. Cross-chain reputation is unified — even the Solana coordinator posts ERC-8004 feedback to Monad.
+Both coordinators share the same core codebase (`@dispatch/coordinator-core`) but differ only in their x402 payment scheme and chain-specific configuration. Each coordinator is independent: its own SQLite database, its own x402 facilitator, its own worker pool. Cross-chain reputation is unified: even the Solana coordinator posts ERC-8004 feedback to Monad.
 
 ### 2.3 Tech Stack [IMPLEMENTED]
 
@@ -174,11 +174,11 @@ Content-Type: application/json
 { "type": "LLM_INFER", "prompt": "Summarize this earnings call..." }
 ```
 
-If the payment is missing or invalid, the coordinator returns HTTP 402 Payment Required with the pricing details in the response body. This follows the x402 protocol specification — any HTTP client that understands 402 responses can pay automatically.
+If the payment is missing or invalid, the coordinator returns HTTP 402 Payment Required with the pricing details in the response body. This follows the x402 protocol specification. Any HTTP client that understands 402 responses can pay automatically.
 
 ### Step 3: Match [IMPLEMENTED]
 
-The coordinator selects a worker through the `claimWorker()` function — an atomic, synchronous operation that prevents TOCTOU (time-of-check-time-of-use) race conditions.
+The coordinator selects a worker through the `claimWorker()` function, an atomic, synchronous operation that prevents TOCTOU (time-of-check-time-of-use) race conditions.
 
 **Matching criteria** (from `workerScore()` in `workerHub.ts`):
 
@@ -187,7 +187,7 @@ The coordinator selects a worker through the `claimWorker()` function — an ato
 3. **ERC-8004 reputation** (+0 to +10): On-chain reputation score (0-100) maps to a 0-10 matching bonus. Workers with higher reputation get routed more jobs.
 4. **Privacy filtering**: PRIVATE jobs are restricted to workers that hold a claimed trust pairing with the requesting user.
 
-The claim is atomic — the worker's status changes from `idle` to `busy` in the same synchronous tick as the selection. No `await` between check and claim. This eliminates the race condition where two jobs could claim the same worker.
+The claim is atomic: the worker's status changes from `idle` to `busy` in the same synchronous tick as the selection. No `await` between check and claim. This eliminates the race condition where two jobs could claim the same worker.
 
 ### Step 4: Execute [IMPLEMENTED]
 
@@ -205,7 +205,7 @@ The coordinator sends a `job_assign` message over the worker's WebSocket connect
 }
 ```
 
-The worker executes locally — desktop workers run Ollama for LLM inference; Seeker workers handle task-type jobs (summarization, classification, extraction) using lightweight on-device models.
+The worker executes locally. Desktop workers run Ollama for LLM inference; Seeker workers handle task-type jobs (summarization, classification, extraction) using lightweight on-device models.
 
 ### Step 5: Verify [IMPLEMENTED]
 
@@ -228,7 +228,7 @@ The worker returns the result along with a signed receipt:
 }
 ```
 
-The coordinator verifies the ed25519 signature using tweetnacl, stores the receipt in SQLite in an atomic transaction with the job completion, and posts ERC-8004 feedback to Monad (fire-and-forget, non-blocking). Failed verification does not block job completion — receipts are stored with a `verified` flag for later auditing.
+The coordinator verifies the ed25519 signature using tweetnacl, stores the receipt in SQLite in an atomic transaction with the job completion, and posts ERC-8004 feedback to Monad (fire-and-forget, non-blocking). Failed verification does not block job completion. Receipts are stored with a `verified` flag for later auditing.
 
 ---
 
@@ -243,7 +243,7 @@ Dispatch implements x402 via `@x402/express` middleware on both coordinators:
 - **Monad coordinator**: Uses `ExactEvmScheme` for EVM-based USDC settlement on Monad (chain `eip155:10143`). USDC contract: `0x534b2f3A21130d7a60830c2Df862319e593943A3`.
 - **Solana coordinator**: Uses `ExactSvmScheme` for SPL USDC settlement on Solana devnet (chain `solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1`).
 
-Both coordinators validate payments through an x402 facilitator service. The payment config is generated dynamically from the protocol's pricing map — route-level pricing is enforced at the middleware layer before the job handler executes.
+Both coordinators validate payments through an x402 facilitator service. The payment config is generated dynamically from the protocol's pricing map. Route-level pricing is enforced at the middleware layer before the job handler executes.
 
 **Why x402 matters for agents**: No SDK installation. No API key provisioning. No billing accounts. An agent that can make an HTTP request and sign a USDC transaction can buy compute. This is the lowest possible barrier for autonomous economic agents.
 
@@ -258,17 +258,17 @@ ERC-8004 (Trustless Agents) is a Coinbase-authored ERC standard that provides on
 
 **Reputation Registry** (`0x8004B663056A597Dffe9eCcC1965A193B7388713` on Monad Testnet)
 - After every completed job, the coordinator posts on-chain feedback: a signed score (0-100 scaled to int128 with 2 decimal places), a skill tag (`dispatch-compute`), a job type tag (`COMPUTE`), and the coordinator's endpoint
-- Feedback is accumulated per-agent — the `getSummary()` function returns aggregate count, value, and decimals
+- Feedback is accumulated per-agent. The `getSummary()` function returns aggregate count, value, and decimals
 - Feedback can be filtered by client address and tags, enabling per-coordinator or per-skill-type reputation queries
-- Feedback is revocable — the original poster can revoke a feedback entry
+- Feedback is revocable. The original poster can revoke a feedback entry
 
 **Reputation-aware routing**: The `workerScore()` function in `workerHub.ts` adds up to 10 bonus points for workers with high on-chain reputation. A worker with a reputation score of 80/100 receives an 8-point bonus, making them significantly more likely to win job matching over unrated workers. This creates a virtuous cycle: completing jobs builds reputation, higher reputation wins more jobs.
 
-The Solana coordinator also posts ERC-8004 feedback to Monad — reputation is cross-chain and unified regardless of which coordinator processed the job.
+The Solana coordinator also posts ERC-8004 feedback to Monad. Reputation is cross-chain and unified regardless of which coordinator processed the job.
 
 ### 4.3 Ed25519 Receipts [IMPLEMENTED]
 
-Every job completion produces a cryptographic receipt — an ed25519 signature over the canonical JSON of the receipt object:
+Every job completion produces a cryptographic receipt: an ed25519 signature over the canonical JSON of the receipt object:
 
 ```
 receipt = { job_id, provider_pubkey, output_hash, completed_at, payment_ref }
@@ -290,7 +290,7 @@ Receipts serve three purposes:
 
 ### 4.4 Trust Pairing [IMPLEMENTED]
 
-For PRIVATE-class jobs, Dispatch implements trust pairing — a mechanism that restricts job routing to specific, pre-authorized workers.
+For PRIVATE-class jobs, Dispatch implements trust pairing, a mechanism that restricts job routing to specific, pre-authorized workers.
 
 ```typescript
 interface TrustPairing {
@@ -303,17 +303,17 @@ interface TrustPairing {
 }
 ```
 
-The flow: a user creates a trust pairing with a pairing code. A worker claims the pairing by submitting the code. Once claimed, PRIVATE jobs from that user can only be routed to paired workers. The `claimWorker()` function enforces this — it queries `trust_pairings` for claimed pairings and filters candidates to the trusted set. If no trusted workers are available, the job fails rather than routing to an untrusted worker.
+The flow: a user creates a trust pairing with a pairing code. A worker claims the pairing by submitting the code. Once claimed, PRIVATE jobs from that user can only be routed to paired workers. The `claimWorker()` function enforces this: it queries `trust_pairings` for claimed pairings and filters candidates to the trusted set. If no trusted workers are available, the job fails rather than routing to an untrusted worker.
 
 ---
 
 ## 5. BOLT Token Economics [DESIGNED]
 
-BOLT is the settlement token for the Dispatch network. It is designed to capture 100% of economic activity flowing through the protocol — not as a payment token that agents interact with, but as a settlement layer that operates behind the scenes.
+BOLT is the settlement token for the Dispatch network. It is designed to capture 100% of economic activity flowing through the protocol, not as a payment token that agents interact with, but as a settlement layer that operates behind the scenes.
 
 ### 5.1 BOLT-as-Settlement Model
 
-The agent experience is unchanged — agents pay USDC via x402 headers, exactly as described in Section 4.1. BOLT operates at the settlement layer:
+The agent experience is unchanged. Agents pay USDC via x402 headers, exactly as described in Section 4.1. BOLT operates at the settlement layer:
 
 ```
 Agent pays USDC ──> Coordinator receives USDC
@@ -333,17 +333,17 @@ This design preserves the "just HTTP and stablecoins" UX for agents while ensuri
 
 BOLT's value is supported by three simultaneous pressure mechanisms:
 
-**1. Buy pressure** — Every job triggers a USDC-to-BOLT swap on Jupiter DEX. If the network processes 100,000 jobs per day at an average price of $0.005, that creates $500/day of automatic buy pressure. This scales linearly with network usage.
+**1. Buy pressure.** Every job triggers a USDC-to-BOLT swap on Jupiter DEX. If the network processes 100,000 jobs per day at an average price of $0.005, that creates $500/day of automatic buy pressure. This scales linearly with network usage.
 
-**2. Supply lock** — Workers who stake BOLT receive priority in job matching and reputation multipliers (see Section 5.3). Staked BOLT is locked and removed from circulating supply. As more workers stake for competitive advantage, available supply decreases.
+**2. Supply lock.** Workers who stake BOLT receive priority in job matching and reputation multipliers (see Section 5.3). Staked BOLT is locked and removed from circulating supply. As more workers stake for competitive advantage, available supply decreases.
 
-**3. Burn** — A 5% protocol fee (`PROTOCOL_FEE_BPS: 500`) is permanently burned from every BOLT settlement. This makes the total supply strictly deflationary over time. The burn is encoded in the protocol constants (`packages/protocol/src/types.ts`).
+**3. Burn.** A 5% protocol fee (`PROTOCOL_FEE_BPS: 500`) is permanently burned from every BOLT settlement. This makes the total supply strictly deflationary over time. The burn is encoded in the protocol constants (`packages/protocol/src/types.ts`).
 
 These three mechanisms create a flywheel: more jobs increase buy pressure and burn rate; rising token value attracts more workers; more workers improve network capacity and reliability; better capacity attracts more agent demand.
 
 ### 5.3 Staking Tiers [DESIGNED]
 
-Staking is optional — any worker can join at the OPEN tier with zero BOLT. This preserves the "100x lower barrier" positioning relative to GPU rental networks. Staking provides competitive advantages, not gate-keeping.
+Staking is optional. Any worker can join at the OPEN tier with zero BOLT. This preserves the "100x lower barrier" positioning relative to GPU rental networks. Staking provides competitive advantages, not gate-keeping.
 
 | Tier | BOLT Required | Matching Bonus | Rep Multiplier | Additional Benefits |
 |------|--------------|----------------|----------------|-------------------|
@@ -351,13 +351,13 @@ Staking is optional — any worker can join at the OPEN tier with zero BOLT. Thi
 | VERIFIED | 100 | +5 | 1.5x | All job tiers, priority matching |
 | SENTINEL | 1,000 | +10 | 2.0x | Priority matching, protocol revenue share |
 
-These values are defined in `STAKE_PRIORITY` and `STAKE_REQUIREMENTS` in `packages/protocol/src/types.ts`. The matching bonus directly influences `workerScore()` — a SENTINEL worker receives a +10 bonus, equivalent to the maximum device-type preference or full reputation score.
+These values are defined in `STAKE_PRIORITY` and `STAKE_REQUIREMENTS` in `packages/protocol/src/types.ts`. The matching bonus directly influences `workerScore()`. A SENTINEL worker receives a +10 bonus, equivalent to the maximum device-type preference or full reputation score.
 
 The reputation multiplier amplifies on-chain reputation growth. A SENTINEL worker earning 80 reputation points from a job receives an effective 160 points for matching purposes, compounding their competitive advantage over time.
 
 ### 5.4 Token Distribution
 
-BOLT has a fixed supply of 1,000,000,000 (1B) tokens with 9 decimal places. The supply is never inflationary — new tokens are never minted after initial distribution. With the 5% burn on every settlement, total supply strictly decreases over time.
+BOLT has a fixed supply of 1,000,000,000 (1B) tokens with 9 decimal places. The supply is never inflationary. New tokens are never minted after initial distribution. With the 5% burn on every settlement, total supply strictly decreases over time.
 
 | Category | Allocation | Vesting Schedule |
 |----------|-----------|-----------------|
@@ -375,7 +375,7 @@ Worker Rewards halve annually: Year 1 emits 200M, Year 2 emits 100M, Year 3 emit
 
 - **BOLT (SPL)**: The canonical token lives on Solana. Worker staking, Jupiter DEX swaps, and USDC settlement all occur on Solana.
 - **Wrapped BOLT (ERC-20)**: A wrapped representation on Monad for governance participation and receipt-linked staking verification.
-- **Bridge**: Standard lock-and-mint bridge between Solana and Monad. Coordinators on both chains read stake levels — the Solana coordinator reads SPL balances directly, the Monad coordinator reads wrapped BOLT balances.
+- **Bridge**: Standard lock-and-mint bridge between Solana and Monad. Coordinators on both chains read stake levels: the Solana coordinator reads SPL balances directly, the Monad coordinator reads wrapped BOLT balances.
 
 This mirrors the dual-chain architecture: Solana handles the economic layer (token, staking, payments), Monad handles the trust layer (reputation, governance, receipts).
 
@@ -389,15 +389,15 @@ Every job result is bound to its producer via ed25519 signatures. The coordinato
 
 ### 6.2 Atomic Job Claims [IMPLEMENTED]
 
-The `claimWorker()` function performs matching and state mutation in a single synchronous tick — no `await` between eligibility check and worker status update. This eliminates TOCTOU race conditions where two concurrent job submissions could claim the same idle worker.
+The `claimWorker()` function performs matching and state mutation in a single synchronous tick, with no `await` between eligibility check and worker status update. This eliminates TOCTOU race conditions where two concurrent job submissions could claim the same idle worker.
 
 ### 6.3 Trust Pairing for Private Jobs [IMPLEMENTED]
 
-PRIVATE-class jobs are routed exclusively to workers that hold a claimed trust pairing with the requesting user. The pairing mechanism uses time-limited, single-use codes. Unclaimed pairings expire. The coordinator enforces this at the matching layer — a PRIVATE job with no trusted workers available fails immediately rather than routing to an untrusted worker.
+PRIVATE-class jobs are routed exclusively to workers that hold a claimed trust pairing with the requesting user. The pairing mechanism uses time-limited, single-use codes. Unclaimed pairings expire. The coordinator enforces this at the matching layer. A PRIVATE job with no trusted workers available fails immediately rather than routing to an untrusted worker.
 
 ### 6.4 Reputation-Based Slashing [IMPLEMENTED]
 
-Failed jobs trigger negative ERC-8004 feedback (score: 20/100 vs. 80/100 for success). Accumulated negative feedback reduces a worker's matching score, effectively slashing their job volume without requiring token slashing. This is a reputation-based economic penalty — workers who fail jobs earn less because they get matched less.
+Failed jobs trigger negative ERC-8004 feedback (score: 20/100 vs. 80/100 for success). Accumulated negative feedback reduces a worker's matching score, effectively slashing their job volume without requiring token slashing. This is a reputation-based economic penalty: workers who fail jobs earn less because they get matched less.
 
 ### 6.5 Worker Identity [IMPLEMENTED]
 
@@ -409,7 +409,7 @@ Workers send heartbeat messages every few seconds. The coordinator prunes worker
 
 ### 6.7 On-Chain Receipt Anchoring [DESIGNED]
 
-Receipts are structured for submission to on-chain anchor contracts — Solidity on Monad and Anchor programs on Solana. Anchored receipts provide permanent, tamper-proof records of computation that can be verified by any party against the chain state.
+Receipts are structured for submission to on-chain anchor contracts (Solidity on Monad and Anchor programs on Solana). Anchored receipts provide permanent, tamper-proof records of computation that can be verified by any party against the chain state.
 
 ---
 
@@ -465,13 +465,13 @@ Delivered and running on Monad testnet and Solana devnet:
 ### Phase 3: Scale [FUTURE]
 
 - On-chain receipt anchoring on both Monad (Solidity) and Solana (Anchor)
-- zkML validation — zero-knowledge proofs that a specific model produced a specific output
-- Dynamic pricing — job prices adjust based on supply/demand ratio and worker availability
-- Confidential compute — TEE-based execution for sensitive workloads
-- Agent discovery — agents query the ERC-8004 Identity Registry to find workers by skill, reputation, and availability
-- Multi-coordinator routing — agents discover coordinators via on-chain registry
-- GPU worker tier — extend beyond consumer hardware to dedicated GPU nodes
-- Governance — BOLT holders vote on protocol parameters (pricing, fee rate, staking thresholds)
+- zkML validation: zero-knowledge proofs that a specific model produced a specific output
+- Dynamic pricing: job prices adjust based on supply/demand ratio and worker availability
+- Confidential compute: TEE-based execution for sensitive workloads
+- Agent discovery: agents query the ERC-8004 Identity Registry to find workers by skill, reputation, and availability
+- Multi-coordinator routing: agents discover coordinators via on-chain registry
+- GPU worker tier: extend beyond consumer hardware to dedicated GPU nodes
+- Governance: BOLT holders vote on protocol parameters (pricing, fee rate, staking thresholds)
 
 ---
 
@@ -488,22 +488,22 @@ Delivered and running on Monad testnet and Solana devnet:
 | **Multi-chain** | Solana + Monad | Cosmos (single) | Filecoin (single) | Solana (single) | N/A |
 | **Agent-native** | Yes (HTTP + x402) | No (CLI/SDK) | No (deal protocol) | No (IoT protocol) | Partial (API key) |
 
-Dispatch's closest analogy is Helium's approach to hardware onboarding — leveraging devices people already own rather than requiring purpose-built infrastructure. But where Helium provides wireless coverage, Dispatch provides compute. And where Helium uses a burn-and-mint token model, Dispatch uses USDC-to-BOLT auto-swap with direct burn, creating cleaner value capture.
+Dispatch's closest analogy is Helium's approach to hardware onboarding, leveraging devices people already own rather than requiring purpose-built infrastructure. But where Helium provides wireless coverage, Dispatch provides compute. And where Helium uses a burn-and-mint token model, Dispatch uses USDC-to-BOLT auto-swap with direct burn, creating cleaner value capture.
 
 ---
 
 ## 10. References
 
-1. **x402 Protocol** — HTTP-native payments by Coinbase. Specification: [https://www.x402.org/](https://www.x402.org/)
-2. **ERC-8004: Trustless Agents** — On-chain agent identity and reputation by Coinbase. Contracts: [https://github.com/erc-8004/erc-8004-contracts](https://github.com/erc-8004/erc-8004-contracts)
-3. **Ed25519** — Edwards-curve Digital Signature Algorithm. RFC 8032.
-4. **tweetnacl** — JavaScript implementation of NaCl cryptographic library. Used for receipt signature verification.
-5. **viem** — TypeScript interface for Ethereum. Used for ERC-8004 contract interactions on Monad.
-6. **Solana Mobile Wallet Adapter** — Mobile authentication protocol for Solana apps. Used by Seeker workers.
-7. **Ollama** — Local LLM inference engine. Used by desktop workers for FAST/LLM_INFER jobs.
-8. **Helium (HNT)** — Decentralized wireless network using consumer hardware. Comparable supply-side model.
-9. **Akash Network** — Decentralized GPU compute marketplace. Container-granularity comparison.
-10. **Render Network** — Distributed GPU rendering. Datacenter-class hardware comparison.
+1. **x402 Protocol.** HTTP-native payments by Coinbase. Specification: [https://www.x402.org/](https://www.x402.org/)
+2. **ERC-8004: Trustless Agents.** On-chain agent identity and reputation by Coinbase. Contracts: [https://github.com/erc-8004/erc-8004-contracts](https://github.com/erc-8004/erc-8004-contracts)
+3. **Ed25519.** Edwards-curve Digital Signature Algorithm. RFC 8032.
+4. **tweetnacl.** JavaScript implementation of NaCl cryptographic library. Used for receipt signature verification.
+5. **viem.** TypeScript interface for Ethereum. Used for ERC-8004 contract interactions on Monad.
+6. **Solana Mobile Wallet Adapter.** Mobile authentication protocol for Solana apps. Used by Seeker workers.
+7. **Ollama.** Local LLM inference engine. Used by desktop workers for FAST/LLM_INFER jobs.
+8. **Helium (HNT).** Decentralized wireless network using consumer hardware. Comparable supply-side model.
+9. **Akash Network.** Decentralized GPU compute marketplace. Container-granularity comparison.
+10. **Render Network.** Distributed GPU rendering. Datacenter-class hardware comparison.
 
 ---
 

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 
-const codeSnippet = `// Submit a job — x402 handles the payment automatically
+const codeSnippet = `// Submit a job. x402 handles the payment automatically
 const router = new ComputeRouter({
   monad: "http://coordinator-monad:4010",
   solana: "http://coordinator-solana:4020",
@@ -47,7 +47,7 @@ const STRINGS = /("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'|`(?:[^`\\]|\\.)*`)/g;
 const PUNCTUATION = /([{}[\]=()=>,:;]|=>)/g;
 
 function highlightLine(line: string, index: number): React.ReactNode {
-  // Comments take priority — the whole rest of the line is a comment
+  // Comments take priority: the whole rest of the line is a comment
   const commentMatch = line.match(/^(.*?)(\/\/.*)$/);
   if (commentMatch) {
     const before = commentMatch[1];
@@ -77,7 +77,7 @@ function highlightTokens(text: string): React.ReactNode[] {
     // Odd indices are matched strings
     if (i % 2 === 1) {
       // Check if this is a property key (followed by colon in the original text)
-      // We detect this by checking context — property keys like "type": appear as
+      // We detect this by checking context. Property keys like "type": appear as
       // the string right before a colon in JSON-like structures
       const afterPart = parts.slice(i + 1).join("");
       if (afterPart.trimStart().startsWith(":")) {

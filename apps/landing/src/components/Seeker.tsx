@@ -10,7 +10,7 @@ const features = [
       </svg>
     ),
     title: "Passive Income, Zero Effort",
-    description: "Your phone picks up AI tasks over WebSocket while you sleep. BOLT earnings accumulate automatically — no interaction needed.",
+    description: "Your phone picks up AI tasks over WebSocket while you sleep. $BOLT earnings accumulate automatically, no interaction needed.",
   },
   {
     icon: (
@@ -28,7 +28,7 @@ const features = [
       </svg>
     ),
     title: "No GPU Required",
-    description: "Summarization, classification, data extraction — all run on your phone's CPU. No special hardware, no setup.",
+    description: "Summarization, classification, data extraction. All run on your phone's CPU. No special hardware, no setup.",
   },
 ];
 
@@ -37,14 +37,14 @@ const features = [
 function PhoneMockup() {
   return (
     <div className="relative w-[260px]">
-      {/* Side buttons — volume (left) + power (right) */}
+      {/* Side buttons: volume (left) + power (right) */}
       <div className="absolute -left-[3px] top-[70px] h-6 w-[3px] rounded-l-sm bg-[#3a3a4a]" />
       <div className="absolute -left-[3px] top-[100px] h-10 w-[3px] rounded-l-sm bg-[#3a3a4a]" />
       <div className="absolute -right-[3px] top-[90px] h-8 w-[3px] rounded-r-sm bg-[#3a3a4a]" />
 
-      {/* Solana Seeker frame — modern Android proportions, gray matte */}
+      {/* Solana Seeker frame, modern Android proportions, gray matte */}
       <div className="rounded-[2.5rem] border-[1.5px] border-[#4a4a5a] bg-gradient-to-b from-[#35353f] to-[#2a2a35] p-[5px] shadow-xl shadow-black/40">
-        {/* Screen — edge-to-edge display */}
+        {/* Screen, edge-to-edge display */}
         <div className="rounded-[2rem] bg-[#0a0a0f] px-3 pb-3 pt-2 relative overflow-hidden">
           {/* Earpiece / speaker slit */}
           <div className="absolute top-[3px] left-1/2 -translate-x-1/2 h-[2px] w-10 rounded-full bg-[#2a2a35]" />
@@ -96,7 +96,7 @@ function PhoneMockup() {
               <div className="text-[7px] font-semibold uppercase tracking-wide text-[#64748b]">Earnings</div>
               <div className="flex items-baseline gap-1">
                 <span className="font-mono text-lg font-bold text-[#f8fafc]">124.8</span>
-                <span className="text-[10px] font-semibold text-[#e8b84a]">BOLT</span>
+                <span className="text-[10px] font-semibold text-[#e8b84a]">$BOLT</span>
               </div>
             </div>
             <div className="mx-3 h-8 w-px bg-[#2a2a45]" />
@@ -157,7 +157,7 @@ export function Seeker() {
     <section className="border-t border-border px-6 py-20 md:py-28">
       <div className="mx-auto max-w-5xl">
         <div className="grid items-center gap-12 md:grid-cols-2 md:gap-16">
-          {/* Left — copy & features */}
+          {/* Left: copy & features */}
           <div>
             <motion.h2
               initial={{ opacity: 0, y: 20 }}
@@ -177,7 +177,7 @@ export function Seeker() {
             >
               The Seeker app turns any idle phone into a compute node. Connect to
               the network, execute AI tasks in the background, and build onchain
-              reputation — all from your pocket.
+              reputation, all from your pocket.
             </motion.p>
 
             <div className="mt-8 space-y-5">
@@ -204,7 +204,7 @@ export function Seeker() {
             </div>
           </div>
 
-          {/* Right — faithful app mockup */}
+          {/* Right: faithful app mockup */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}

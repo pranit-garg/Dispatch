@@ -1,5 +1,5 @@
 /**
- * ErrorToast — Thin red banner at the top of the dashboard.
+ * ErrorToast: Thin red banner at the top of the dashboard.
  *
  * Subscribes to wsService "error" events and auto-dismisses after 4 seconds.
  * Animates slide-down on appear, slide-up on dismiss.

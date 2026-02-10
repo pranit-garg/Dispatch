@@ -1,5 +1,5 @@
 /**
- * JobDetailModal — Bottom sheet modal showing full details for a completed job.
+ * JobDetailModal: Bottom sheet modal showing full details for a completed job.
  *
  * Slides up from the bottom with a semi-transparent overlay.
  * Displays: Job ID, Task Type, Timestamp, Duration, Result, Earnings.
@@ -95,7 +95,7 @@ export function JobDetailModal({ job, visible, onClose }: JobDetailModalProps) {
                 </Text>
               </View>
             </View>
-            <DetailRow label="Earnings" value="0.001 SOL" accent />
+            <DetailRow label="Earnings" value="1.0 BOLT" accent />
           </View>
         </Pressable>
       </Pressable>

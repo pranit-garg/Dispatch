@@ -1,5 +1,5 @@
 /**
- * Root layout — wraps the entire app with providers and dark theme.
+ * Root layout. Wraps the entire app with providers and dark theme.
  *
  * Responsibilities:
  * 1. Loads Space Grotesk font family (matching dispatch.computer)

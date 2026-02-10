@@ -1,6 +1,6 @@
 ---
 title: Worker Types
-description: Desktop workers vs seeker workers — capabilities, registration, and how the coordinator routes jobs to each type.
+description: Desktop workers vs seeker workers. Capabilities, registration, and how the coordinator routes jobs to each type.
 ---
 
 # Worker Types
@@ -54,7 +54,7 @@ After execution, the worker builds a receipt (SHA-256 hash of output, ed25519 si
 
 ## Seeker Worker
 
-The seeker is a lightweight worker designed for mobile devices. It handles only TASK jobs — no LLM inference.
+The seeker is a lightweight worker designed for mobile devices. It handles only TASK jobs, no LLM inference.
 
 ### Registration
 
@@ -117,7 +117,7 @@ When a job arrives, the coordinator's `claimWorker()` function finds an availabl
 3. Is not busy with another job
 4. For PRIVATE jobs: is trust-paired with the submitting user
 
-The coordinator does not prefer desktop over seeker for TASK jobs — any worker with the capability can be assigned.
+The coordinator does not prefer desktop over seeker for TASK jobs. Any worker with the capability can be assigned.
 
 ## Running multiple workers
 

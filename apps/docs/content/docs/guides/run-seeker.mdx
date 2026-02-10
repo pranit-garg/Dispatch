@@ -1,11 +1,11 @@
 ---
 title: Run a Seeker
-description: Submit compute jobs to the Dispatch network using the ComputeRouter SDK — LLM inference, tasks, and private jobs.
+description: Submit compute jobs to the Dispatch network using the ComputeRouter SDK. LLM inference, tasks, and private jobs.
 ---
 
 # Run a Seeker
 
-A seeker is any client that submits jobs. Backend service, script, mobile app — anything that talks HTTP. This guide shows how to use the `ComputeRouter` SDK.
+A seeker is any client that submits jobs. Backend service, script, mobile app, anything that talks HTTP. This guide shows how to use the `ComputeRouter` SDK.
 
 ## Installation
 
@@ -104,14 +104,14 @@ Requires a prior trust pairing between `my-app-user-001` and at least one online
 Control cost vs. speed:
 
 ```typescript
-// Explicit FAST tier — higher price, prioritized
+// Explicit FAST tier - higher price, prioritized
 await router.runLLM({
   prompt: "...",
   policy: Policy.FAST,
   user_id: "user-001",
 });
 
-// Explicit CHEAP tier — lower price
+// Explicit CHEAP tier - lower price
 await router.runTask({
   task_type: "classify",
   input: "...",
@@ -119,7 +119,7 @@ await router.runTask({
   user_id: "user-001",
 });
 
-// AUTO (default) — LLM_INFER → FAST, TASK → CHEAP
+// AUTO (default) - LLM_INFER resolves to FAST, TASK resolves to CHEAP
 await router.runLLM({ prompt: "...", user_id: "user-001" });
 // Resolves to FAST ($0.010)
 

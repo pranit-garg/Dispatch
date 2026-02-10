@@ -245,7 +245,7 @@ function DualChainIllustration() {
           </svg>
         </motion.div>
 
-        {/* Bridge connectors — 3 parallel animated lines */}
+        {/* Bridge connectors: 3 parallel animated lines */}
         <div className="flex flex-col gap-2">
           {[0, 0.4, 0.8].map((delay, i) => (
             <div key={i} className="relative h-px w-14 md:w-24">
@@ -422,13 +422,13 @@ function OpenSourceIllustration() {
 const blocks = [
   {
     title: "HTTP-native payments",
-    description: "Agents pay USDC via x402 headers. The coordinator auto-swaps to $BOLT via Jupiter DEX. Workers earn $BOLT with real upside — hold, stake for priority, or sell.",
+    description: "Agents pay USDC via x402 headers. The coordinator auto-swaps to $BOLT via Jupiter DEX. Workers earn $BOLT with real upside: hold, stake for priority, or sell.",
     tag: "x402 / $BOLT",
     illustration: PaymentIllustration,
   },
   {
     title: "Portable onchain reputation",
-    description: "Workers build ERC-8004 reputation that follows them across apps. $BOLT staking amplifies your score — Verified workers get 1.5x, Sentinels get 2x reputation multiplier.",
+    description: "Workers build ERC-8004 reputation that follows them across apps. $BOLT staking amplifies your score. Verified workers get 1.5x, Sentinels get 2x reputation multiplier.",
     tag: "ERC-8004",
     illustration: ReputationIllustration,
   },
@@ -440,19 +440,19 @@ const blocks = [
   },
   {
     title: "Solana for economics, Monad for trust",
-    description: "$BOLT lives on Solana — where 150K+ Seeker phones have wallets. ERC-8004 reputation lives on Monad — where smart contract programmability enables verifiable identity. Each chain does what it's best at.",
+    description: "$BOLT lives on Solana, where 150K+ Seeker phones have wallets. ERC-8004 reputation lives on Monad, where smart contract programmability enables verifiable identity. Each chain does what it's best at.",
     tag: "Dual-chain",
     illustration: DualChainIllustration,
   },
   {
     title: "Cryptographic receipts",
-    description: "Every result includes an ed25519 signature over the output hash. Verifiable proof of who computed what — designed for onchain anchoring.",
+    description: "Every result includes an ed25519 signature over the output hash. Verifiable proof of who computed what, designed for onchain anchoring.",
     tag: "ed25519",
     illustration: ReceiptIllustration,
   },
   {
     title: "Fully open source",
-    description: "Coordinator, worker SDK, Seeker app, $BOLT contracts — all MIT licensed. Fork it, audit it, deploy your own network.",
+    description: "Coordinator, worker SDK, Seeker app, $BOLT contracts. All MIT licensed. Fork it, audit it, deploy your own network.",
     tag: "MIT license",
     illustration: OpenSourceIllustration,
   },

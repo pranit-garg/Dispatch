@@ -1,6 +1,6 @@
 ---
 title: Solana
-description: Solana devnet coordinator setup — SVM x402 payments with ExactSvmScheme, facilitator config, and differences from Monad.
+description: Solana devnet coordinator setup. SVM x402 payments with ExactSvmScheme, facilitator config, and differences from Monad.
 ---
 
 # Solana Chain Integration
@@ -81,7 +81,7 @@ const resourceServer = new x402ResourceServer(
 const middleware = paymentMiddleware(buildPaymentConfig(config), resourceServer);
 ```
 
-Note: unlike Monad, the Solana coordinator does not pass an `asset` field — SPL token resolution is handled by the `ExactSvmScheme`.
+Note: unlike Monad, the Solana coordinator does not pass an `asset` field. SPL token resolution is handled by the `ExactSvmScheme`.
 
 ## Payment endpoints
 
@@ -111,7 +111,7 @@ Workers connect to the Solana coordinator with:
 COORDINATOR_URL=http://localhost:4020 pnpm --filter worker-desktop start
 ```
 
-The WebSocket connection is upgraded on the same port — `ws://localhost:4020`.
+The WebSocket connection is upgraded on the same port: `ws://localhost:4020`.
 
 ## SDK configuration
 
@@ -143,4 +143,4 @@ const result = await router.runTask({
 | Facilitator | `x402-facilitator.molandak.org` | `www.x402.org/facilitator` |
 | Database | `monad.db` | `solana.db` |
 
-Both coordinators expose identical REST API and WebSocket protocol. Workers and the SDK use the same code — only the coordinator URL changes.
+Both coordinators expose identical REST API and WebSocket protocol. Workers and the SDK use the same code. Only the coordinator URL changes.

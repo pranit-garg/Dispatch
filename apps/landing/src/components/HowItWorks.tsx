@@ -19,7 +19,7 @@ const steps = [
     num: "03",
     label: "Match",
     detail: "Coordinator claims the best worker by reputation, stake tier, and device type",
-    sub: "BOLT stakers get priority \u00b7 Sentinels get 2x rep boost",
+    sub: "$BOLT stakers get priority \u00b7 Sentinels get 2x rep boost",
   },
   {
     num: "04",
@@ -30,8 +30,8 @@ const steps = [
   {
     num: "05",
     label: "Settle",
-    detail: "USDC auto-swaps to BOLT via Jupiter. Worker earns BOLT, 5% burned.",
-    sub: "BOLT settlement \u2192 worker wallet \u00b7 protocol fee \u2192 burn address",
+    detail: "USDC auto-swaps to $BOLT via Jupiter. Worker earns $BOLT, 5% burned.",
+    sub: "$BOLT settlement \u2192 worker wallet \u00b7 protocol fee \u2192 burn address",
   },
 ];
 
@@ -47,7 +47,7 @@ export function HowItWorks() {
         >
           <h2 className="text-3xl font-bold md:text-4xl">How it works</h2>
           <p className="mx-auto mt-4 max-w-xl text-text-muted">
-            Five steps from request to BOLT-settled, cryptographically verified result.
+            Five steps from request to $BOLT-settled, cryptographically verified result.
           </p>
         </motion.div>
 

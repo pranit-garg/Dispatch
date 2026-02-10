@@ -1,6 +1,6 @@
 ---
 title: Environment Variables
-description: Every environment variable in the Dispatch monorepo — coordinator, worker, hosted BYOK, and demo CLI settings.
+description: Every environment variable in the Dispatch monorepo, covering coordinator, worker, hosted BYOK, and demo CLI settings.
 ---
 
 # Environment Variables Reference
@@ -98,4 +98,4 @@ DEMO_CHAIN=monad
 
 - **COORDINATOR_URL**: The worker derives the WebSocket URL from this by replacing `http://` with `ws://`. Both HTTP and WS run on the same port.
 
-- **MONAD_USDC / ASSET**: Only needed for EVM chains. The Solana coordinator does not require an explicit asset address — the `ExactSvmScheme` handles SPL token resolution.
+- **MONAD_USDC / ASSET**: Only needed for EVM chains. The Solana coordinator does not require an explicit asset address. The `ExactSvmScheme` handles SPL token resolution.

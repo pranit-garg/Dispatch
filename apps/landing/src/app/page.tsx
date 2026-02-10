@@ -1,9 +1,9 @@
 import { Navbar } from "@/components/Navbar";
 import { Hero } from "@/components/Hero";
-import { TrustStrip } from "@/components/TrustStrip";
 import { FounderVideo } from "@/components/FounderVideo";
 import { WhyDispatch } from "@/components/WhyDispatch";
 import { HowItWorks } from "@/components/HowItWorks";
+import { DualChain } from "@/components/DualChain";
 import { Tokenomics } from "@/components/Tokenomics";
 import { Seeker } from "@/components/Seeker";
 import { LiveDemo } from "@/components/LiveDemo";
@@ -15,10 +15,10 @@ export default function Home() {
     <main>
       <Navbar />
       <Hero />
-      <TrustStrip />
       <FounderVideo />
       <WhyDispatch />
       <HowItWorks />
+      <DualChain />
       <Tokenomics />
       <Seeker />
       <LiveDemo />

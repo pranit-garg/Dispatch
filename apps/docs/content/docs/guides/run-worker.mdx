@@ -1,6 +1,6 @@
 ---
 title: Run a Worker
-description: Set up and run a desktop worker node on the Dispatch network — keypair generation, registration, and trust pairing.
+description: Set up and run a desktop worker node on the Dispatch network, including keypair generation, registration, and trust pairing.
 ---
 
 # Run a Worker
@@ -11,7 +11,7 @@ Workers execute jobs assigned by the coordinator. This guide covers setting up a
 
 - **Node.js** 20+
 - **pnpm** 9+
-- **Ollama** installed and running (for LLM inference jobs) — [ollama.com](https://ollama.com)
+- **Ollama** installed and running (for LLM inference jobs). Install from [ollama.com](https://ollama.com).
 - A running coordinator (see [Quickstart](/docs/getting-started/quickstart))
 
 ## 1. Configure environment
@@ -33,7 +33,7 @@ pnpm --filter worker-desktop start
 
 On first run, the worker:
 
-1. **Generates an ed25519 keypair** — stored at `./data/worker-key.json`
+1. **Generates an ed25519 keypair**, stored at `./data/worker-key.json`
 2. **Connects** to the coordinator via WebSocket
 3. **Registers** with provider type `DESKTOP` and capabilities `[LLM_INFER, TASK]`
 4. **Starts heartbeating** every 10 seconds
@@ -58,9 +58,9 @@ The worker calls the local Ollama instance with the prompt and returns the gener
 
 The worker runs built-in logic based on `task_type`:
 
-- **summarize** — truncates to 200 characters, returns word count
-- **classify** — keyword-based sentiment analysis (positive/negative/neutral)
-- **extract_json** — extracts and parses JSON objects from free text
+- **summarize**: truncates to 200 characters, returns word count
+- **classify**: keyword-based sentiment analysis (positive/negative/neutral)
+- **extract_json**: extracts and parses JSON objects from free text
 
 ### Receipt generation
 
@@ -92,10 +92,10 @@ See the [Trust Pairing guide](/docs/guides/trust-pairing) for the full flow.
 Use different key paths to run multiple workers on the same machine:
 
 ```bash
-# Terminal 1 — default key
+# Terminal 1 - default key
 COORDINATOR_URL=http://localhost:4010 pnpm --filter worker-desktop start
 
-# Terminal 2 — custom key path
+# Terminal 2 - custom key path
 COORDINATOR_URL=http://localhost:4010 \
 WORKER_KEY_PATH=./data/worker-key-2.json \
 pnpm --filter worker-desktop start
@@ -128,7 +128,7 @@ The worker's ed25519 keypair is persisted at `./data/worker-key.json` (or the pa
 }
 ```
 
-The public key (hex-encoded) is the worker's identity across the network — it appears in receipts, trust pairings, and job assignments.
+The public key (hex-encoded) is the worker's identity across the network. It appears in receipts, trust pairings, and job assignments.
 
 **Keep this file safe.** Lose the key file and you lose the worker's identity and all its trust pairings.
 

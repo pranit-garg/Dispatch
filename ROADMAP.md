@@ -1,5 +1,5 @@
-# Dispatch Compute Network — Backlog
-<!-- Updated: 2026-02-09 — Removed completed items, added new ones -->
+# Dispatch Compute Network: Backlog
+<!-- Updated: 2026-02-09. Removed completed items, added new ones. -->
 
 ## Post-MVP Features
 

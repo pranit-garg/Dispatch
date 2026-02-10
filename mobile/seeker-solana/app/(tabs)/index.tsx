@@ -1,11 +1,11 @@
 /**
- * Dashboard screen — the main screen of the app.
+ * Dashboard screen, the main screen of the app.
  *
  * Layout (top to bottom):
- * 1. StatusCard — connection status + worker ID
- * 2. EarningsCard — SOL earned + jobs completed
- * 3. WorkerToggle — big start/stop button
- * 4. JobHistory — recent completed jobs
+ * 1. StatusCard: connection status + worker ID
+ * 2. EarningsCard: BOLT earned + jobs completed
+ * 3. WorkerToggle: big start/stop button
+ * 4. JobHistory: recent completed jobs
  */
 import React, { useCallback } from "react";
 import {
@@ -53,6 +53,9 @@ export default function DashboardScreen() {
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
       <ErrorToast />
+      <View style={styles.testnetBanner}>
+        <Text style={styles.testnetText}>Testnet · Settling in SOL</Text>
+      </View>
       <ScrollView
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
@@ -80,7 +83,7 @@ export default function DashboardScreen() {
         {worker.signingMode === "wallet" && !worker.walletAddress && (
           <View style={styles.walletBanner}>
             <Text style={styles.walletBannerText}>
-              Link your Phantom wallet to earn SOL for compute jobs
+              Link your Phantom wallet to earn BOLT for compute jobs
             </Text>
           </View>
         )}
@@ -166,6 +169,24 @@ const styles = StyleSheet.create({
     color: colors.warning,
     fontFamily: fontFamily.semibold,
     textAlign: "center",
+  },
+  testnetBanner: {
+    backgroundColor: colors.warning + "15",
+    borderWidth: 1,
+    borderColor: colors.warning + "30",
+    borderRadius: 8,
+    paddingVertical: spacing.xs,
+    paddingHorizontal: spacing.md,
+    alignItems: "center",
+    marginHorizontal: spacing.lg,
+    marginTop: spacing.sm,
+  },
+  testnetText: {
+    fontSize: fontSize.xs,
+    color: colors.warning,
+    fontFamily: fontFamily.semibold,
+    letterSpacing: 1,
+    textTransform: "uppercase",
   },
   loadingContainer: {
     flex: 1,

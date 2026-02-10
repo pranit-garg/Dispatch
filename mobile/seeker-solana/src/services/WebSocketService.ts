@@ -53,7 +53,7 @@ type EventListener<K extends keyof EventMap> = (data: EventMap[K]) => void;
 
 // ── Pricing constants (mock, matches coordinator pricing) ──
 
-const TASK_PRICE_SOL = 0.001; // Mock SOL earnings per TASK job
+const TASK_PRICE_BOLT = 0.001; // Mock BOLT earnings per TASK job (MVP placeholder)
 
 // ── Service ────────────────────────────────────
 
@@ -386,7 +386,7 @@ class WebSocketService {
     }
 
     if (success) {
-      this._totalEarnings += TASK_PRICE_SOL;
+      this._totalEarnings += TASK_PRICE_BOLT;
       this.emit("earnings", this._totalEarnings);
     }
 

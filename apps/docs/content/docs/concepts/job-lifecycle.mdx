@@ -1,6 +1,6 @@
 ---
 title: Job Lifecycle
-description: Every status transition a job goes through in Dispatch — from submission to completion, including timeouts and failures.
+description: Every status transition a job goes through in Dispatch, from submission to completion, including timeouts and failures.
 ---
 
 # Job Lifecycle
@@ -49,7 +49,7 @@ The coordinator accepted the job and stored it in the database. It's now looking
 
 A worker matched to the job. The coordinator sent a `job_assign` message over WebSocket.
 
-- The coordinator uses atomic `claimWorker()` — a synchronous select-and-mark-busy that prevents race conditions when multiple jobs arrive at once
+- The coordinator uses atomic `claimWorker()`, a synchronous select-and-mark-busy that prevents race conditions when multiple jobs arrive at once
 
 ### running
 
@@ -95,7 +95,7 @@ During assignment, the coordinator enforces privacy rules:
 - **PUBLIC** jobs: any online worker with matching capabilities can be assigned
 - **PRIVATE** jobs: only workers that the submitting user has trust-paired with are eligible
 
-If a PRIVATE job is submitted and no trusted worker is online, the coordinator returns `422` immediately — it does not wait or retry.
+If a PRIVATE job is submitted and no trusted worker is online, the coordinator returns `422` immediately. It does not wait or retry.
 
 ## Polling for results
 

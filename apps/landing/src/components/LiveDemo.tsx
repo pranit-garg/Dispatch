@@ -27,8 +27,8 @@ const responseJson = `{
   },
   "bolt_payment": {
     "usdc_amount": "$0.010",
-    "bolt_earned": "12.4 BOLT",
-    "protocol_fee": "0.65 BOLT burned"
+    "bolt_earned": "12.4 $BOLT",
+    "protocol_fee": "0.65 $BOLT burned"
   }
 }`;
 

@@ -1,10 +1,10 @@
 /**
- * Onboarding — 3-step horizontal pager introducing Dispatch to new users.
+ * Onboarding: 3-step horizontal pager introducing Dispatch to new users.
  *
  * Steps:
- * 1. "Earn from your phone" — hero headline + gold circle visual
- * 2. "How it works" — 3-step vertical flow (Connect, Compute, Earn)
- * 3. "Get started" — choose Device Key or Wallet, then start
+ * 1. "Earn from your phone" - hero headline + gold circle visual
+ * 2. "How it works" - 3-step vertical flow (Connect, Compute, Earn)
+ * 3. "Get started" - choose Device Key or Wallet, then start
  *
  * On completion, sets `dispatch_has_onboarded` in AsyncStorage and
  * navigates to the main tabs.
@@ -37,7 +37,7 @@ const ONBOARDED_KEY = "dispatch_has_onboarded";
 const TOTAL_STEPS = 3;
 
 // ---------------------------------------------------------------------------
-// Step 1 — Hero
+// Step 1: Hero
 // ---------------------------------------------------------------------------
 function StepEarn() {
   return (
@@ -50,7 +50,7 @@ function StepEarn() {
         />
       </View>
 
-      <Text style={styles.headline}>Your phone{"\n"}can earn SOL</Text>
+      <Text style={styles.headline}>Your phone{"\n"}can earn BOLT</Text>
 
       <Text style={styles.subtitle}>
         Dispatch routes AI jobs to your idle phone. You earn crypto for every
@@ -61,7 +61,7 @@ function StepEarn() {
 }
 
 // ---------------------------------------------------------------------------
-// Step 2 — How it works
+// Step 2: How it works
 // ---------------------------------------------------------------------------
 const HOW_STEPS = [
   {
@@ -77,7 +77,7 @@ const HOW_STEPS = [
   {
     num: "3",
     title: "Earn",
-    desc: "Get paid in SOL for every completed job",
+    desc: "Earn BOLT for every completed job",
   },
 ] as const;
 
@@ -109,7 +109,7 @@ function StepHow() {
 }
 
 // ---------------------------------------------------------------------------
-// Step 3 — Get started (signing mode choice)
+// Step 3: Get started (signing mode choice)
 // ---------------------------------------------------------------------------
 function StepStart({ onComplete }: { onComplete: () => void }) {
   const [selected, setSelected] = useState<"device" | "wallet" | null>(null);
@@ -159,7 +159,7 @@ function StepStart({ onComplete }: { onComplete: () => void }) {
         disabled={!selected}
         onPress={onComplete}
       >
-        <Text style={styles.ctaText}>Start Earning</Text>
+        <Text style={styles.ctaText}>Start Earning BOLT</Text>
       </Pressable>
     </View>
   );

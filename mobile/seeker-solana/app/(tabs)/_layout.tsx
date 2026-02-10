@@ -1,5 +1,5 @@
 /**
- * Tab layout — two tabs: Dashboard and Settings.
+ * Tab layout. Two tabs: Dashboard and Settings.
  * Uses a dark theme tab bar with Ionicons, Space Grotesk labels,
  * and a status dot overlay on the Dashboard icon.
  */

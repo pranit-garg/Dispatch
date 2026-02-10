@@ -1,7 +1,7 @@
 /**
- * EarningsCard — Displays total SOL earnings and jobs completed count.
+ * EarningsCard: Displays total BOLT earnings and jobs completed count.
  *
- * For MVP these are mock values (0.001 SOL per TASK job).
+ * For MVP these are mock values (1.0 BOLT per TASK job).
  * The card has a gold glow shadow and split amount display.
  */
 import React from "react";
@@ -25,7 +25,7 @@ export function EarningsCard({ totalEarnings, jobsCompleted }: EarningsCardProps
             <Text style={styles.amountInt}>{intPart}</Text>
             <Text style={styles.amountDec}>.{decPart}</Text>
           </View>
-          <Text style={styles.currency}>SOL</Text>
+          <Text style={styles.currency}>BOLT</Text>
         </View>
       </View>
 

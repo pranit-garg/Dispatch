@@ -1,5 +1,5 @@
 /**
- * StatusCard — Shows connection status, coordinator URL, and worker ID.
+ * StatusCard: Shows connection status, coordinator URL, and worker ID.
  *
  * Visual indicators:
  * - Green dot = connected and processing jobs (pulsing)

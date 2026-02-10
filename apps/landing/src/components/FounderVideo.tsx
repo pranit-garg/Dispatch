@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 
-// Pranit provides this — leave empty until then
+// Pranit provides this, leave empty until then
 const VIDEO_URL = "";
 
 export function FounderVideo() {
@@ -57,16 +57,6 @@ export function FounderVideo() {
           </div>
         </motion.div>
 
-        {/* Attribution */}
-        <motion.p
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.2 }}
-          className="mt-4 text-center text-sm text-text-dim"
-        >
-          Pranit Garg &middot; Built solo in 2 weeks &middot; a16z CSX alum
-        </motion.p>
       </div>
     </section>
   );

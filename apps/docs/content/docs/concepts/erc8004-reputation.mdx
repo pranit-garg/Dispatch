@@ -1,11 +1,11 @@
 ---
 title: ERC-8004 Reputation
-description: Onchain worker identity and portable reputation scores via ERC-8004 on Monad — how Dispatch tracks trust.
+description: Onchain worker identity and portable reputation scores via ERC-8004 on Monad. How Dispatch tracks trust.
 ---
 
 # ERC-8004 Reputation
 
-Every Dispatch worker gets a verifiable, portable identity and reputation score onchain through [ERC-8004](https://github.com/parity-asia/ERC-8004). Reputation lives on Monad regardless of which chain the job settles on. Workers take their track record anywhere — none of it is locked to Dispatch.
+Every Dispatch worker gets a verifiable, portable identity and reputation score onchain through [ERC-8004](https://github.com/parity-asia/ERC-8004). Reputation lives on Monad regardless of which chain the job settles on. Workers take their track record anywhere. None of it is locked to Dispatch.
 
 ## What is ERC-8004
 
@@ -15,7 +15,7 @@ ERC-8004 is a standard for agent identity and reputation onchain. It defines two
 
 Contract: `0x8004A818...` (Monad testnet)
 
-Agents register as ERC-721 NFTs. Each token has a URI pointing to metadata — name, description, capabilities. Every worker gets a persistent, ownable identity that any protocol can read.
+Agents register as ERC-721 NFTs. Each token has a URI pointing to metadata (name, description, capabilities). Every worker gets a persistent, ownable identity that any protocol can read.
 
 ### Reputation Registry
 
@@ -77,12 +77,12 @@ The `@dispatch/erc8004` package exposes:
 
 Most compute marketplaces lock worker reputation inside their own platform. ERC-8004 makes reputation portable and verifiable:
 
-- **Workers own their reputation** — an onchain asset, not a platform metric
-- **Any protocol can read it** — not just Dispatch; any service can check a worker's track record
-- **Trustless verification** — the data is onchain, no need to trust Dispatch's word
-- **Sybil resistance** — reputation accumulates over real work, making it expensive to fake
+- **Workers own their reputation.** An onchain asset, not a platform metric.
+- **Any protocol can read it.** Not just Dispatch; any service can check a worker's track record.
+- **Trustless verification.** The data is onchain, no need to trust Dispatch's word.
+- **Sybil resistance.** Reputation accumulates over real work, making it expensive to fake.
 
-Good workers get rewarded across the entire ecosystem, not just one platform.
+Good workers get rewarded across every protocol that reads ERC-8004, not just Dispatch.
 
 ## Stake-Based Reputation Multiplier
 
@@ -96,4 +96,4 @@ BOLT staking amplifies ERC-8004 reputation scores in the matching algorithm:
 
 A Sentinel-tier worker with 80/100 ERC-8004 reputation contributes `(80/100) × 10 × 2.0 = 16` to their matching score, compared to `(80/100) × 10 × 1.0 = 8` for an Open-tier worker with the same reputation.
 
-Staking is optional — workers earn BOLT with zero stake. But staking creates a positive feedback loop: higher tier → better jobs → more BOLT earned → more staking.
+Staking is optional. Workers earn BOLT with zero stake. But staking creates a positive feedback loop: higher tier, better jobs, more BOLT earned, more staking.

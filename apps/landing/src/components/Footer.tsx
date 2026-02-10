@@ -10,7 +10,7 @@ export function Footer() {
             </span>
           </div>
           <p className="mt-1 text-sm text-text-dim">
-            Pay in USDC. Earn in BOLT. x402 payments. ERC-8004 reputation. Onchain and open source.
+            Pay in USDC. Earn in $BOLT. x402 payments. ERC-8004 reputation. Onchain and open source.
           </p>
         </div>
 
@@ -50,14 +50,13 @@ export function Footer() {
             </a>
           </div>
           <span className="text-sm text-text-dim">
-            Built by{" "}
             <a
               href="https://x.com/pranit"
               target="_blank"
               rel="noopener noreferrer"
               className="text-text-muted transition-colors hover:text-text"
             >
-              Pranit Garg
+              Dispatch Protocol
             </a>
           </span>
         </div>

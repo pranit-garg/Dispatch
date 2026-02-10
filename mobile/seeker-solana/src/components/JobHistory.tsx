@@ -1,5 +1,5 @@
 /**
- * JobHistory — Scrollable list of recently completed jobs.
+ * JobHistory: Scrollable list of recently completed jobs.
  *
  * Each row shows:
  * - Task type icon/badge

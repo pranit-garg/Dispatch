@@ -6,8 +6,7 @@ const technologies = [
   "Coinbase x402",
   "Monad",
   "Solana",
-  "BOLT Token",
-  "a16z CSX",
+  "$BOLT Token",
   "TypeScript",
   "ed25519",
 ];

@@ -68,7 +68,7 @@ export function DualChain() {
             </ul>
           </motion.div>
 
-          {/* Animated bridge — visible on md+ between cards */}
+          {/* Animated bridge, visible on md+ between cards */}
           <div className="hidden md:flex flex-col items-center justify-center gap-1 px-2">
             {[0, 1, 2].map((i) => (
               <motion.div
@@ -80,7 +80,7 @@ export function DualChain() {
             ))}
           </div>
 
-          {/* Animated bridge — visible on mobile between cards */}
+          {/* Animated bridge, visible on mobile between cards */}
           <div className="flex md:hidden items-center justify-center gap-1">
             {[0, 1, 2].map((i) => (
               <motion.div

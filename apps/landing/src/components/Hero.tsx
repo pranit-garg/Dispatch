@@ -6,7 +6,7 @@ import { JobFlowDiagram } from "./hero/JobFlowDiagram";
 export function Hero() {
   return (
     <section className="relative overflow-hidden px-6 pt-20 pb-16 md:pt-32 md:pb-24">
-      {/* Ambient glow — CSS only */}
+      {/* Ambient glow, CSS only */}
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute -top-40 left-1/2 -translate-x-1/2 h-[600px] w-[800px] rounded-full opacity-[0.07]"
           style={{ background: "radial-gradient(ellipse, #d4a246, transparent 70%)" }}
@@ -43,14 +43,14 @@ export function Hero() {
           Turn idle devices into an AI compute network.
         </motion.h1>
 
-        {/* Subheadline — updated for BOLT */}
+        {/* Subheadline, updated for BOLT */}
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
           className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-text-muted md:text-xl"
         >
-          Agents pay USDC. Workers earn BOLT. Every job builds onchain
+          Agents pay USDC. Workers earn $BOLT. Every job builds onchain
           reputation via ERC-8004. Live on Monad and Solana testnet.
         </motion.p>
 

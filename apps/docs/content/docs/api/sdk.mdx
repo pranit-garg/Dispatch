@@ -1,6 +1,6 @@
 ---
 title: SDK Reference
-description: ComputeRouter SDK reference — submit AI jobs to decentralized workers with automatic hosted BYOK fallback.
+description: ComputeRouter SDK reference. Submit AI jobs to decentralized workers with automatic hosted BYOK fallback.
 ---
 
 # SDK Reference
@@ -148,8 +148,8 @@ interface ComputeResult {
 
 The SDK tries adapters in this order:
 
-1. **Decentralized** (selected chain) — submits to coordinator, polls for result
-2. **Hosted fallback** — tries preferred hosted provider, then the other
+1. **Decentralized** (selected chain): submits to coordinator, polls for result
+2. **Hosted fallback**: tries preferred hosted provider, then the other
 
 ```
 runLLM / runTask
@@ -173,10 +173,10 @@ runLLM / runTask
 
 When routing through the decentralized network, the SDK:
 
-1. **Gets a quote** — `GET /v1/quote?job_type=...&policy=...`
-2. **Submits the job** — `POST /v1/jobs/commit/\{tier\}`
-3. **Handles x402** — if `402` returned and x402Client configured, signs payment and retries
-4. **Polls for result** — `GET /v1/jobs/\{id\}` every 500ms until completed or timed out
+1. **Gets a quote.** `GET /v1/quote?job_type=...&policy=...`
+2. **Submits the job.** `POST /v1/jobs/commit/\{tier\}`
+3. **Handles x402.** If `402` returned and x402Client configured, signs payment and retries.
+4. **Polls for result.** `GET /v1/jobs/\{id\}` every 500ms until completed or timed out.
 
 Timeouts:
 - `TASK` jobs: 30 seconds
@@ -192,4 +192,4 @@ ANTHROPIC_API_KEY=sk-ant-...
 PREFERRED_HOSTED_PROVIDER=openai
 ```
 
-The hosted adapters call provider APIs directly — no coordinator, no x402 payments. The `route` field in the result shows which hosted provider was used.
+The hosted adapters call provider APIs directly, with no coordinator and no x402 payments. The `route` field in the result shows which hosted provider was used.

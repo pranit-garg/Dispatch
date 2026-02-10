@@ -2,7 +2,7 @@ import { ImageResponse } from "next/og";
 
 export const runtime = "edge";
 export const alt =
-  "Dispatch — Idle Compute for AI Agents | x402 + ERC-8004 on Monad & Solana";
+  "Dispatch: Idle Compute for AI Agents | BOLT Token + x402 + ERC-8004";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -23,7 +23,7 @@ export default function OgImage() {
           overflow: "hidden",
         }}
       >
-        {/* Top accent border — gold gradient */}
+        {/* Top accent border, gold gradient */}
         <div
           style={{
             position: "absolute",
@@ -82,7 +82,7 @@ export default function OgImage() {
             </svg>
           </div>
 
-          {/* Main title — full gold */}
+          {/* Main title, full gold */}
           <div
             style={{
               fontSize: "72px",
@@ -106,7 +106,7 @@ export default function OgImage() {
               display: "flex",
             }}
           >
-            Dispatch idle compute to AI agents. x402 payments + ERC-8004 reputation.
+            Idle compute for AI agents. BOLT token + x402 payments + ERC-8004 reputation.
           </div>
 
           {/* Tags */}
@@ -151,7 +151,7 @@ export default function OgImage() {
                 display: "flex",
               }}
             >
-              x402 Protocol
+              BOLT Token
             </div>
           </div>
         </div>

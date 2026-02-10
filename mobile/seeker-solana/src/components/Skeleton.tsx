@@ -1,5 +1,5 @@
 /**
- * Skeleton — Shimmer placeholder for loading states.
+ * Skeleton: Shimmer placeholder for loading states.
  *
  * Renders a rounded rectangle with an animated gold shimmer sweep.
  * Used as a placeholder matching the shape of StatusCard, EarningsCard, etc.
