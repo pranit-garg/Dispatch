@@ -168,6 +168,17 @@ export function Seeker() {
               Earn from your phone.
             </motion.h2>
 
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.08 }}
+              className="mt-3 inline-flex items-center gap-2 rounded-full border border-border bg-bg-card px-3 py-1 text-xs text-text-dim"
+            >
+              <span className="inline-block h-1.5 w-1.5 rounded-full bg-accent" />
+              Submitted to Solana dApp Store. Pending review.
+            </motion.div>
+
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}

@@ -50,9 +50,9 @@ export function dashboardRouter(db: Database.Database, hub: WorkerHub): Router {
           <td title="${j.id}">${j.id.slice(0, 8)}...</td>
           <td>${j.type}</td>
           <td><span class="status status-${j.status}">${j.status}</span></td>
-          <td>${j.worker_pubkey ? j.worker_pubkey.slice(0, 12) + "..." : "—"}</td>
+          <td>${j.worker_pubkey ? j.worker_pubkey.slice(0, 12) + "..." : "-"}</td>
           <td>${j.created_at}</td>
-          <td>${j.completed_at ?? "—"}</td>
+          <td>${j.completed_at ?? "-"}</td>
         </tr>`
       )
       .join("");
@@ -156,7 +156,7 @@ export function dashboardRouter(db: Database.Database, hub: WorkerHub): Router {
 </head>
 <body>
   <h1>Dispatch Network</h1>
-  <p class="subtitle">Verifiable Compute &mdash; live &mdash; auto-refreshes every 10s</p>
+  <p class="subtitle">Verifiable Compute &middot; live &middot; auto-refreshes every 10s</p>
 
   <div class="cards">
     <div class="card">
@@ -195,7 +195,7 @@ export function dashboardRouter(db: Database.Database, hub: WorkerHub): Router {
   </table>
 
   <div class="footer">
-    Dispatch &mdash; Verifiable Compute Network &bull; ${new Date().toISOString()}
+    Dispatch &middot; Verifiable Compute Network &bull; ${new Date().toISOString()}
   </div>
 </body>
 </html>`;

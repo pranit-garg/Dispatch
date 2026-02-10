@@ -153,6 +153,9 @@ ERC-8004 was co-authored by Erik Reppel (Coinbase, x402 creator). Dispatch alrea
 ### Project Name
 Dispatch
 
+### Status
+Submitted to Solana dApp Store. Pending review.
+
 ### Tagline
 Turn your Seeker into a compute node.
 
