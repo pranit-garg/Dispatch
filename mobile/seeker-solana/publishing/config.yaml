@@ -2,23 +2,24 @@ publisher:
   name: Pranit Garg
   website: https://dispatch.computer
   contact: https://x.com/pranit
-  address: ""
-  email: "pranitgarg1997@gmail.com"
-  support_email: "pranitgarg1997@gmail.com"
-
+  address: ''
+  email: pranitgarg1997@gmail.com
+  support_email: pranitgarg1997@gmail.com
 app:
   name: Dispatch
   android_package: com.dispatch.seeker
-  address: ""
+  address: 8S8ErMDFh9q18L9BVPQYsNM5vYczug3g6k4zfz5CfG3j
   urls:
+    license_url: https://dispatch.computer/terms
+    copyright_url: https://dispatch.computer/terms
     privacy_policy_url: https://dispatch.computer/privacy
-    terms_of_service_url: https://dispatch.computer/terms
     website: https://dispatch.computer
-    source_code: https://github.com/pranit-garg/dispatch
-
+  media:
+    - purpose: icon
+      uri: media/app_icon.png
 release:
-  version: "1.0.0"
-  address: ""
+  version: 1.0.0
+  address: Au9YeSiiVgt1gG261AwHxHp95pWhe7KpGcD661M5kbhn
   media:
     - purpose: icon
       width: 512
@@ -46,37 +47,49 @@ release:
       uri: media/screenshot_settings.png
   files:
     - purpose: install
-      uri: ""
+      uri: ../build-1770731703429.apk
+  catalog:
+    en-US:
+      name: Dispatch
+      short_description: Idle phone to AI node
+      long_description: |
+        Dispatch turns your phone into an AI compute node. When you're not
+        using your device, it picks up lightweight AI tasks from the network
+        and earns SOL for every job completed.
 
-catalog:
-  en-US:
-    name: Dispatch
-    short_description: Turn your idle phone into an AI compute node. Earn SOL.
-    long_description: |
-      Dispatch turns your phone into an AI compute node. When you're not
-      using your device, it picks up lightweight AI tasks from the network
-      and earns SOL for every job completed.
+        How it works:
+        - Connect to the Dispatch coordinator network
+        - Your phone receives and processes AI tasks
+        - Each completed job is signed with an ed25519 receipt
+        - Earn SOL for verified work
 
-      How it works:
-      - Connect to the Dispatch coordinator network
-      - Your phone receives and processes AI tasks
-      - Each completed job is signed with an ed25519 receipt
-      - Earn SOL for verified work
+        Features:
+        - Device key signing, no wallet required, works on any Android device
+        - Phantom wallet integration via Mobile Wallet Adapter (optional)
+        - Real-time job history and earnings tracking
+        - Dark theme optimized for OLED displays
+        - x402 micropayment protocol for trustless settlement
+        - ERC-8004 onchain reputation building
 
-      Features:
-      - Device key signing — no wallet required, works on any Android device
-      - Phantom wallet integration via Mobile Wallet Adapter (optional)
-      - Real-time job history and earnings tracking
-      - Dark theme optimized for OLED displays
-      - x402 micropayment protocol for trustless settlement
-      - ERC-8004 onchain reputation building
-
-      Currently in testnet/beta. Earnings are simulated — the protocol
-      and cryptographic signing are real.
-    new_in_version: "Initial release"
-
+        Currently in testnet/beta. Earnings are simulated, the protocol
+        and cryptographic signing are real.
+      new_in_version: Initial release
+      saga_features: ''
+  android_details:
+    cert_fingerprint: 41e018ef799059435c8e59c242263f5f15690ecf7a8d5f5e83f5bee0d4eb0f0d
+    min_sdk: 24
+    version: 1.0.0
+    version_code: 1
+    locales:
+      - en-US
 solana_mobile_dapp_publisher_portal:
   testing_instructions: |
     App is in testnet/beta mode. Earnings are simulated but the protocol
     and cryptographic signing are real. Connect to the test coordinator
     at the default URL to see jobs arrive.
+lastSubmittedVersionOnChain:
+  address: Au9YeSiiVgt1gG261AwHxHp95pWhe7KpGcD661M5kbhn
+  version_code: 1
+  apk_hash: LL1RVZ0q+gsUJrOZ9CVbxl66cphmbLwIO3OD3w9kIDU=
+lastUpdatedVersionOnStore:
+  address: Au9YeSiiVgt1gG261AwHxHp95pWhe7KpGcD661M5kbhn
