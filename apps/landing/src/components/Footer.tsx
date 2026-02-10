@@ -33,32 +33,14 @@ export function Footer() {
               GitHub
             </a>
             <a
-              href="https://github.com/pranit-garg/dispatch/blob/main/docs/litepaper.md"
+              href="https://github.com/pranit-garg/Dispatch/blob/main/docs/Dispatch_Litepaper.pdf"
               target="_blank"
               rel="noopener noreferrer"
               className="text-sm text-text-muted transition-colors hover:text-text"
             >
               Litepaper
             </a>
-            <a
-              href="https://x.com/pranit"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-sm text-text-muted transition-colors hover:text-text"
-            >
-              Twitter/X
-            </a>
           </div>
-          <span className="text-sm text-text-dim">
-            <a
-              href="https://x.com/pranit"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-text-muted transition-colors hover:text-text"
-            >
-              Dispatch Protocol
-            </a>
-          </span>
         </div>
       </div>
     </footer>

@@ -440,7 +440,7 @@ const blocks = [
   },
   {
     title: "Solana for economics, Monad for trust",
-    description: "$BOLT lives on Solana, where 150K+ Seeker phones have wallets. ERC-8004 reputation lives on Monad, where smart contract programmability enables verifiable identity. Each chain does what it's best at.",
+    description: "$BOLT lives on Solana, where Seeker phones ship with Solana wallets. ERC-8004 reputation lives on Monad, where smart contract programmability enables verifiable identity. Each chain does what it's best at.",
     tag: "Dual-chain",
     illustration: DualChainIllustration,
   },

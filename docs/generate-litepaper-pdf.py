@@ -146,7 +146,7 @@ LATEX_TEMPLATE = r"""
 ]
 \setmonofont{Courier New}[Scale=0.85]
 
-\usepackage[margin=0.75in,top=1in,bottom=1in]{geometry}
+\usepackage[margin=0.85in,top=1in,bottom=1in]{geometry}
 \usepackage{graphicx}
 \usepackage{booktabs}
 \usepackage{array}
@@ -217,6 +217,8 @@ $endif$
 
 % ── Begin document ──
 \begin{document}
+\sloppy
+\setlength{\emergencystretch}{3em}
 
 % ── Title block (full-width) ──
 \twocolumn[
@@ -226,11 +228,11 @@ $endif$
     \vspace{12pt}
     {\large $for(author)$$author$$sep$ \and $endfor$ \par}
     \vspace{4pt}
-    {\normalsize\itshape Dispatch Protocol \par}
+    {\normalsize\itshape Dispatch \par}
     \vspace{4pt}
     {\small $date$ \par}
     \vspace{2pt}
-    {\small\color{gray} pranit@dispatch.computer \enspace\textperiodcentered\enspace \url{https://dispatch.computer} \par}
+    {\small\color{gray} \url{https://dispatch.computer} \par}
     \vspace{12pt}
 \end{center}
 

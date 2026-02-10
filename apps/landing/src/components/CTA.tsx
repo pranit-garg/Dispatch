@@ -51,8 +51,6 @@ export function CTA() {
           transition={{ delay: 0.15 }}
           className="mt-6 flex items-center justify-center gap-6 text-sm text-text-dim"
         >
-          <span className="font-mono">150K+ Seeker devices</span>
-          <span className="text-border">&middot;</span>
           <span className="font-mono">2 chains</span>
           <span className="text-border">&middot;</span>
           <span className="font-mono">&lt;500ms latency</span>

@@ -8,13 +8,13 @@ const navLinks = [
   { label: "How It Works", href: "#how" },
   { label: "BOLT", href: "#bolt" },
   {
-    label: "Docs",
-    href: "https://docs.dispatch.computer/docs",
+    label: "Litepaper",
+    href: "https://github.com/pranit-garg/Dispatch/blob/main/docs/Dispatch_Litepaper.pdf",
     external: true,
   },
   {
-    label: "Litepaper",
-    href: "https://github.com/pranit-garg/dispatch/blob/main/docs/litepaper.md",
+    label: "Docs",
+    href: "https://docs.dispatch.computer/docs",
     external: true,
   },
 ];

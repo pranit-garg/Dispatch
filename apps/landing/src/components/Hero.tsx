@@ -40,7 +40,7 @@ export function Hero() {
           <span className="bg-gradient-to-r from-[#d4a246] to-[#f0c674] bg-clip-text text-transparent">
             Dispatch
           </span>{" "}
-          Turn idle devices into an AI compute network.
+          turns idle devices into an AI compute network.
         </motion.h1>
 
         {/* Subheadline, updated for BOLT */}
@@ -51,7 +51,7 @@ export function Hero() {
           className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-text-muted md:text-xl"
         >
           Agents pay USDC. Workers earn $BOLT. Every job builds onchain
-          reputation via ERC-8004. Live on Monad and Solana testnet.
+          reputation via ERC-8004.
         </motion.p>
 
         {/* CTA buttons */}
@@ -73,7 +73,9 @@ export function Hero() {
             Read the Docs
           </a>
           <a
-            href="#litepaper"
+            href="https://github.com/pranit-garg/Dispatch/blob/main/docs/Dispatch_Litepaper.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
             className="inline-flex items-center gap-2 rounded-lg border border-border px-6 py-3 font-medium text-text-muted transition-colors hover:border-border-bright hover:text-text"
           >
             <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

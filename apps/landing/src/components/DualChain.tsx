@@ -6,7 +6,7 @@ const solanaBullets = [
   "$BOLT token economy",
   "Worker staking & priority matching",
   "USDC payments via x402",
-  "150K+ Seeker mobile devices",
+  "Solana Seeker mobile support",
   "Jupiter DEX integration",
 ];
 
@@ -126,7 +126,7 @@ export function DualChain() {
           transition={{ delay: 0.3 }}
           className="mx-auto mt-10 max-w-2xl text-center text-sm text-text-dim"
         >
-          You can&apos;t run ERC-8004 on Solana (it&apos;s EVM-only). You can&apos;t reach 150K
+          You can&apos;t run ERC-8004 on Solana (it&apos;s EVM-only). You can&apos;t reach
           Seeker phones on Monad (they have Solana wallets). Each chain does what it&apos;s best at.
         </motion.p>
       </div>
