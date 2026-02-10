@@ -10,7 +10,7 @@ export function Footer() {
             </span>
           </div>
           <p className="mt-1 text-sm text-text-dim">
-            The dispatch layer for AI compute. x402 payments. ERC-8004 reputation. Onchain and open source.
+            Pay in USDC. Earn in BOLT. x402 payments. ERC-8004 reputation. Onchain and open source.
           </p>
         </div>
 
@@ -24,19 +24,29 @@ export function Footer() {
             >
               Docs
             </a>
-<a
+            <a
+              href="https://github.com/pranit-garg/dispatch"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm text-text-muted transition-colors hover:text-text"
+            >
+              GitHub
+            </a>
+            <a
+              href="https://github.com/pranit-garg/dispatch/blob/main/docs/litepaper.md"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm text-text-muted transition-colors hover:text-text"
+            >
+              Litepaper
+            </a>
+            <a
               href="https://x.com/pranit"
               target="_blank"
               rel="noopener noreferrer"
               className="text-sm text-text-muted transition-colors hover:text-text"
             >
               Twitter/X
-            </a>
-            <a
-              href="#why"
-              className="text-sm text-text-muted transition-colors hover:text-text"
-            >
-              Why Dispatch
             </a>
           </div>
           <span className="text-sm text-text-dim">

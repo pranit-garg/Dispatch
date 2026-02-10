@@ -12,8 +12,9 @@ Dispatch is the layer where AI agents submit compute jobs over HTTP, pay with US
 ## Three pillars
 
 - **Agent-native compute** — AI agents are the customers. They submit HTTP requests with x402 payment headers. No SDK required, no wallet setup. Just HTTP and USDC.
-- **Idle hardware as supply** — Phones and desktops earn USDC by processing AI inference while idle. The network scales with devices people already own.
+- **Idle hardware as supply** — Phones and desktops earn BOLT by processing AI inference while idle. The network scales with devices people already own.
 - **Onchain trust** — Workers register as ERC-8004 agents on Monad. Every job builds verifiable reputation. Ed25519 receipts prove every result.
+- **BOLT-powered settlement** — Every job auto-converts USDC to BOLT via Jupiter. Workers earn BOLT with upside — hold, stake for priority, or sell. 5% protocol fee burned per job.
 
 ## What it does
 
@@ -22,6 +23,7 @@ Dispatch is the layer where AI agents submit compute jobs over HTTP, pay with US
 - **Workers** execute jobs and return signed receipts
 - **x402** settles stablecoin payments automatically on every job commit
 - **ERC-8004** tracks worker identity and reputation on Monad
+- **BOLT** settles worker payments via Jupiter DEX with built-in value accrual
 
 ## Architecture at a glance
 
@@ -69,3 +71,5 @@ apps/
 - [SDK Reference](/docs/api/sdk) — `ComputeRouter` usage
 - [Run a Worker](/docs/guides/run-worker) — join the network as a worker
 - [ERC-8004 Reputation](/docs/concepts/erc8004-reputation) — onchain worker identity and trust
+- [BOLT Token](/docs/concepts/bolt-token) — settlement, staking, and value accrual
+- [Dual-Chain Architecture](/docs/concepts/dual-chain) — why Solana + Monad

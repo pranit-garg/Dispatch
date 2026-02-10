@@ -1,8 +1,8 @@
 # Dispatch
 
-**The compute layer AI agents pay into.**
+**Pay in USDC. Earn in BOLT.**
 
-Agents submit HTTP requests with [x402](https://www.x402.org/) payment headers. Idle phones and desktops process the work. USDC settles per job. No token, no staking — just HTTP and stablecoins.
+Agents submit HTTP requests with x402 payment headers. USDC auto-converts to BOLT via Jupiter DEX. Workers earn BOLT — hold for upside, stake for priority matching, or sell.
 
 [dispatch.computer](https://dispatch.computer) · [Docs](https://docs.dispatch.computer) · [Android APK](https://expo.dev/artifacts/eas/pRku9ZWEqdSGS2poEU9VjN.apk)
 
@@ -16,14 +16,35 @@ Agent (HTTP + x402)  →  Coordinator  →  Worker (phone/desktop)
                      Route by reputation    Process job
                      + device type          Sign ed25519 receipt
                             ↓                    ↓
-                     USDC settles ←──────── Result returned
+                     BOLT settles ←──────── Result returned
 ```
 
 1. **Agent submits a job** — HTTP POST with an x402 payment header. No SDK required.
 2. **Coordinator routes it** — Matches to the best worker by device type, reputation score, and routing policy (FAST / CHEAP / PRIVATE).
 3. **Worker processes** — Summarization, classification, extraction, or LLM inference via Ollama.
 4. **Worker signs a receipt** — ed25519 signature over the output hash. Cryptographic proof of who computed what.
-5. **USDC settles** — x402 micropayment on Solana (SPL) or Monad (EVM). Worker gets paid per job.
+5. **BOLT settles** — USDC auto-swaps to BOLT. Worker earns BOLT per job. 5% protocol fee burned.
+
+## BOLT Token
+
+BOLT is the settlement token that powers every Dispatch job.
+
+**How it works:** Agents pay USDC (unchanged UX). At the coordinator, USDC auto-swaps to BOLT via Jupiter DEX. Workers receive BOLT as payment. 100% of economic activity flows through BOLT — every job creates buy pressure.
+
+**Value accrual:**
+1. **Buy pressure** — Every job converts USDC → BOLT on Jupiter
+2. **Supply lock** — Workers stake BOLT for priority matching
+3. **Burn** — 5% protocol fee permanently burned per job
+
+**Staking tiers** (optional — zero stake required to earn):
+
+| Tier | Stake | Benefits |
+|------|-------|----------|
+| Open | 0 BOLT | CHEAP tier jobs, standard matching |
+| Verified | 100 BOLT | All tiers, +5 priority, 1.5x rep multiplier |
+| Sentinel | 1,000 BOLT | Priority matching, +10 bonus, 2x rep, revenue share |
+
+BOLT is a native SPL token on Solana. Wrapped BOLT (ERC-20) on Monad for governance.
 
 ## Why Agents?
 
@@ -68,6 +89,7 @@ Contracts on Monad Testnet:
 packages/
   protocol/          — Shared types, enums, WS messages, pricing
   compute-router/    — Client SDK (decentralized + hosted adapters)
+  bolt/              — BOLT token types, staking tiers, Jupiter swap utils
   erc8004/           — ERC-8004 viem wrappers (identity + reputation)
 apps/
   coordinator-core/     — Express + SQLite + WebSocket hub
@@ -150,6 +172,7 @@ pnpm test   # Unit tests
 | Android APK | [Download](https://expo.dev/artifacts/eas/pRku9ZWEqdSGS2poEU9VjN.apk) |
 | ERC-8004 Contracts | [erc-8004/erc-8004-contracts](https://github.com/erc-8004/erc-8004-contracts) |
 | x402 Protocol | [x402.org](https://www.x402.org/) |
+| Litepaper | [docs/litepaper.md](docs/litepaper.md) |
 
 ## License
 

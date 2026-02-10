@@ -4,6 +4,10 @@ import { getPrice, Policy, JobType } from "@dispatch/protocol";
 /**
  * Build x402 payment resource config for paymentMiddleware.
  *
+ * After x402 verifies the USDC payment, the coordinator triggers BOLT settlement:
+ * USDC → Jupiter swap → BOLT → 5% protocol fee burned → remaining BOLT to worker.
+ * See bolt-settlement.ts for the settlement logic.
+ *
  * Returns a config object shaped for @x402/express paymentMiddleware:
  * {
  *   "POST /v1/jobs/commit/fast": { accepts: [...], description, mimeType },

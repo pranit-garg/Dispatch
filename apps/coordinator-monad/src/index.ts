@@ -1,4 +1,4 @@
-import { createServer, startServer, configFromEnv, buildPaymentConfig, type ERC8004Config } from "@dispatch/coordinator-core";
+import { createServer, startServer, configFromEnv, buildPaymentConfig, type ERC8004Config, type StakeConfig } from "@dispatch/coordinator-core";
 import { getReputationSummary, giveFeedback, buildJobFeedback } from "@dispatch/erc8004";
 import { paymentMiddleware, x402ResourceServer } from "@x402/express";
 import { ExactEvmScheme } from "@x402/evm/exact/server";
@@ -80,10 +80,50 @@ if (erc8004Key) {
   console.log(`[Monad Coordinator] ERC-8004 reputation: DISABLED (no ERC8004_PRIVATE_KEY)`);
 }
 
+// ── BOLT staking (cross-chain from Solana) ─────
+// Monad coordinator reads BOLT stake levels cross-chain from Solana.
+// BOLT is native SPL on Solana — Monad reads via Solana RPC.
+// Wrapped BOLT (ERC-20) on Monad is for governance only.
+
+let stakeConfig: StakeConfig | undefined;
+
+const boltMint = process.env.BOLT_MINT;
+if (boltMint) {
+  const { StakeTier, STAKE_REQUIREMENTS } = await import("@dispatch/protocol");
+
+  stakeConfig = {
+    async readStakeLevel(pubkey: string) {
+      try {
+        // Cross-chain read: query Solana for BOLT balance
+        const { Connection, PublicKey } = await import("@solana/web3.js");
+        const { getAssociatedTokenAddress } = await import("@solana/spl-token");
+        const solanaRpc = process.env.SOLANA_RPC ?? "https://api.devnet.solana.com";
+        const connection = new Connection(solanaRpc, "confirmed");
+        const mint = new PublicKey(boltMint);
+        const owner = new PublicKey(pubkey);
+        const ata = await getAssociatedTokenAddress(mint, owner);
+        const info = await connection.getTokenAccountBalance(ata);
+        const balance = Number(info.value.uiAmount ?? 0);
+
+        if (balance >= STAKE_REQUIREMENTS[StakeTier.SENTINEL]) return StakeTier.SENTINEL;
+        if (balance >= STAKE_REQUIREMENTS[StakeTier.VERIFIED]) return StakeTier.VERIFIED;
+        return StakeTier.OPEN;
+      } catch {
+        return StakeTier.OPEN;
+      }
+    },
+  };
+
+  console.log(`[Monad Coordinator] BOLT staking: ENABLED (cross-chain, mint: ${boltMint})`);
+} else {
+  console.log(`[Monad Coordinator] BOLT staking: DISABLED (no BOLT_MINT)`);
+}
+
 // ── Start server ────────────────────────────────
 const server = createServer(config, {
   ...(middleware && { paymentMiddleware: middleware }),
   ...(erc8004 && { erc8004 }),
+  ...(stakeConfig && { stakeConfig }),
 });
 startServer(config, server);
 

@@ -10,7 +10,7 @@ const features = [
       </svg>
     ),
     title: "Passive Income, Zero Effort",
-    description: "Your phone picks up AI tasks over WebSocket while you sleep. USDC earnings accumulate automatically — no interaction needed.",
+    description: "Your phone picks up AI tasks over WebSocket while you sleep. BOLT earnings accumulate automatically — no interaction needed.",
   },
   {
     icon: (
@@ -95,8 +95,8 @@ function PhoneMockup() {
             <div className="flex-1">
               <div className="text-[7px] font-semibold uppercase tracking-wide text-[#64748b]">Earnings</div>
               <div className="flex items-baseline gap-1">
-                <span className="font-mono text-lg font-bold text-[#f8fafc]">0.0847</span>
-                <span className="text-[10px] font-semibold text-[#e8b84a]">SOL</span>
+                <span className="font-mono text-lg font-bold text-[#f8fafc]">124.8</span>
+                <span className="text-[10px] font-semibold text-[#e8b84a]">BOLT</span>
               </div>
             </div>
             <div className="mx-3 h-8 w-px bg-[#2a2a45]" />

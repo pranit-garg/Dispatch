@@ -8,6 +8,8 @@ import {
   JobType,
   Policy,
   PrivacyClass,
+  StakeTier,
+  STAKE_PRIORITY,
   type RegisterMsg,
   type HeartbeatMsg,
   type JobCompleteMsg,
@@ -40,6 +42,12 @@ interface TrackedWorker {
   lastHeartbeat: number;
   activeJobId: string | null;
   reputationScore?: number; // cached ERC-8004 score (0-100)
+  stakeLevel?: StakeTier; // cached BOLT stake tier
+}
+
+/** Optional config for reading BOLT stake levels */
+export interface StakeConfig {
+  readStakeLevel: (pubkey: string) => Promise<StakeTier>;
 }
 
 const HEARTBEAT_TIMEOUT_MS = 30_000;
@@ -50,10 +58,12 @@ export class WorkerHub {
   private heartbeatCheck: ReturnType<typeof setInterval>;
   private db: Database.Database;
   private erc8004?: ERC8004Config;
+  private stakeConfig?: StakeConfig;
 
-  constructor(server: Server, db: Database.Database, erc8004?: ERC8004Config) {
+  constructor(server: Server, db: Database.Database, erc8004?: ERC8004Config, stakeConfig?: StakeConfig) {
     this.db = db;
     this.erc8004 = erc8004;
+    this.stakeConfig = stakeConfig;
 
     // Upgrade HTTP → WebSocket on the same port
     this.wss = new WebSocketServer({ noServer: true });
@@ -133,6 +143,16 @@ export class WorkerHub {
           console.log(`[WorkerHub] ERC-8004 reputation for ${id}: ${score}`);
         }
       }).catch(() => { /* ERC-8004 unavailable — ignore */ });
+    }
+
+    // Async: fetch BOLT stake level (non-blocking, best-effort)
+    if (this.stakeConfig) {
+      this.stakeConfig.readStakeLevel(msg.provider_pubkey).then((tier) => {
+        if (this.workers.has(id)) {
+          worker.stakeLevel = tier;
+          console.log(`[WorkerHub] BOLT stake tier for ${id}: ${tier}`);
+        }
+      }).catch(() => { /* BOLT stake read failed — default to OPEN */ });
     }
 
     const ack: RegisterAckMsg = { type: "register_ack", status: "ok", worker_id: id };
@@ -281,10 +301,19 @@ export class WorkerHub {
     }
     // Prefer fresher heartbeats
     score += Math.max(0, 5 - (Date.now() - w.lastHeartbeat) / 10_000);
+
+    // BOLT staking: tier-based priority bonus + reputation multiplier
+    const stakeBonus = STAKE_PRIORITY[w.stakeLevel ?? StakeTier.OPEN];
+
     // ERC-8004: boost by reputation score (0-100 mapped to 0-10 bonus)
+    // Multiplied by stake tier reputation multiplier
     if (w.reputationScore !== undefined) {
-      score += (w.reputationScore / 100) * 10;
+      score += (w.reputationScore / 100) * 10 * stakeBonus.repMultiplier;
     }
+
+    // Add stake tier priority bonus
+    score += stakeBonus.bonus;
+
     return score;
   }
 

@@ -117,3 +117,19 @@ The coordinator builds x402 payment configs for each endpoint:
 - `POST /v1/jobs/commit/cheap` — priced at CHEAP tier
 
 Payment is settled in USDC on the configured chain (Monad or Solana). See [x402 Payments](/docs/concepts/x402-payments) for the full protocol details.
+
+## Staking Tier Effects
+
+BOLT staking tiers affect which job tiers a worker can access:
+
+| Worker Stake Tier | CHEAP Jobs | FAST Jobs | PRIVATE Jobs |
+|------------------|------------|-----------|--------------|
+| Open (0 BOLT) | ✓ | — | With trust pairing |
+| Verified (100 BOLT) | ✓ | ✓ | With trust pairing |
+| Sentinel (1,000 BOLT) | ✓ | ✓ | With trust pairing |
+
+Open-tier workers only receive CHEAP tier jobs (tasks like summarization, classification, extraction). Verified and Sentinel workers can receive both CHEAP and FAST tier jobs, including LLM inference.
+
+Private jobs require trust pairing regardless of stake tier — staking doesn't bypass the privacy model.
+
+Sentinels also receive a share of protocol revenue from the 5% BOLT fee burned on every job.

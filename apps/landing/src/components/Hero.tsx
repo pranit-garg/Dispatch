@@ -1,43 +1,16 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useState, useEffect } from "react";
-
-const terminalLines = [
-  { text: "$ dispatch submit --task llm-summarize --chain monad --tier FAST", color: "text-text" },
-  { text: "→ Matched: node-7f3a | ERC-8004 rep: 4.82 | 847 jobs", color: "text-green" },
-  { text: "→ x402 payment: $0.010 USDC sent in request header", color: "text-green" },
-  { text: "→ Executing: LLM summarization (340ms)", color: "text-green" },
-  { text: "→ Receipt: ed25519 sig over output hash ✓", color: "text-green" },
-  { text: "→ Reputation: feedback posted onchain to Monad", color: "text-green font-bold" },
-];
+import { JobFlowDiagram } from "./hero/JobFlowDiagram";
 
 export function Hero() {
-  const [visibleLines, setVisibleLines] = useState(0);
-
-  useEffect(() => {
-    if (visibleLines >= terminalLines.length) return;
-    const timer = setInterval(() => {
-      setVisibleLines((prev) => {
-        if (prev >= terminalLines.length) {
-          clearInterval(timer);
-          return prev;
-        }
-        return prev + 1;
-      });
-    }, 600);
-    return () => clearInterval(timer);
-  }, [visibleLines]);
-
   return (
     <section className="relative overflow-hidden px-6 pt-20 pb-16 md:pt-32 md:pb-24">
       {/* Ambient glow — CSS only */}
       <div className="pointer-events-none absolute inset-0">
-        {/* Top-center warm glow */}
         <div className="absolute -top-40 left-1/2 -translate-x-1/2 h-[600px] w-[800px] rounded-full opacity-[0.07]"
           style={{ background: "radial-gradient(ellipse, #d4a246, transparent 70%)" }}
         />
-        {/* Subtle side accents */}
         <div className="absolute -top-20 -left-40 h-[400px] w-[400px] rounded-full opacity-[0.04]"
           style={{ background: "radial-gradient(circle, #d4a246, transparent 70%)" }}
         />
@@ -67,19 +40,18 @@ export function Hero() {
           <span className="bg-gradient-to-r from-[#d4a246] to-[#f0c674] bg-clip-text text-transparent">
             Dispatch
           </span>{" "}
-          any device into an AI compute network.
+          Turn idle devices into an AI compute network.
         </motion.h1>
 
-        {/* Subheadline */}
+        {/* Subheadline — updated for BOLT */}
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
           className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-text-muted md:text-xl"
         >
-          Phones and laptops earn USDC for running AI tasks. Workers build
-          portable, onchain reputation via ERC-8004. Agents pay per request
-          through x402 — no tokens, no staking, no middlemen.
+          Agents pay USDC. Workers earn BOLT. Every job builds onchain
+          reputation via ERC-8004. Live on Monad and Solana testnet.
         </motion.p>
 
         {/* CTA buttons */}
@@ -101,45 +73,23 @@ export function Hero() {
             Read the Docs
           </a>
           <a
-            href="#why"
+            href="#litepaper"
             className="inline-flex items-center gap-2 rounded-lg border border-border px-6 py-3 font-medium text-text-muted transition-colors hover:border-border-bright hover:text-text"
           >
             <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
-            See How It Works
+            View Litepaper
           </a>
         </motion.div>
 
-        {/* Animated terminal demo */}
+        {/* Animated job flow diagram */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.5 }}
-          className="mx-auto mt-12 max-w-[500px]"
         >
-          <div className="rounded-xl border border-border bg-[#0d0d12] overflow-hidden">
-            {/* Terminal top bar */}
-            <div className="flex items-center gap-2 px-4 py-3 border-b border-border">
-              <span className="h-3 w-3 rounded-full bg-[#ff5f57]" />
-              <span className="h-3 w-3 rounded-full bg-[#febc2e]" />
-              <span className="h-3 w-3 rounded-full bg-[#28c840]" />
-            </div>
-            {/* Terminal body */}
-            <div className="p-4 font-mono text-sm text-left min-h-[180px]">
-              {terminalLines.map((line, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: i < visibleLines ? 1 : 0 }}
-                  transition={{ duration: 0.3 }}
-                  className={`${line.color} ${i > 0 ? "mt-1" : ""}`}
-                >
-                  {line.text}
-                </motion.div>
-              ))}
-            </div>
-          </div>
+          <JobFlowDiagram />
         </motion.div>
       </div>
     </section>

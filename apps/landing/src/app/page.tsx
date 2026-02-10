@@ -1,10 +1,12 @@
 import { Navbar } from "@/components/Navbar";
 import { Hero } from "@/components/Hero";
+import { TrustStrip } from "@/components/TrustStrip";
+import { FounderVideo } from "@/components/FounderVideo";
 import { WhyDispatch } from "@/components/WhyDispatch";
-import { Architecture } from "@/components/Architecture";
-import { CodePreview } from "@/components/CodePreview";
-import { Chains } from "@/components/Chains";
+import { HowItWorks } from "@/components/HowItWorks";
+import { Tokenomics } from "@/components/Tokenomics";
 import { Seeker } from "@/components/Seeker";
+import { LiveDemo } from "@/components/LiveDemo";
 import { CTA } from "@/components/CTA";
 import { Footer } from "@/components/Footer";
 
@@ -13,11 +15,13 @@ export default function Home() {
     <main>
       <Navbar />
       <Hero />
+      <TrustStrip />
+      <FounderVideo />
       <WhyDispatch />
-      <Architecture />
-      <CodePreview />
-      <Chains />
+      <HowItWorks />
+      <Tokenomics />
       <Seeker />
+      <LiveDemo />
       <CTA />
       <Footer />
     </main>

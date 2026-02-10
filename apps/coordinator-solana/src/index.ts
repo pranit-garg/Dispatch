@@ -1,4 +1,4 @@
-import { createServer, startServer, configFromEnv, buildPaymentConfig, type ERC8004Config } from "@dispatch/coordinator-core";
+import { createServer, startServer, configFromEnv, buildPaymentConfig, type ERC8004Config, type StakeConfig } from "@dispatch/coordinator-core";
 import { getReputationSummary, giveFeedback, buildJobFeedback } from "@dispatch/erc8004";
 import { paymentMiddleware, x402ResourceServer } from "@x402/express";
 import { ExactSvmScheme } from "@x402/svm/exact/server";
@@ -82,7 +82,49 @@ if (erc8004Key) {
 const server = createServer(config, {
   ...(middleware && { paymentMiddleware: middleware }),
   ...(erc8004 && { erc8004 }),
+  ...(stakeConfig && { stakeConfig }),
 });
 startServer(config, server);
+
+// ── BOLT staking (optional) ────────────────────
+// Solana coordinator reads BOLT stake levels natively (SPL token balance).
+// Activated when BOLT_MINT env var is set.
+
+let stakeConfig: StakeConfig | undefined;
+
+const boltMint = process.env.BOLT_MINT;
+if (boltMint) {
+  const { StakeTier, STAKE_REQUIREMENTS } = await import("@dispatch/protocol");
+
+  stakeConfig = {
+    async readStakeLevel(pubkey: string) {
+      try {
+        // [DESIGNED] Read BOLT SPL token balance as stake proxy
+        // In production: read dedicated staking program accounts
+        const { Connection, PublicKey } = await import("@solana/web3.js");
+        const { getAssociatedTokenAddress } = await import("@solana/spl-token");
+        const connection = new Connection(
+          process.env.SOLANA_RPC ?? "https://api.devnet.solana.com",
+          "confirmed"
+        );
+        const mint = new PublicKey(boltMint);
+        const owner = new PublicKey(pubkey);
+        const ata = await getAssociatedTokenAddress(mint, owner);
+        const info = await connection.getTokenAccountBalance(ata);
+        const balance = Number(info.value.uiAmount ?? 0);
+
+        if (balance >= STAKE_REQUIREMENTS[StakeTier.SENTINEL]) return StakeTier.SENTINEL;
+        if (balance >= STAKE_REQUIREMENTS[StakeTier.VERIFIED]) return StakeTier.VERIFIED;
+        return StakeTier.OPEN;
+      } catch {
+        return StakeTier.OPEN;
+      }
+    },
+  };
+
+  console.log(`[Solana Coordinator] BOLT staking: ENABLED (mint: ${boltMint})`);
+} else {
+  console.log(`[Solana Coordinator] BOLT staking: DISABLED (no BOLT_MINT)`);
+}
 
 console.log(`[Solana Coordinator] x402 payment gating: ${testnetMode ? "DISABLED (testnet mode)" : "ENABLED"}`);

@@ -5,11 +5,16 @@ import { motion, AnimatePresence } from "framer-motion";
 
 const navLinks = [
   { label: "Why Dispatch", href: "#why" },
-  { label: "Architecture", href: "#architecture" },
-  { label: "Code", href: "#code" },
+  { label: "How It Works", href: "#how" },
+  { label: "BOLT", href: "#bolt" },
   {
     label: "Docs",
     href: "https://docs.dispatch.computer/docs",
+    external: true,
+  },
+  {
+    label: "Litepaper",
+    href: "https://github.com/pranit-garg/dispatch/blob/main/docs/litepaper.md",
     external: true,
   },
 ];

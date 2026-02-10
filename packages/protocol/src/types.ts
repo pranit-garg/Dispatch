@@ -110,3 +110,48 @@ export function getPrice(policy: Policy.FAST | Policy.CHEAP, jobType: JobType): 
   const key = `${policy}_${jobType}`;
   return PRICING_MAP[key] ?? "$0.001";
 }
+
+// ── BOLT Token ────────────────────────────────
+
+export enum StakeTier {
+  OPEN = "OPEN",
+  VERIFIED = "VERIFIED",
+  SENTINEL = "SENTINEL",
+}
+
+/** BOLT staking requirements per tier */
+export const STAKE_REQUIREMENTS: Record<StakeTier, number> = {
+  [StakeTier.OPEN]: 0,
+  [StakeTier.VERIFIED]: 100,
+  [StakeTier.SENTINEL]: 1000,
+};
+
+/** BOLT protocol constants */
+export const BOLT = {
+  DECIMALS: 9,
+  TOTAL_SUPPLY: "1_000_000_000",
+  PROTOCOL_FEE_BPS: 500, // 5%
+  SYMBOL: "BOLT",
+} as const;
+
+/** Matching priority bonus per stake tier */
+export const STAKE_PRIORITY: Record<StakeTier, { bonus: number; repMultiplier: number }> = {
+  [StakeTier.OPEN]: { bonus: 0, repMultiplier: 1.0 },
+  [StakeTier.VERIFIED]: { bonus: 5, repMultiplier: 1.5 },
+  [StakeTier.SENTINEL]: { bonus: 10, repMultiplier: 2.0 },
+};
+
+export interface BoltPayment {
+  job_id: string;
+  usdc_amount: string;
+  bolt_amount: string;
+  worker_pubkey: string;
+  protocol_fee: string;
+  tx_signature?: string;
+}
+
+export interface StakeInfo {
+  pubkey: string;
+  tier: StakeTier;
+  amount: string;
+}

@@ -1,0 +1,94 @@
+---
+title: BOLT Token
+description: BOLT is the settlement token that powers every Dispatch job — creating buy pressure, supply lock, and burns through 100% payment flow-through.
+---
+
+# BOLT Token
+
+**Pay in USDC. Earn in BOLT.**
+
+BOLT is the settlement layer of the Dispatch compute network. Agents pay stablecoins (USDC via x402) — their UX is unchanged. Under the hood, every USDC payment auto-converts to BOLT before reaching the worker.
+
+## BOLT-as-Settlement Model
+
+The key insight: instead of skimming a percentage fee, **100% of economic activity flows through BOLT**. If the network processes $1M in compute, $1M of buy pressure hits the BOLT token — not $50K.
+
+### Flow
+
+1. **Agent pays USDC** — Standard x402 payment header, same as always
+2. **Coordinator receives USDC** — x402 facilitator verifies payment
+3. **Auto-swap via Jupiter** — USDC → BOLT on Jupiter DEX (atomic, in the job commit flow)
+4. **Protocol fee** — 5% of BOLT permanently burned
+5. **Worker receives BOLT** — Remaining 95% deposited to worker's wallet
+
+Workers choose what to do with earned BOLT:
+- **Hold** — Price upside as network usage grows
+- **Stake** — Lock BOLT for priority matching and reputation multiplier
+- **Sell** — Swap back to USDC on Jupiter anytime
+
+## Value Accrual Flywheel
+
+Three sources of pressure work together:
+
+1. **Buy pressure** — Every job creates a USDC → BOLT swap on Jupiter. More jobs = more buying.
+2. **Supply lock** — Workers stake BOLT for better matching priority. Staked BOLT is locked, reducing circulating supply.
+3. **Burn** — 5% protocol fee is permanently burned on every job. Total supply decreases over time.
+
+Result: More jobs → more buying → less supply → price appreciation → workers earn more value per job → more workers → more capacity → more jobs.
+
+## Staking Tiers
+
+Staking is optional. Any worker can earn BOLT with zero stake — preserving the "100x lower barrier to entry" philosophy. Staking unlocks priority matching and reputation multipliers.
+
+| Tier | Required Stake | Job Access | Priority Bonus | Rep Multiplier | Additional |
+|------|---------------|------------|----------------|----------------|------------|
+| **Open** | 0 BOLT | CHEAP tier only | +0 | 1.0x | — |
+| **Verified** | 100 BOLT | All tiers | +5 | 1.5x | — |
+| **Sentinel** | 1,000 BOLT | All tiers | +10 | 2.0x | Protocol revenue share |
+
+Priority bonus adds directly to the worker's matching score. Reputation multiplier amplifies the ERC-8004 score contribution to matching.
+
+## Token Distribution
+
+Fixed supply of 1 billion BOLT. No inflation mechanism.
+
+| Category | Allocation | Vesting |
+|----------|-----------|---------|
+| Worker Rewards | 40% | 4-year emission, halving annually |
+| Team + Advisors | 15% | 1-year cliff, 3-year linear vest |
+| Treasury / DAO | 15% | Community governed, 6-month timelock |
+| Community / Airdrops | 10% | Early adopter incentives |
+| Liquidity | 10% | DEX pools, 1-year lock |
+| Hackathon Reserve | 5% | Testnet faucet and grants |
+| Strategic Partners | 5% | x402, Solana, ERC-8004 ecosystem |
+
+## Cross-Chain Design
+
+- **Solana** — BOLT is a native SPL token. Workers earn, stake, and trade where they already have wallets (Seeker, Phantom). Deeper consumer DeFi via Jupiter and Raydium.
+- **Monad** — Wrapped BOLT (ERC-20) for governance. Protocol proposals and voting happen on Monad alongside the ERC-8004 reputation system.
+- Both coordinators read Solana stake levels to determine worker tier.
+
+## Jupiter DEX Integration
+
+BOLT trades on Jupiter with real liquidity [DESIGNED]. The swap happens atomically in the job commit flow:
+
+1. x402 verifies USDC payment
+2. Coordinator calls Jupiter Quote API (`GET /v6/quote`)
+3. Builds swap transaction (USDC input, BOLT output, 0.5% slippage)
+4. Signs and submits as part of the job commit
+
+On devnet: BOLT SPL token deployed with seeded liquidity pool.
+On mainnet: BOLT trades with organic liquidity.
+
+## Implementation Status
+
+| Component | Status |
+|-----------|--------|
+| BOLT types + constants | [IMPLEMENTED] |
+| Staking tier matching in coordinator | [IMPLEMENTED] |
+| Jupiter swap integration | [DESIGNED] |
+| SPL token mint program | [DESIGNED] |
+| Dedicated staking program | [DESIGNED] |
+| Wrapped BOLT on Monad | [DESIGNED] |
+| Worker reward emissions | [FUTURE] |
+| Governance voting | [FUTURE] |

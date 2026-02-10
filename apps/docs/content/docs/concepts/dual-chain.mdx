@@ -1,0 +1,63 @@
+---
+title: Dual-Chain Architecture
+description: Why Dispatch runs on both Solana and Monad — each chain plays a distinct, irreplaceable role in the protocol.
+---
+
+# Dual-Chain Architecture
+
+Dispatch runs on two chains — not because "we support two chains" sounds good, but because each chain does something the other can't.
+
+## The Practical Split
+
+### Solana — The Economic Layer
+
+Solana handles money and mobile devices:
+
+- **BOLT token** — Native SPL token. Workers earn, stake, and trade BOLT on Solana.
+- **USDC payments** — x402 settlement via `ExactSvmScheme` on Solana devnet.
+- **150K+ Seeker phones** — Pre-ordered devices with Solana wallets (Phantom via MWA). These are the supply-side workers.
+- **Staking** — BOLT staking program for tier-based matching priority.
+- **DeFi** — Jupiter, Raydium, Phantom — immediate liquidity and trading for workers.
+- **Cost** — Sub-cent transaction fees make frequent stake/unstake operations practical.
+
+### Monad — The Trust Layer
+
+Monad handles identity and governance:
+
+- **ERC-8004 reputation** — The ERC-8004 standard is EVM-only Solidity. It can't run on Solana. Workers register as agents and build verifiable, onchain track records.
+- **Governance** — Wrapped BOLT (ERC-20) on Monad for protocol proposals and voting.
+- **Receipt anchoring** — Job receipt hashes anchored onchain for permanent, verifiable proof.
+- **Smart contract programmability** — Monad's EVM compatibility enables complex reputation logic (validation registries, slashing conditions, cross-protocol composability).
+
+## Why Not Just One Chain?
+
+You can't run ERC-8004 on Solana — it's EVM-only Solidity with a specific contract interface (`IIdentityRegistry`, `IReputationRegistry`). Porting it would mean forking the standard, losing compatibility with the broader ERC-8004 ecosystem.
+
+You can't reach 150K+ Seeker phones on Monad — they have Solana wallets, use Phantom, and interact via Mobile Wallet Adapter. Asking mobile workers to bridge to an EVM chain adds friction that kills adoption.
+
+## How It Works In Practice
+
+Both coordinators are independent:
+- **Monad coordinator** (port 4010): EVM x402 settlement, ERC-8004 reputation, reads BOLT stake cross-chain from Solana
+- **Solana coordinator** (port 4020): SVM x402 settlement, BOLT staking natively, reads BOLT stake directly
+
+Each has its own SQLite database, worker pool, and x402 payment configuration. A worker can connect to both simultaneously.
+
+### Cross-Chain Reads
+
+The Monad coordinator reads BOLT stake levels from Solana:
+- Queries Solana RPC for the worker's BOLT token balance
+- Maps balance to stake tier (Open / Verified / Sentinel)
+- Uses tier for matching priority, same as the Solana coordinator
+
+This is a read-only cross-chain operation — no bridge, no wrapped tokens for staking.
+
+### Contracts
+
+| Contract | Chain | Address |
+|----------|-------|---------|
+| Identity Registry | Monad Testnet | `0x8004A818BFB912233c491871b3d84c89A494BD9e` |
+| Reputation Registry | Monad Testnet | `0x8004B663056A597Dffe9eCcC1965A193B7388713` |
+| BOLT Token | Solana Devnet | [DESIGNED] |
+| BOLT Staking | Solana Devnet | [DESIGNED] |
+| Wrapped BOLT | Monad Testnet | [DESIGNED] |

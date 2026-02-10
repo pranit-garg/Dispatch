@@ -50,3 +50,18 @@ Multi-provider load balancing across coordinators and hosted providers.
 
 ### payment-refunds
 Refund x402 payments when no worker is available within timeout.
+
+### bolt-token
+Deploy BOLT SPL token on Solana devnet. Fixed 1B supply, 9 decimals.
+
+### bolt-staking
+Staking program with tier-based matching priority (Open/Verified/Sentinel).
+
+### bolt-jupiter
+Jupiter DEX integration for atomic USDC→BOLT settlement in job commit flow.
+
+### bolt-governance
+Wrapped BOLT (ERC-20) on Monad for governance votes and proposals.
+
+### bolt-distribution
+Worker reward emissions schedule with annual halving over 4 years.
