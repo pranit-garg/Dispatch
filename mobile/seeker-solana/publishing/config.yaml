@@ -8,7 +8,7 @@ publisher:
 app:
   name: Dispatch
   android_package: com.dispatch.seeker
-  address: 8S8ErMDFh9q18L9BVPQYsNM5vYczug3g6k4zfz5CfG3j
+  address: C7XQ66exyet7kaGyTyQHMvXeLCgqeaebdDjBtHBLXLJV
   urls:
     license_url: https://dispatch.computer/terms
     copyright_url: https://dispatch.computer/terms
@@ -18,8 +18,8 @@ app:
     - purpose: icon
       uri: media/app_icon.png
 release:
-  version: 1.0.0
-  address: Au9YeSiiVgt1gG261AwHxHp95pWhe7KpGcD661M5kbhn
+  version: 1.1.0
+  address: CnQAdgmbNPMr3yfwFfKt5n9KE3zKG2TWsfmS8rHVu4qV
   media:
     - purpose: icon
       width: 512
@@ -73,13 +73,13 @@ release:
 
         Currently in testnet/beta. Earnings are simulated, the protocol
         and cryptographic signing are real.
-      new_in_version: Initial release
+      new_in_version: Onchain reputation feedback with Monad transaction links, tappable block explorer URLs, fixed earnings display
       saga_features: ''
   android_details:
     cert_fingerprint: 41e018ef799059435c8e59c242263f5f15690ecf7a8d5f5e83f5bee0d4eb0f0d
     min_sdk: 24
-    version: 1.0.0
-    version_code: 1
+    version: 1.1.0
+    version_code: 2
     locales:
       - en-US
 solana_mobile_dapp_publisher_portal:
@@ -88,8 +88,8 @@ solana_mobile_dapp_publisher_portal:
     and cryptographic signing are real. Connect to the test coordinator
     at the default URL to see jobs arrive.
 lastSubmittedVersionOnChain:
-  address: Au9YeSiiVgt1gG261AwHxHp95pWhe7KpGcD661M5kbhn
+  address: CnQAdgmbNPMr3yfwFfKt5n9KE3zKG2TWsfmS8rHVu4qV
   version_code: 1
   apk_hash: LL1RVZ0q+gsUJrOZ9CVbxl66cphmbLwIO3OD3w9kIDU=
 lastUpdatedVersionOnStore:
-  address: Au9YeSiiVgt1gG261AwHxHp95pWhe7KpGcD661M5kbhn
+  address: CnQAdgmbNPMr3yfwFfKt5n9KE3zKG2TWsfmS8rHVu4qV

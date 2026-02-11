@@ -28,7 +28,7 @@ Agents need cheap inference. They need it on-demand. And they can't sign contrac
 
 [SHOW: dispatch.computer landing page, scroll through]
 
-Dispatch is the layer between agents and compute. An agent sends a standard HTTP POST with an x402 payment header. The coordinator matches it to an idle worker based on reputation and routing policy. The worker processes the job, signs a cryptographic receipt, and gets paid in USDC. That's it.
+Dispatch is the layer between agents and compute. An agent sends a standard HTTP POST with an x402 payment header. The coordinator matches it to an idle worker based on reputation and routing policy. The worker processes the job, signs a cryptographic receipt, and gets paid. That's it.
 
 [SHOW: CLI demo on the landing page, click "Run Command"]
 
@@ -36,7 +36,7 @@ Here's what that looks like in practice. One CLI command, one result, with a sig
 
 [SHOW: Seeker phone - open app, tap "Get Started", jobs start flowing within seconds]
 
-On mobile, it's even simpler. Open the app, tap once, and your phone starts processing AI jobs and earning BOLT.
+On mobile, it's even simpler. Open the app, tap once, and your phone connects to the coordinator over WebSocket and starts picking up compute tasks. Every result is signed with the device's own cryptographic key.
 
 **[1:30 - 2:00] WHY NOW**
 
@@ -56,9 +56,9 @@ Third, Solana Mobile Wallet Adapter and the Seeker. A whole fleet of phones that
 
 This is a working MVP. Dual-chain: Solana for payments and mobile, Monad for identity and reputation. 12,000+ lines of TypeScript. Full end-to-end flow running on testnet.
 
-Desktop workers running Ollama for real LLM inference. A mobile Android app picking up jobs over WebSocket. Ed25519 signed receipts on every result.
+Desktop workers running Ollama for real LLM inference. Mobile workers handling lightweight task jobs: summarize, classify, extract. Both signing ed25519 receipts on every result.
 
-Zero-friction mobile: one tap to start earning. Jobs flow within seconds of opening the app.
+Zero-friction mobile: one tap to start earning. The phone connects to our production coordinator on Railway, picks up jobs over WebSocket, processes them locally, and signs a cryptographic receipt for each one.
 
 And the entire codebase was written by AI agents, which seems fitting for a compute network built for AI agents.
 
@@ -103,29 +103,29 @@ Dispatch is a TypeScript monorepo. Six packages:
 
 **[0:50 - 1:30] LIVE E2E FLOW**
 
-[SHOW: terminal, split view with coordinator logs visible]
+[SHOW: terminal with CLI ready]
 
-Let me run a live job. I'll start the coordinator, connect a desktop worker, and submit a job from the CLI.
+Let me show you the two paths. First, the CLI. An agent submits a job with one command.
 
-[SHOW: run `dispatch agent run --type llm --prompt "Explain x402 in one sentence" --policy fast`]
+[SHOW: run `dispatch agent run --type summarize --prompt "Summarize the latest Solana validator update" --policy fast`]
 
-The agent submits the job via HTTP POST. The coordinator matches it to our connected worker based on routing policy. The worker runs the inference through Ollama, signs an ed25519 receipt over the output hash, and returns the result.
+That hits our production coordinator on Railway via HTTP POST. The coordinator finds an idle worker, routes the job over WebSocket, the worker processes it, signs an ed25519 receipt over the output hash, and returns the result. The receipt is cryptographic proof: you can verify it independently using the worker's public key.
 
 [SHOW: highlight the receipt in the response: hash, worker ID, signature]
 
-That receipt is cryptographic proof. You can verify it independently using the worker's public key. No trust required.
+[SHOW: split-screen - left: Seeker phone with jobs flowing, right: CLI submitting]
 
-[SHOW: split-screen - left: Seeker phone receiving and completing jobs, right: CLI submitting jobs and getting results]
-
-And here's the magic: while the CLI is submitting jobs, the Seeker phone on the right is picking them up and completing them. Earnings tick up in real-time.
+Now here's the Seeker phone. It's connected to the same coordinator over WebSocket. When I submit jobs from the CLI, the phone picks them up, processes them locally, signs a receipt, and sends the result back. You can see the job history updating and earnings ticking up in real-time.
 
 **[1:30 - 2:00] SOLANA INTEGRATION**
 
 [SHOW: live Seeker phone - open app, tap Get Started, watch jobs flow in and earnings tick up]
 
-On Solana, the mobile experience is zero-friction. Workers open the Seeker app, tap 'Get Started', and jobs start flowing within seconds. Device keys handle signing automatically. No wallet setup needed for the demo path, though Phantom wallet connection is available in Settings for power users.
+Here's what the mobile flow looks like from scratch. Open the app, tap "Get Started", and that's it. The app generates an ed25519 device key, connects to the coordinator over WebSocket, registers as a worker, and starts picking up jobs. No wallet setup, no configuration. Device keys handle all the cryptographic signing.
 
-Payment settlement uses x402 with USDC on Solana. The `ExactSvmScheme` handles the micropayment inline with the job request. Workers see USDC earnings accumulate in the app dashboard.
+For power users, Phantom wallet connection is available in Settings via Solana's Mobile Wallet Adapter.
+
+Payment settlement uses x402 with USDC on Solana. The `ExactSvmScheme` handles the micropayment inline with the job request.
 
 [SHOW: the coordinator code where x402 payment is verified]
 
@@ -141,6 +141,8 @@ Workers register as ERC-8004 agents and get an onchain identity NFT. After every
 
 The coordinator reads reputation scores when routing jobs. Higher reputation workers get priority. This creates a flywheel: do good work, build reputation, get better jobs.
 
+And now you can see the Monad transaction right here in the app. Tap any completed job, and there's the transaction hash with a link to the block explorer. That's real onchain proof that this job was completed and scored.
+
 The contracts are live on Monad testnet. Identity Registry at `0x8004A8...`, Reputation Registry at `0x8004B6...`.
 
 **[2:30 - 2:50] CLOSE**
@@ -149,7 +151,7 @@ The contracts are live on Monad testnet. Identity Registry at `0x8004A8...`, Rep
 
 That's Dispatch. A working dual-chain compute network with x402 payments, ERC-8004 reputation, and Solana mobile support.
 
-12,000 lines of TypeScript, MIT licensed, built entirely by AI agents. The code is on GitHub, the docs are at docs.dispatch.computer, and it's live on testnet right now.
+12,000 lines of TypeScript, MIT licensed, built entirely by AI agents. The coordinator is live on Railway, the mobile app is running on a real Seeker phone, and the whole thing is on GitHub. The code is at docs.dispatch.computer and it's running on testnet right now.
 
 ---
 
@@ -170,16 +172,81 @@ That's Dispatch. A working dual-chain compute network with x402 payments, ERC-80
 - **Length target**: 2:30 - 2:50
 - **Format**: screen recording only, voiceover narration
 - **Screen recordings needed**:
-  - VS Code with monorepo open
-  - Terminal running coordinator + worker + CLI
-  - Seeker phone: open app, tap Get Started, jobs auto-flowing, earnings ticking up
-  - Code highlights: x402 payment verification, ERC-8004 reputation read, ed25519 receipt signing
+  - VS Code with monorepo open (show file tree: packages/, apps/, mobile/)
+  - CLI submitting a job: `dispatch agent run --type summarize --prompt "..." --policy fast`
+  - Split-screen: CLI on left, Seeker phone on right (jobs flowing, earnings ticking)
+  - Seeker phone cold start: open app, tap Get Started, watch it auto-connect and receive first job
+  - Code highlights: receipt signing (ReceiptSigner.ts), coordinator matching (workerHub.ts), ERC-8004 reputation read
 - **Delivery**: clear, paced, like a conference talk. Pause when showing code.
 
 ### Key Messages to Hit
 1. "One HTTP request in, one verified result out"
 2. "Written entirely by AI agents" (Colosseum Agent Hackathon requirement)
 3. "x402 + ERC-8004 from the same team at Coinbase"
-4. "Working MVP, not a spec"
+4. "Working MVP, not a spec" (live coordinator on Railway, real phone)
 5. "Dual-chain: each chain does what it's best at"
 6. "Zero friction: open, tap, earn" (mobile demo)
+7. "Every result has a cryptographic receipt" (ed25519 signed proof)
+
+### What's Happening Under the Hood (reference for voiceover accuracy)
+- **Phone connects** via WebSocket to production coordinator on Railway
+- **Device key**: ed25519 keypair generated and stored locally on the phone
+- **Registration**: phone sends `register` message with public key + capabilities (`TASK`)
+- **Heartbeat**: phone pings coordinator every 10 seconds to stay alive
+- **Job flow**: coordinator sends `job_assign` over WebSocket, phone processes locally, sends `job_complete` with signed receipt back
+- **Task types**: summarize (text truncation + word count), classify (keyword sentiment analysis), extract_json (regex JSON extraction)
+- **Receipt**: SHA-256 hash of output, signed with device's ed25519 private key. Coordinator can verify independently.
+- **Desktop workers**: run real LLM inference via Ollama (heavier compute)
+- **Mobile workers**: run lightweight task processing (designed for phone hardware)
+- **Earnings**: 0.001 BOLT per completed task (testnet placeholder, real settlement via x402 USDC in production)
+
+---
+
+## Presenter Notes: Onchain Proof
+
+> Use these notes to speak accurately about what's real onchain during demos.
+
+### What to Say (Technically Accurate)
+
+- "Every completed job posts reputation feedback as a real Monad testnet transaction"
+- "You can see the transaction hash right here in the app, and tap it to open the Monad block explorer"
+- "The coordinator posts ERC-8004 feedback after every job, both demo and real jobs"
+- "This creates a verifiable onchain history of every compute interaction"
+
+### What's Real vs. Mock
+
+| Feature | Status | Details |
+|---------|--------|---------|
+| ERC-8004 reputation feedback | **REAL** | Every completed job posts a `giveFeedback` tx to Monad testnet |
+| Transaction hashes in app | **REAL** | The coordinator sends the tx hash back to the phone over WebSocket |
+| Block explorer links | **REAL** | Tapping opens `https://testnet.monadexplorer.com/tx/{hash}` showing the actual transaction |
+| ed25519 signed receipts | **REAL** | Every job result is signed with the worker's cryptographic key |
+| Worker identity (device keys) | **REAL** | Phone generates and stores its own ed25519 keypair |
+| WebSocket connection | **REAL** | Phone connects to production coordinator on Railway |
+| BOLT token earnings | **MOCK** | 0.001 BOLT per task (testnet placeholder, not a real token transfer) |
+| x402 USDC payments | **MOCK** | Disabled in testnet mode (the code exists but payment gating is off) |
+| BOLT staking tiers | **MOCK** | No BOLT_MINT set, staking reads are disabled |
+
+### How to Show Onchain Proof in the Demo
+
+1. Open the app on the Seeker, tap "Get Started"
+2. Let 2-3 jobs complete (takes ~10 seconds)
+3. Tap a completed job in the history list
+4. Point out the "Reputation Tx" row with the truncated hash
+5. Tap the hash to open the Monad testnet explorer
+6. Show the transaction on-screen: "This is a real Monad transaction, posted by our coordinator after the phone completed this job"
+7. Point out the `giveFeedback` function call, the agent ID, and the score in the transaction details
+
+### Explorer URLs
+
+- **Monad Testnet Explorer:** `https://testnet.monadexplorer.com`
+- **Transaction format:** `https://testnet.monadexplorer.com/tx/{hash}`
+- **Coordinator account:** Check Railway logs for `[Solana Coordinator] ERC-8004 reputation: ENABLED (account: 0x...)`
+
+### Key Talking Points for Judges
+
+1. "This isn't a mockup. Every job posts a real transaction to Monad testnet."
+2. "You can verify this independently. Open the explorer, paste the hash."
+3. "The reputation score feeds back into job routing. Higher reputation workers get priority."
+4. "We chose Monad for reputation because per-job feedback updates need fast, cheap finality."
+5. "The dual-chain architecture means each chain does what it's best at: Solana for payments and mobile, Monad for identity and reputation."

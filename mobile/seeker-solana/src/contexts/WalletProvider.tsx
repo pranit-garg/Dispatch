@@ -179,6 +179,11 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         setTotalEarnings(newTotal);
         void AsyncStorage.setItem(STORAGE_EARNINGS, String(newTotal));
       }),
+
+      wsService.on("feedbackPosted", () => {
+        // Force re-render by creating new array ref
+        setJobHistory((prev) => [...prev]);
+      }),
     ];
 
     return () => {

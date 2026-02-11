@@ -10,6 +10,7 @@ import {
   Text,
   Modal,
   Pressable,
+  Linking,
   StyleSheet,
 } from "react-native";
 import type { CompletedJob } from "../services/WebSocketService";
@@ -95,7 +96,35 @@ export function JobDetailModal({ job, visible, onClose }: JobDetailModalProps) {
                 </Text>
               </View>
             </View>
-            <DetailRow label="Earnings" value="1.0 BOLT" accent />
+            <DetailRow label="Earnings" value="0.001 BOLT" accent />
+
+            {/* Onchain transaction link */}
+            {job.feedbackTxHash ? (
+              <Pressable
+                style={styles.detailRow}
+                onPress={() => {
+                  if (job.feedbackExplorerUrl) {
+                    Linking.openURL(job.feedbackExplorerUrl);
+                  }
+                }}
+              >
+                <Text style={styles.detailLabel}>Reputation Tx</Text>
+                <View style={styles.txLinkContainer}>
+                  <Text style={styles.txHash}>
+                    {job.feedbackTxHash.slice(0, 6)}...{job.feedbackTxHash.slice(-4)}
+                  </Text>
+                  <Text style={styles.linkIcon}>↗</Text>
+                </View>
+              </Pressable>
+            ) : (
+              <View style={styles.detailRow}>
+                <Text style={styles.detailLabel}>Reputation Tx</Text>
+                <Text style={[styles.detailValue, { color: colors.textDim }]}>Pending...</Text>
+              </View>
+            )}
+            {job.feedbackNetwork && (
+              <DetailRow label="Network" value={job.feedbackNetwork === "monad-testnet" ? "Monad Testnet" : job.feedbackNetwork} />
+            )}
           </View>
         </Pressable>
       </Pressable>
@@ -208,5 +237,19 @@ const styles = StyleSheet.create({
   accentValue: {
     color: colors.accent,
     fontFamily: fontFamily.semibold,
+  },
+  txLinkContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.xs,
+  },
+  txHash: {
+    fontSize: fontSize.sm,
+    fontFamily: "monospace",
+    color: "#8b5cf6",
+  },
+  linkIcon: {
+    fontSize: fontSize.sm,
+    color: "#8b5cf6",
   },
 });

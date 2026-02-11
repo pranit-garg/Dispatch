@@ -27,7 +27,7 @@ export interface ERC8004Config {
   /** Fetch reputation score for a worker pubkey. Returns 0-100 or null if unknown. */
   getReputationScore: (pubkey: string) => Promise<number | null>;
   /** Post feedback after job completion. Fire-and-forget. */
-  postFeedback?: (workerPubkey: string, jobId: string, success: boolean) => Promise<void>;
+  postFeedback?: (workerPubkey: string, jobId: string, success: boolean) => Promise<string | void>;
 }
 
 // ── Worker state ───────────────────────────────
@@ -177,9 +177,22 @@ export class WorkerHub {
     const isDemoJob = msg.job_id.startsWith("demo-");
 
     if (isDemoJob) {
-      // Demo jobs have no DB row — skip DB update, just reset worker state
       worker.status = "idle";
       worker.activeJobId = null;
+      // Post ERC-8004 feedback even for demo jobs
+      if (this.erc8004?.postFeedback) {
+        this.erc8004.postFeedback(worker.pubkey, msg.job_id, true).then((txHash) => {
+          if (txHash && worker.ws.readyState === WebSocket.OPEN) {
+            this.send(worker.ws, {
+              type: "feedback_posted",
+              job_id: msg.job_id,
+              tx_hash: txHash,
+              network: "monad-testnet",
+              explorer_url: `https://testnet.monadexplorer.com/tx/${txHash}`,
+            });
+          }
+        }).catch(() => {});
+      }
       console.log(`[WorkerHub] Demo job ${msg.job_id} completed by worker ${worker.id}`);
       return;
     }
@@ -207,9 +220,17 @@ export class WorkerHub {
 
     // ERC-8004: post positive feedback (fire-and-forget)
     if (this.erc8004?.postFeedback) {
-      this.erc8004.postFeedback(worker.pubkey, msg.job_id, true).catch(() => {
-        /* ERC-8004 feedback failed — non-critical */
-      });
+      this.erc8004.postFeedback(worker.pubkey, msg.job_id, true).then((txHash) => {
+        if (txHash && worker.ws.readyState === WebSocket.OPEN) {
+          this.send(worker.ws, {
+            type: "feedback_posted",
+            job_id: msg.job_id,
+            tx_hash: txHash,
+            network: "monad-testnet",
+            explorer_url: `https://testnet.monadexplorer.com/tx/${txHash}`,
+          });
+        }
+      }).catch(() => {});
     }
 
     worker.status = "idle";

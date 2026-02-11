@@ -20,6 +20,7 @@ import {
   type HeartbeatAckMsg,
   type JobAssignMsg,
   type ErrorMsg,
+  type FeedbackPostedMsg,
   type CoordinatorToWorker,
   JobType,
   createRegisterMsg,
@@ -38,6 +39,10 @@ export interface CompletedJob {
   durationMs: number;
   success: boolean;
   error?: string;
+  // Onchain transaction links
+  feedbackTxHash?: string;
+  feedbackExplorerUrl?: string;
+  feedbackNetwork?: string;
 }
 
 type EventMap = {
@@ -47,6 +52,7 @@ type EventMap = {
   error: string;
   registered: string; // workerId
   earnings: number; // total earnings (mock)
+  feedbackPosted: { job_id: string; tx_hash: string; network: string; explorer_url: string };
 };
 
 type EventListener<K extends keyof EventMap> = (data: EventMap[K]) => void;
@@ -285,6 +291,9 @@ class WebSocketService {
       case "error":
         this.handleError(msg);
         break;
+      case "feedback_posted":
+        this.handleFeedbackPosted(msg as unknown as FeedbackPostedMsg);
+        break;
       default:
         console.warn("[WS] Unknown message type:", (msg as Record<string, unknown>).type);
     }
@@ -397,6 +406,16 @@ class WebSocketService {
   private handleError(msg: ErrorMsg): void {
     console.error(`[WS] Coordinator error [${msg.code}]: ${msg.message}`);
     this.emit("error", `[${msg.code}] ${msg.message}`);
+  }
+
+  private handleFeedbackPosted(msg: FeedbackPostedMsg): void {
+    const job = this._jobHistory.find(j => j.jobId === msg.job_id);
+    if (job) {
+      job.feedbackTxHash = msg.tx_hash;
+      job.feedbackExplorerUrl = msg.explorer_url;
+      job.feedbackNetwork = msg.network;
+      this.emit("feedbackPosted", msg);
+    }
   }
 
   // ── Heartbeat ──────────────────────────────

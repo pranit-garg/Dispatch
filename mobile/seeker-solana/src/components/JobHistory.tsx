@@ -81,6 +81,11 @@ function JobRow({
             { backgroundColor: job.success ? colors.success : colors.error },
           ]}
         />
+        {job.feedbackTxHash && (
+          <View style={styles.txBadge}>
+            <Text style={styles.txBadgeText}>TX</Text>
+          </View>
+        )}
         <Text style={styles.chevron}>{"\u203A"}</Text>
       </View>
     </Pressable>
@@ -205,5 +210,17 @@ const styles = StyleSheet.create({
   },
   separator: {
     height: spacing.sm,
+  },
+  txBadge: {
+    backgroundColor: "#8b5cf620",
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: borderRadius.sm,
+  },
+  txBadgeText: {
+    fontSize: fontSize.xs,
+    fontFamily: fontFamily.bold,
+    color: "#8b5cf6",
+    letterSpacing: 0.5,
   },
 });

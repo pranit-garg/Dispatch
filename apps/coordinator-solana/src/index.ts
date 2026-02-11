@@ -56,20 +56,17 @@ if (erc8004Key) {
       }
     },
 
-    async postFeedback(workerPubkey: string, jobId: string, success: boolean): Promise<void> {
-      try {
-        const agentId = pubkeyToAgentId(workerPubkey);
-        const entry = buildJobFeedback({
-          agentId,
-          score: success ? 80 : 20,
-          jobType: "COMPUTE",
-          endpoint: `http://localhost:${config.port}`,
-        });
-        await giveFeedback(entry, account);
-        console.log(`[ERC-8004] Posted ${success ? "positive" : "negative"} feedback for job ${jobId}`);
-      } catch (err) {
-        console.warn(`[ERC-8004] Failed to post feedback for job ${jobId}:`, err);
-      }
+    async postFeedback(workerPubkey: string, jobId: string, success: boolean): Promise<string> {
+      const agentId = pubkeyToAgentId(workerPubkey);
+      const entry = buildJobFeedback({
+        agentId,
+        score: success ? 80 : 20,
+        jobType: "COMPUTE",
+        endpoint: `http://localhost:${config.port}`,
+      });
+      const txHash = await giveFeedback(entry, account);
+      console.log(`[ERC-8004] Feedback tx: ${txHash} for job ${jobId}`);
+      return txHash;
     },
   };
 

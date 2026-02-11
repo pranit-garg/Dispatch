@@ -90,6 +90,14 @@ export interface ErrorMsg {
   message: string;
 }
 
+export interface FeedbackPostedMsg {
+  type: "feedback_posted";
+  job_id: string;
+  tx_hash: string;
+  network: string;
+  explorer_url: string;
+}
+
 // ── Union Types ────────────────────────────────
 
 export type WorkerToCoordinator =
@@ -103,6 +111,7 @@ export type CoordinatorToWorker =
   | RegisterAckMsg
   | HeartbeatAckMsg
   | JobAssignMsg
-  | ErrorMsg;
+  | ErrorMsg
+  | FeedbackPostedMsg;
 
 export type WSMessage = WorkerToCoordinator | CoordinatorToWorker;
