@@ -88,12 +88,12 @@ export function Tokenomics() {
           </p>
         </motion.div>
 
-        {/* Value accrual flywheel */}
+        {/* Value accrual flywheel — planned, visually subdued */}
         <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
+          initial={{ opacity: 0, scale: 0.97 }}
+          whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
-          className="mb-20"
+          className="mb-20 rounded-2xl border border-dashed border-border p-8 opacity-80"
         >
           <div className="mb-8 flex items-center justify-center gap-3 text-center">
             <h3 className="text-lg font-semibold text-text-muted">
@@ -140,14 +140,19 @@ export function Tokenomics() {
           </div>
         </motion.div>
 
-        <div className="mx-auto max-w-xl">
-          {/* Staking tiers */}
+        <div className="mx-auto max-w-xl rounded-2xl border border-dashed border-border p-8 opacity-80">
+          {/* Staking tiers — planned */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, scale: 0.97 }}
+            whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
           >
-            <h3 className="mb-6 text-lg font-semibold">Staking Tiers</h3>
+            <div className="mb-6 flex items-center gap-3">
+              <h3 className="text-lg font-semibold">Staking Tiers</h3>
+              <span className="rounded-full border border-accent/30 bg-accent/10 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-accent">
+                Planned
+              </span>
+            </div>
             <p className="mb-4 text-sm text-text-muted">
               Staking is optional. Anyone can earn with zero stake. Higher tiers
               unlock priority matching and reputation multipliers.
@@ -159,8 +164,8 @@ export function Tokenomics() {
               {tiers.map((tier, i) => (
                 <motion.div
                   key={tier.name}
-                  initial={{ opacity: 0, y: 10 }}
-                  whileInView={{ opacity: 1, y: 0 }}
+                  initial={{ opacity: 0, scale: 0.97 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.1 }}
                   className="rounded-xl border border-border bg-bg-card p-4"

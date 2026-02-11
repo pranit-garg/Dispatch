@@ -91,12 +91,12 @@ function PhoneMockup() {
           </div>
 
           {/* EarningsCard */}
-          <div className="mb-2 flex items-center rounded-xl border border-[#d4a246] bg-[#1a1a2e] p-2.5">
+          <div className="mb-2 flex items-center rounded-xl border border-[#34d399] bg-[#1a1a2e] p-2.5">
             <div className="flex-1">
               <div className="text-[7px] font-semibold uppercase tracking-wide text-[#64748b]">Earnings</div>
               <div className="flex items-baseline gap-1">
-                <span className="font-mono text-lg font-bold text-[#f8fafc]">124.8</span>
-                <span className="text-[10px] font-semibold text-[#e8b84a]">$BOLT</span>
+                <span className="font-mono text-lg font-bold text-[#f8fafc]">$12.40</span>
+                <span className="text-[10px] font-semibold text-[#34d399]">USDC</span>
               </div>
             </div>
             <div className="mx-3 h-8 w-px bg-[#2a2a45]" />

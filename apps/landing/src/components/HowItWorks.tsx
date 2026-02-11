@@ -60,10 +60,10 @@ export function HowItWorks() {
               {steps.map((step, i) => (
                 <motion.div
                   key={step.num}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
+                  initial={{ opacity: 0, x: -15 }}
+                  whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
-                  transition={{ delay: i * 0.1 }}
+                  transition={{ delay: i * 0.15 }}
                   className="relative flex flex-col items-center text-center"
                 >
                   <div className="relative z-10 mb-4 flex h-12 w-12 items-center justify-center rounded-full border border-border bg-bg-card font-mono text-sm font-bold text-accent-bright shadow-[0_0_20px_rgba(212,162,70,0.15)]">

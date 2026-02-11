@@ -59,6 +59,8 @@ export function CTA() {
           <span className="text-border">&middot;</span>
           <span className="font-mono">&lt;500ms latency</span>
           <span className="text-border">&middot;</span>
+          <span className="font-mono">12K+ lines</span>
+          <span className="text-border">&middot;</span>
           <span className="font-mono">MIT licensed</span>
         </motion.div>
 
