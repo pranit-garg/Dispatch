@@ -29,7 +29,7 @@ const steps = [
 export function HowItWorks() {
   return (
     <section
-      className="relative overflow-hidden border-t border-border px-6 py-20 md:py-28"
+      className="relative overflow-hidden section-divider px-6 py-20 md:py-28"
       id="how"
     >
       <div className="relative mx-auto max-w-5xl">

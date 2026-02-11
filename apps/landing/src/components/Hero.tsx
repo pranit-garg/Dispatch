@@ -66,7 +66,7 @@ export function Hero() {
             href="https://docs.dispatch.computer/docs/getting-started/quickstart"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 rounded-lg bg-accent px-6 py-3 font-medium text-[#0a0a0e] transition-colors hover:bg-accent-bright"
+            className="btn-glow inline-flex items-center gap-2 rounded-lg bg-accent px-6 py-3 font-medium text-[#0a0a0e] transition-colors hover:bg-accent-bright"
           >
             {/* Terminal icon */}
             <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

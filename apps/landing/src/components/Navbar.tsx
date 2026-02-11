@@ -24,12 +24,30 @@ const navLinks = [
   },
 ];
 
+const sectionIds = ["why", "how", "bolt"];
+
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState("");
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 10);
+    const onScroll = () => {
+      setScrolled(window.scrollY > 10);
+
+      // Scroll-spy: find which section is in view
+      let current = "";
+      for (const id of sectionIds) {
+        const el = document.getElementById(id);
+        if (el) {
+          const rect = el.getBoundingClientRect();
+          if (rect.top <= 150 && rect.bottom > 150) {
+            current = id;
+          }
+        }
+      }
+      setActiveSection(current);
+    };
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
@@ -51,21 +69,26 @@ export function Navbar() {
 
         {/* Desktop links */}
         <div className="hidden items-center gap-8 md:flex">
-          {navLinks.map((link) => (
-            <a
-              key={link.label}
-              href={link.href}
-              {...(link.external
-                ? { target: "_blank", rel: "noopener noreferrer" }
-                : {})}
-              className="text-sm text-text-muted transition-colors hover:text-text"
-            >
-              {link.label}
-              {link.external && (
-                <span className="ml-1 inline-block text-xs">&#8599;</span>
-              )}
-            </a>
-          ))}
+          {navLinks.map((link) => {
+            const isActive = !link.external && activeSection === link.href.replace("#", "");
+            return (
+              <a
+                key={link.label}
+                href={link.href}
+                {...(link.external
+                  ? { target: "_blank", rel: "noopener noreferrer" }
+                  : {})}
+                className={`text-sm transition-colors hover:text-text ${
+                  isActive ? "text-accent font-medium" : "text-text-muted"
+                }`}
+              >
+                {link.label}
+                {link.external && (
+                  <span className="ml-1 inline-block text-xs">&#8599;</span>
+                )}
+              </a>
+            );
+          })}
         </div>
 
         {/* Mobile hamburger */}

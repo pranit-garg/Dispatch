@@ -40,7 +40,7 @@ export function DualChain() {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.1 }}
-            className="flex-1 rounded-2xl border border-border bg-bg-card/50 p-6 md:p-8"
+            className="card-hover flex-1 rounded-2xl border border-border bg-bg-card/50 p-6 md:p-8 hover:border-green/40"
           >
             <div className="mb-6 flex items-center gap-4">
               <div className="flex h-14 w-14 items-center justify-center rounded-full border-2 border-green">
@@ -98,7 +98,7 @@ export function DualChain() {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.2 }}
-            className="flex-1 rounded-2xl border border-border bg-bg-card/50 p-6 md:p-8"
+            className="card-hover flex-1 rounded-2xl border border-border bg-bg-card/50 p-6 md:p-8 hover:border-accent/40"
           >
             <div className="mb-6 flex items-center gap-4">
               <div className="flex h-14 w-14 items-center justify-center rounded-full border-2 border-accent">

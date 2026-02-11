@@ -35,7 +35,7 @@ const flywheelSteps = [
 export function Tokenomics() {
   return (
     <section
-      className="relative overflow-hidden border-t border-border px-6 py-20 md:py-28"
+      className="relative overflow-hidden section-divider px-6 py-20 md:py-28"
       id="bolt"
     >
       <div className="relative mx-auto max-w-6xl">
@@ -171,7 +171,7 @@ export function Tokenomics() {
                   whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.1 }}
-                  className="rounded-xl border border-border bg-bg-card p-4"
+                  className="card-hover rounded-xl border border-border bg-bg-card p-4 hover:border-accent/30"
                 >
                   <div className="flex items-center justify-between mb-2">
                     <span className={`font-semibold ${tier.color}`}>

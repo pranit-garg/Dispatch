@@ -85,7 +85,7 @@ const liveItems = [
 export function WhyDispatch() {
   return (
     <section
-      className="relative overflow-hidden border-t border-border px-6 py-20 md:py-28"
+      className="relative overflow-hidden section-divider px-6 py-20 md:py-28"
       id="why"
     >
       <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
@@ -127,7 +127,7 @@ export function WhyDispatch() {
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              className="rounded-xl border border-accent/30 bg-gradient-to-br from-accent/[0.08] to-transparent p-8 md:flex md:items-start md:gap-6"
+              className="card-hover rounded-xl border border-accent/30 bg-gradient-to-br from-accent/[0.08] to-transparent p-8 md:flex md:items-start md:gap-6 hover:border-accent/50"
             >
               <div className="mb-4 flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-accent/30 bg-accent/10 text-accent md:mb-0">
                 {agentCards[0].icon}
@@ -148,7 +148,7 @@ export function WhyDispatch() {
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: (i + 1) * 0.1 }}
-                  className="rounded-xl border border-accent/20 bg-bg-card/40 p-6"
+                  className="card-hover rounded-xl border border-accent/20 bg-bg-card/40 p-6 hover:border-accent/40"
                 >
                   <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg border border-accent/30 bg-accent/10 text-accent">
                     {card.icon}
@@ -186,7 +186,7 @@ export function WhyDispatch() {
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.1 }}
-                  className="rounded-xl border border-green/20 bg-bg-card/40 p-6"
+                  className="card-hover rounded-xl border border-green/20 bg-bg-card/40 p-6 hover:border-green/40"
                 >
                   <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg border border-green/30 bg-green/10 text-green">
                     {card.icon}
@@ -203,7 +203,7 @@ export function WhyDispatch() {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.2 }}
-              className="rounded-xl border border-green/30 bg-gradient-to-b from-green/[0.06] to-transparent p-6 md:col-span-2 md:flex md:flex-col md:justify-center"
+              className="card-hover rounded-xl border border-green/30 bg-gradient-to-b from-green/[0.06] to-transparent p-6 md:col-span-2 md:flex md:flex-col md:justify-center hover:border-green/50"
             >
               <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg border border-green/30 bg-green/10 text-green">
                 {workerCards[2].icon}

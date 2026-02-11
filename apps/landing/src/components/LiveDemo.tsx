@@ -43,7 +43,7 @@ export function LiveDemo() {
   }, [submitted, visibleChars]);
 
   return (
-    <section className="border-t border-border px-6 py-20 md:py-28" id="demo">
+    <section className="section-divider px-6 py-20 md:py-28" id="demo">
       <div className="mx-auto max-w-5xl">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

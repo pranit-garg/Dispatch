@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 
 export function CTA() {
   return (
-    <section className="relative overflow-hidden border-t border-border px-6 py-20 md:py-28">
+    <section className="relative overflow-hidden section-divider px-6 py-20 md:py-28">
       {/* Top accent line */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 h-px w-1/3 bg-gradient-to-r from-transparent via-[#d4a246]/50 to-transparent" />
 
@@ -75,7 +75,7 @@ export function CTA() {
             href="https://docs.dispatch.computer/docs/getting-started/quickstart"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 rounded-lg bg-accent px-6 py-3 font-medium text-[#0a0a0e] transition-colors hover:bg-accent-bright"
+            className="btn-glow inline-flex items-center gap-2 rounded-lg bg-accent px-6 py-3 font-medium text-[#0a0a0e] transition-colors hover:bg-accent-bright"
           >
             {/* Terminal icon */}
             <svg

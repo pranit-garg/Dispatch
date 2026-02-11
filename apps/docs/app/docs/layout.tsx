@@ -10,7 +10,7 @@ export default function Layout({ children }: { children: ReactNode }) {
         title: (
           <span className="flex items-center gap-2 font-bold text-lg">
             <img src="/icon.png" alt="" width={20} height={20} className="rounded" />
-            <span><span className="text-[#d4a246]">Dis</span>patch</span>
+            <span>Dispatch</span>
           </span>
         ),
       }}
