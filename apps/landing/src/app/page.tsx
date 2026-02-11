@@ -3,6 +3,7 @@ import { Hero } from "@/components/Hero";
 import { HowItWorks } from "@/components/HowItWorks";
 import { WhyDispatch } from "@/components/WhyDispatch";
 import { LiveDemo } from "@/components/LiveDemo";
+import { NetworkStatus } from "@/components/NetworkStatus";
 import { Seeker } from "@/components/Seeker";
 import { DualChain } from "@/components/DualChain";
 import { Tokenomics } from "@/components/Tokenomics";
@@ -17,6 +18,7 @@ export default function Home() {
       <HowItWorks />
       <WhyDispatch />
       <LiveDemo />
+      <NetworkStatus />
       <Seeker />
       <DualChain />
       <Tokenomics />

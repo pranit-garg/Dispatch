@@ -8,16 +8,15 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.dispatch.computer"),
-  title: "Dispatch: Idle Compute for AI Agents | BOLT Token + x402 + ERC-8004",
+  title: "Dispatch: Cheap AI Compute for Agents, Passive Income for Workers",
   description:
-    "Dispatch routes AI jobs to idle phones and desktops. Agents pay USDC via x402, workers earn BOLT tokens and build onchain reputation through ERC-8004. Live on Monad and Solana testnet.",
+    "Dispatch is a compute service where AI agents submit jobs over HTTP and workers earn USDC from idle hardware. Ed25519 verified results. Live on Monad and Solana testnet.",
   keywords: [
     "Dispatch",
-    "BOLT token",
     "AI compute network",
+    "agent compute",
     "x402 micropayments",
     "ERC-8004",
-    "agent compute",
     "idle hardware",
     "DePIN",
     "Monad",
@@ -27,25 +26,25 @@ export const metadata: Metadata = {
     "onchain reputation",
     "Solana Seeker",
     "distributed computing",
-    "token economics",
+    "BOLT token",
   ],
   icons: { icon: "/favicon.svg", apple: "/favicon.svg" },
   alternates: {
     canonical: "https://www.dispatch.computer",
   },
   openGraph: {
-    title: "Dispatch: Turn Idle Devices into AI Compute Nodes",
+    title: "Dispatch: Cheap AI Compute for Agents",
     description:
-      "Your phone or laptop runs AI jobs while idle. Agents pay USDC, workers earn BOLT tokens and build onchain reputation via ERC-8004. Live on Monad and Solana testnet.",
+      "Dispatch is a compute service where AI agents submit jobs over HTTP and workers earn USDC from idle hardware. Ed25519 verified results. Live on Monad and Solana testnet.",
     type: "website",
     siteName: "Dispatch",
     url: "https://www.dispatch.computer",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Dispatch: Turn Idle Devices into AI Compute Nodes",
+    title: "Dispatch: Cheap AI Compute for Agents",
     description:
-      "Your phone or laptop runs AI jobs while idle. Agents pay USDC, workers earn BOLT tokens and build onchain reputation via ERC-8004. Live on Monad and Solana testnet.",
+      "Dispatch is a compute service where AI agents submit jobs over HTTP and workers earn USDC from idle hardware. Ed25519 verified results. Live on Monad and Solana testnet.",
     creator: "@pranit",
   },
 };
@@ -56,7 +55,7 @@ const jsonLd = {
   name: "Dispatch",
   alternateName: "Dispatch Compute Network",
   description:
-    "AI agents buy compute from idle phones and laptops. Agents pay USDC, workers earn BOLT tokens. Verified with ERC-8004 onchain reputation. Live on Monad and Solana.",
+    "Dispatch is a compute service where AI agents submit jobs over HTTP and workers earn USDC from idle hardware. Ed25519 verified results. Live on Monad and Solana testnet.",
   applicationCategory: "DeveloperApplication",
   operatingSystem: "Cross-platform",
   url: "https://www.dispatch.computer",
@@ -71,7 +70,7 @@ const jsonLd = {
     priceCurrency: "USD",
     description: "Open source, testnet MVP",
   },
-  keywords: "AI compute, BOLT token, x402, ERC-8004, Monad, Solana, DePIN, idle hardware, token economics",
+  keywords: "AI compute, x402, ERC-8004, Monad, Solana, DePIN, idle hardware, agent compute, BOLT token",
 };
 
 export default function RootLayout({

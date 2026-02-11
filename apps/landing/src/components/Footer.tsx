@@ -10,7 +10,7 @@ export function Footer() {
             </span>
           </div>
           <p className="mt-1 text-sm text-text-dim">
-            Pay in USDC. Earn in $BOLT. x402 payments. ERC-8004 reputation. Onchain and open source.
+            Cheap AI compute for agents. Passive income for workers. Open source.
           </p>
         </div>
 
