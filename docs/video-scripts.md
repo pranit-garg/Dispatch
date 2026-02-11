@@ -34,6 +34,10 @@ Dispatch is the layer between agents and compute. An agent sends a standard HTTP
 
 Here's what that looks like in practice. One CLI command, one result, with a signed receipt proving who computed what.
 
+[SHOW: Seeker phone - open app, tap "Get Started", jobs start flowing within seconds]
+
+On mobile, it's even simpler. Open the app, tap once, and your phone starts processing AI jobs and earning BOLT.
+
 **[1:30 - 2:00] WHY NOW**
 
 Three things make this possible today that didn't exist a year ago.
@@ -42,7 +46,7 @@ First, x402: Coinbase's protocol for HTTP-native micropayments. Agents can pay p
 
 Second, ERC-8004: onchain agent identity and reputation. Workers register, build track records, and agents discover trusted compute through the registry. We're on Monad for this because per-job reputation updates need fast, cheap finality.
 
-Third, Solana Mobile Wallet Adapter and the Seeker. A whole fleet of phones that can authenticate with a tap and earn while idle.
+Third, Solana Mobile Wallet Adapter and the Seeker. A whole fleet of phones that start earning with a single tap. No wallet setup, no configuration. Open, tap, earn.
 
 [SHOW: Seeker phone mockup from the landing page]
 
@@ -53,6 +57,8 @@ Third, Solana Mobile Wallet Adapter and the Seeker. A whole fleet of phones that
 This is a working MVP. Dual-chain: Solana for payments and mobile, Monad for identity and reputation. 12,000+ lines of TypeScript. Full end-to-end flow running on testnet.
 
 Desktop workers running Ollama for real LLM inference. A mobile Android app picking up jobs over WebSocket. Ed25519 signed receipts on every result.
+
+Zero-friction mobile: one tap to start earning. Jobs flow within seconds of opening the app.
 
 And the entire codebase was written by AI agents, which seems fitting for a compute network built for AI agents.
 
@@ -109,11 +115,15 @@ The agent submits the job via HTTP POST. The coordinator matches it to our conne
 
 That receipt is cryptographic proof. You can verify it independently using the worker's public key. No trust required.
 
+[SHOW: split-screen - left: Seeker phone receiving and completing jobs, right: CLI submitting jobs and getting results]
+
+And here's the magic: while the CLI is submitting jobs, the Seeker phone on the right is picking them up and completing them. Earnings tick up in real-time.
+
 **[1:30 - 2:00] SOLANA INTEGRATION**
 
-[SHOW: mobile app code or the Seeker mockup]
+[SHOW: live Seeker phone - open app, tap Get Started, watch jobs flow in and earnings tick up]
 
-On Solana, workers authenticate via Mobile Wallet Adapter. The Seeker app connects to Phantom, establishes a WebSocket to the coordinator, and picks up jobs automatically.
+On Solana, the mobile experience is zero-friction. Workers open the Seeker app, tap 'Get Started', and jobs start flowing within seconds. Device keys handle signing automatically. No wallet setup needed for the demo path, though Phantom wallet connection is available in Settings for power users.
 
 Payment settlement uses x402 with USDC on Solana. The `ExactSvmScheme` handles the micropayment inline with the job request. Workers see USDC earnings accumulate in the app dashboard.
 
@@ -162,7 +172,7 @@ That's Dispatch. A working dual-chain compute network with x402 payments, ERC-80
 - **Screen recordings needed**:
   - VS Code with monorepo open
   - Terminal running coordinator + worker + CLI
-  - Mobile app (emulator or real Seeker device)
+  - Seeker phone: open app, tap Get Started, jobs auto-flowing, earnings ticking up
   - Code highlights: x402 payment verification, ERC-8004 reputation read, ed25519 receipt signing
 - **Delivery**: clear, paced, like a conference talk. Pause when showing code.
 
@@ -172,3 +182,4 @@ That's Dispatch. A working dual-chain compute network with x402 payments, ERC-80
 3. "x402 + ERC-8004 from the same team at Coinbase"
 4. "Working MVP, not a spec"
 5. "Dual-chain: each chain does what it's best at"
+6. "Zero friction: open, tap, earn" (mobile demo)

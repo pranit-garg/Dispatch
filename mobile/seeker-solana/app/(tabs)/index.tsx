@@ -7,7 +7,7 @@
  * 3. WorkerToggle: big start/stop button
  * 4. JobHistory: recent completed jobs
  */
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect, useRef } from "react";
 import {
   View,
   ScrollView,
@@ -33,6 +33,19 @@ export default function DashboardScreen() {
   const worker = useWorker();
   const [refreshing, setRefreshing] = React.useState(false);
   const [connectingWallet, setConnectingWallet] = React.useState(false);
+  const hasAutoConnected = useRef(false);
+
+  useEffect(() => {
+    if (!worker.isLoading && worker.status === "disconnected" && !hasAutoConnected.current) {
+      hasAutoConnected.current = true;
+      const timer = setTimeout(() => {
+        worker.connect().catch((err) => {
+          console.warn("[Dashboard] Auto-connect failed:", err);
+        });
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [worker.isLoading, worker.status]);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);

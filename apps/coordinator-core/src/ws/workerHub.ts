@@ -174,6 +174,16 @@ export class WorkerHub {
     const worker = this.findByActiveJob(msg.job_id);
     if (!worker) return;
 
+    const isDemoJob = msg.job_id.startsWith("demo-");
+
+    if (isDemoJob) {
+      // Demo jobs have no DB row — skip DB update, just reset worker state
+      worker.status = "idle";
+      worker.activeJobId = null;
+      console.log(`[WorkerHub] Demo job ${msg.job_id} completed by worker ${worker.id}`);
+      return;
+    }
+
     // Atomic: store job result + receipt in a single transaction
     const txn = this.db.transaction(() => {
       this.db.prepare(`
@@ -211,10 +221,12 @@ export class WorkerHub {
     const worker = this.findByActiveJob(msg.job_id);
     if (!worker) return;
 
-    // Put job back in pending state for re-matching
-    this.db.prepare(`
-      UPDATE jobs SET status = 'pending', worker_pubkey = NULL WHERE id = ?
-    `).run(msg.job_id);
+    // Demo jobs have no DB row — just reset worker state
+    if (!msg.job_id.startsWith("demo-")) {
+      this.db.prepare(`
+        UPDATE jobs SET status = 'pending', worker_pubkey = NULL WHERE id = ?
+      `).run(msg.job_id);
+    }
 
     worker.status = "idle";
     worker.activeJobId = null;
@@ -235,12 +247,16 @@ export class WorkerHub {
     const worker = this.workers.get(workerId);
     if (!worker) return;
 
-    // Fail any active job
+    // Fail any active job (skip DB update for demo jobs)
     if (worker.activeJobId) {
-      this.db.prepare(`
-        UPDATE jobs SET status = 'failed', result = '{"error":"worker_disconnected"}' WHERE id = ?
-      `).run(worker.activeJobId);
-      console.log(`[WorkerHub] Worker ${workerId} disconnected with active job ${worker.activeJobId} — marked failed`);
+      if (worker.activeJobId.startsWith("demo-")) {
+        console.log(`[WorkerHub] Worker ${workerId} disconnected with active demo job ${worker.activeJobId} — skipped`);
+      } else {
+        this.db.prepare(`
+          UPDATE jobs SET status = 'failed', result = '{"error":"worker_disconnected"}' WHERE id = ?
+        `).run(worker.activeJobId);
+        console.log(`[WorkerHub] Worker ${workerId} disconnected with active job ${worker.activeJobId} — marked failed`);
+      }
     }
 
     this.workers.delete(workerId);
@@ -321,6 +337,28 @@ export class WorkerHub {
   assignJob(worker: TrackedWorker, jobId: string, msg: JobAssignMsg): void {
     worker.activeJobId = jobId;
     this.send(worker.ws, msg);
+  }
+
+  // ── Demo mode helpers ───────────────────────
+
+  /** Return all workers currently idle */
+  getIdleWorkers(): TrackedWorker[] {
+    const idle: TrackedWorker[] = [];
+    for (const w of this.workers.values()) {
+      if (w.status === "idle") idle.push(w);
+    }
+    return idle;
+  }
+
+  /** Inject a demo job directly to a specific worker. Returns true if sent. */
+  injectDemoJob(workerId: string, msg: JobAssignMsg): boolean {
+    const worker = this.workers.get(workerId);
+    if (!worker || worker.status !== "idle") return false;
+
+    worker.status = "busy";
+    worker.activeJobId = msg.job_id;
+    this.send(worker.ws, msg);
+    return true;
   }
 
   // ── Stats ──────────────────────────────────

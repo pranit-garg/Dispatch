@@ -1,0 +1,22 @@
+{
+  "mode": "both",
+  "coordinator": {
+    "monad": "http://localhost:4010",
+    "solana": "https://dispatch-solana-production.up.railway.app"
+  },
+  "worker": {
+    "keyPath": "./data/worker-key.json",
+    "capabilities": [
+      "LLM_INFER",
+      "TASK"
+    ],
+    "ollamaUrl": "http://localhost:11434",
+    "providerType": "DESKTOP"
+  },
+  "agent": {
+    "defaultChain": "solana",
+    "defaultPolicy": "AUTO",
+    "defaultPrivacy": "PUBLIC",
+    "userId": "cli-acc7466c"
+  }
+}

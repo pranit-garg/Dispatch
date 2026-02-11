@@ -50,6 +50,7 @@ interface WalletContextType {
   disconnectWallet: () => Promise<void>;
   switchSigningMode: (mode: SigningMode) => void;
   isLoading: boolean;
+  shouldAutoConnect: boolean;
 }
 
 const WalletContext = createContext<WalletContextType | null>(null);
@@ -64,7 +65,7 @@ const STORAGE_SIGNING_MODE = "dispatch_signing_mode";
 
 // Coordinator URL. Set via EXPO_PUBLIC_COORDINATOR_URL or change in Settings
 const DEFAULT_COORDINATOR_URL =
-  process.env.EXPO_PUBLIC_COORDINATOR_URL ?? "wss://dispatch-solana.up.railway.app";
+  process.env.EXPO_PUBLIC_COORDINATOR_URL ?? "wss://dispatch-solana-production.up.railway.app";
 
 // ── Provider ──────────────────────────────────
 
@@ -78,6 +79,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   const [signingMode, setSigningMode] = useState<SigningMode>("device-key");
   const [walletAddress, setWalletAddress] = useState<string | null>(null);
+  const [shouldAutoConnect, setShouldAutoConnect] = useState(false);
 
   // Signing providers (persisted across renders)
   const deviceKeyProvider = useRef(new DeviceKeyProvider()).current;
@@ -129,6 +131,11 @@ export function WalletProvider({ children }: { children: ReactNode }) {
 
         if (storedWorkerId) {
           setWorkerId(storedWorkerId);
+        }
+
+        const hasOnboarded = await AsyncStorage.getItem("dispatch_has_onboarded");
+        if (hasOnboarded === "true") {
+          setShouldAutoConnect(true);
         }
       } catch (err) {
         console.warn("[Wallet] Failed to load persisted state:", err);
@@ -271,6 +278,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         disconnectWallet,
         switchSigningMode,
         isLoading,
+        shouldAutoConnect,
       }}
     >
       {children}
