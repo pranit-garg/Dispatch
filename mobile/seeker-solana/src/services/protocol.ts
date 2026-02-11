@@ -132,6 +132,15 @@ export interface FeedbackPostedMsg {
   explorer_url: string;
 }
 
+export interface PaymentPostedMsg {
+  type: "payment_posted";
+  job_ids: string[];
+  tx_hash: string;
+  amount: string;
+  network: "solana-devnet";
+  explorer_url: string;
+}
+
 // ── Union Types ───────────────────────────────
 
 export type WorkerToCoordinator =
@@ -146,7 +155,8 @@ export type CoordinatorToWorker =
   | HeartbeatAckMsg
   | JobAssignMsg
   | ErrorMsg
-  | FeedbackPostedMsg;
+  | FeedbackPostedMsg
+  | PaymentPostedMsg;
 
 export type WSMessage = WorkerToCoordinator | CoordinatorToWorker;
 

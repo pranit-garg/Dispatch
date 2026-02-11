@@ -184,6 +184,11 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         // Force re-render by creating new array ref
         setJobHistory((prev) => [...prev]);
       }),
+
+      wsService.on("paymentPosted", () => {
+        // Force re-render by creating new array ref
+        setJobHistory((prev) => [...prev]);
+      }),
     ];
 
     return () => {

@@ -72,7 +72,7 @@ export async function giveFeedback(
     ],
   });
 
-  await publicClient().waitForTransactionReceipt({ hash });
+  await publicClient().waitForTransactionReceipt({ hash, timeout: 30_000 });
   return hash;
 }
 

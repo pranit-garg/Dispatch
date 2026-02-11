@@ -22,6 +22,13 @@ interface JobDetailModalProps {
   onClose: () => void;
 }
 
+const TASK_DISPLAY_NAMES: Record<string, string> = {
+  summarize: "Summary",
+  classify: "Classify",
+  extract_json: "Extract",
+  TASK: "AI Task",
+};
+
 // ── Helpers ────────────────────────────────────
 
 function formatTimestamp(ts: number): string {
@@ -70,7 +77,13 @@ export function JobDetailModal({ job, visible, onClose }: JobDetailModalProps) {
           {/* Detail rows */}
           <View style={styles.rows}>
             <DetailRow label="Job ID" value={truncateId(job.jobId)} mono />
-            <DetailRow label="Task Type" value={job.taskType} />
+            <DetailRow label="Task Type" value={TASK_DISPLAY_NAMES[job.taskType] ?? job.taskType} />
+            {job.prompt && (
+              <View style={styles.detailRow}>
+                <Text style={styles.detailLabel}>Task</Text>
+                <Text style={[styles.detailValue, styles.promptText]}>{job.prompt}</Text>
+              </View>
+            )}
             <DetailRow label="Timestamp" value={formatTimestamp(job.timestamp)} />
             <DetailRow label="Duration" value={formatDuration(job.durationMs)} />
             <View style={styles.detailRow}>
@@ -96,9 +109,35 @@ export function JobDetailModal({ job, visible, onClose }: JobDetailModalProps) {
                 </Text>
               </View>
             </View>
-            <DetailRow label="Earnings" value="0.001 BOLT" accent />
+            <DetailRow label="Earnings" value="0.001 BOLT (devnet)" accent />
 
-            {/* Onchain transaction link */}
+            {/* Solana BOLT payment transaction */}
+            {job.paymentTxHash ? (
+              <Pressable
+                style={styles.detailRow}
+                onPress={() => {
+                  if (job.paymentExplorerUrl) {
+                    Linking.openURL(job.paymentExplorerUrl);
+                  }
+                }}
+              >
+                <Text style={styles.detailLabel}>Payment Tx</Text>
+                <View style={styles.txLinkContainer}>
+                  <Text style={styles.solanaTxHash}>
+                    {job.paymentTxHash.slice(0, 6)}...{job.paymentTxHash.slice(-4)}
+                  </Text>
+                  <Text style={styles.solanaLinkIcon}>↗</Text>
+                </View>
+              </Pressable>
+            ) : (
+              <View style={styles.detailRow}>
+                <Text style={styles.detailLabel}>Payment Tx</Text>
+                <Text style={[styles.detailValue, { color: colors.textDim }]}>Batching...</Text>
+              </View>
+            )}
+            <DetailRow label="Payment Network" value="Solana Devnet" />
+
+            {/* Monad reputation transaction */}
             {job.feedbackTxHash ? (
               <Pressable
                 style={styles.detailRow}
@@ -123,7 +162,7 @@ export function JobDetailModal({ job, visible, onClose }: JobDetailModalProps) {
               </View>
             )}
             {job.feedbackNetwork && (
-              <DetailRow label="Network" value={job.feedbackNetwork === "monad-testnet" ? "Monad Testnet" : job.feedbackNetwork} />
+              <DetailRow label="Reputation Network" value={job.feedbackNetwork === "monad-testnet" ? "Monad Testnet" : job.feedbackNetwork} />
             )}
           </View>
         </Pressable>
@@ -251,5 +290,19 @@ const styles = StyleSheet.create({
   linkIcon: {
     fontSize: fontSize.sm,
     color: "#8b5cf6",
+  },
+  solanaTxHash: {
+    fontSize: fontSize.sm,
+    fontFamily: "monospace",
+    color: "#d4a246",
+  },
+  solanaLinkIcon: {
+    fontSize: fontSize.sm,
+    color: "#d4a246",
+  },
+  promptText: {
+    flex: 1,
+    textAlign: "right",
+    marginLeft: spacing.md,
   },
 });

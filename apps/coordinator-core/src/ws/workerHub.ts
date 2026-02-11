@@ -20,6 +20,7 @@ import {
   type JobAssignMsg,
   type ErrorMsg,
 } from "@dispatch/protocol";
+import type { BoltDistributor } from "../bolt/BoltDistributor.js";
 
 // ── ERC-8004 integration (optional) ─────────────
 
@@ -59,11 +60,13 @@ export class WorkerHub {
   private db: Database.Database;
   private erc8004?: ERC8004Config;
   private stakeConfig?: StakeConfig;
+  private boltDistributor?: BoltDistributor;
 
-  constructor(server: Server, db: Database.Database, erc8004?: ERC8004Config, stakeConfig?: StakeConfig) {
+  constructor(server: Server, db: Database.Database, erc8004?: ERC8004Config, stakeConfig?: StakeConfig, boltDistributor?: BoltDistributor) {
     this.db = db;
     this.erc8004 = erc8004;
     this.stakeConfig = stakeConfig;
+    this.boltDistributor = boltDistributor;
 
     // Upgrade HTTP → WebSocket on the same port
     this.wss = new WebSocketServer({ noServer: true });
@@ -191,8 +194,11 @@ export class WorkerHub {
               explorer_url: `https://testnet.monadexplorer.com/tx/${txHash}`,
             });
           }
-        }).catch(() => {});
+        }).catch((err) => { console.error(`[ERC-8004] Feedback tx FAILED for demo job ${msg.job_id}:`, err instanceof Error ? err.message : err); });
       }
+      // Queue BOLT payout for demo job
+      this.boltDistributor?.queuePayout(worker.pubkey, msg.job_id, 0.001);
+
       console.log(`[WorkerHub] Demo job ${msg.job_id} completed by worker ${worker.id}`);
       return;
     }
@@ -230,8 +236,11 @@ export class WorkerHub {
             explorer_url: `https://testnet.monadexplorer.com/tx/${txHash}`,
           });
         }
-      }).catch(() => {});
+      }).catch((err) => { console.error(`[ERC-8004] Feedback tx FAILED for job ${msg.job_id}:`, err instanceof Error ? err.message : err); });
     }
+
+    // Queue BOLT payout
+    this.boltDistributor?.queuePayout(worker.pubkey, msg.job_id, 0.001);
 
     worker.status = "idle";
     worker.activeJobId = null;
@@ -380,6 +389,15 @@ export class WorkerHub {
     worker.activeJobId = msg.job_id;
     this.send(worker.ws, msg);
     return true;
+  }
+
+  /** Send a message to a worker identified by pubkey (used for payment_posted notifications) */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  sendToWorker(pubkey: string, msg: any): void {
+    const worker = this.findByPubkey(pubkey);
+    if (worker) {
+      this.send(worker.ws, msg);
+    }
   }
 
   // ── Stats ──────────────────────────────────

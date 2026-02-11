@@ -25,8 +25,12 @@ export function EarningsCard({ totalEarnings, jobsCompleted }: EarningsCardProps
             <Text style={styles.amountInt}>{intPart}</Text>
             <Text style={styles.amountDec}>.{decPart}</Text>
           </View>
-          <Text style={styles.currency}>Testnet</Text>
+          <View>
+            <Text style={styles.currency}>BOLT</Text>
+            <Text style={styles.networkLabel}>(devnet)</Text>
+          </View>
         </View>
+        <Text style={styles.rateLabel}>0.001 per job</Text>
       </View>
 
       <View style={styles.divider} />
@@ -88,6 +92,18 @@ const styles = StyleSheet.create({
     fontSize: fontSize.md,
     fontFamily: fontFamily.semibold,
     color: colors.accentLight,
+  },
+  networkLabel: {
+    fontSize: fontSize.xs,
+    fontFamily: fontFamily.regular,
+    color: colors.textDim,
+    textAlign: "center",
+  },
+  rateLabel: {
+    fontSize: fontSize.xs,
+    fontFamily: fontFamily.regular,
+    color: colors.textDim,
+    marginTop: spacing.xs,
   },
   divider: {
     width: 1,

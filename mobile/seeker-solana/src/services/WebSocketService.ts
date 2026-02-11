@@ -21,6 +21,7 @@ import {
   type JobAssignMsg,
   type ErrorMsg,
   type FeedbackPostedMsg,
+  type PaymentPostedMsg,
   type CoordinatorToWorker,
   JobType,
   createRegisterMsg,
@@ -35,14 +36,19 @@ export type ConnectionStatus = "disconnected" | "connecting" | "connected" | "re
 export interface CompletedJob {
   jobId: string;
   taskType: string;
+  prompt?: string;
   timestamp: number;
   durationMs: number;
   success: boolean;
   error?: string;
-  // Onchain transaction links
+  // Monad reputation
   feedbackTxHash?: string;
   feedbackExplorerUrl?: string;
   feedbackNetwork?: string;
+  // Solana BOLT payment
+  paymentTxHash?: string;
+  paymentExplorerUrl?: string;
+  paymentAmount?: string;
 }
 
 type EventMap = {
@@ -53,6 +59,7 @@ type EventMap = {
   registered: string; // workerId
   earnings: number; // total earnings (mock)
   feedbackPosted: { job_id: string; tx_hash: string; network: string; explorer_url: string };
+  paymentPosted: { job_ids: string[]; tx_hash: string; amount: string; explorer_url: string };
 };
 
 type EventListener<K extends keyof EventMap> = (data: EventMap[K]) => void;
@@ -294,6 +301,9 @@ class WebSocketService {
       case "feedback_posted":
         this.handleFeedbackPosted(msg as unknown as FeedbackPostedMsg);
         break;
+      case "payment_posted":
+        this.handlePaymentPosted(msg as unknown as PaymentPostedMsg);
+        break;
       default:
         console.warn("[WS] Unknown message type:", (msg as Record<string, unknown>).type);
     }
@@ -382,6 +392,7 @@ class WebSocketService {
     const completedJob: CompletedJob = {
       jobId: msg.job_id,
       taskType: msg.payload.task_type ?? msg.job_type,
+      prompt: msg.payload.input,
       timestamp: Date.now(),
       durationMs,
       success,
@@ -416,6 +427,23 @@ class WebSocketService {
       job.feedbackNetwork = msg.network;
       this.emit("feedbackPosted", msg);
     }
+  }
+
+  private handlePaymentPosted(msg: PaymentPostedMsg): void {
+    for (const jobId of msg.job_ids) {
+      const job = this._jobHistory.find(j => j.jobId === jobId);
+      if (job) {
+        job.paymentTxHash = msg.tx_hash;
+        job.paymentExplorerUrl = msg.explorer_url;
+        job.paymentAmount = msg.amount + " BOLT";
+      }
+    }
+    this.emit("paymentPosted", {
+      job_ids: msg.job_ids,
+      tx_hash: msg.tx_hash,
+      amount: msg.amount,
+      explorer_url: msg.explorer_url,
+    });
   }
 
   // ── Heartbeat ──────────────────────────────

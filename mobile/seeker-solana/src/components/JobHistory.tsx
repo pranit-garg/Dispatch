@@ -41,6 +41,13 @@ function formatRelativeTime(timestamp: number): string {
   return `${days}d ago`;
 }
 
+const TASK_DISPLAY_NAMES: Record<string, string> = {
+  summarize: "Summary",
+  classify: "Classify",
+  extract_json: "Extract",
+  TASK: "AI Task",
+};
+
 const TASK_TYPE_COLORS: Record<string, string> = {
   summarize: "#d4a246",
   classify: "#8b5cf6",
@@ -65,12 +72,21 @@ function JobRow({
       onPress={onPress}
     >
       <View style={styles.leftSection}>
-        <View style={[styles.typeBadge, { backgroundColor: badgeColor + "20" }]}>
-          <Text style={[styles.typeText, { color: badgeColor }]}>
-            {job.taskType}
-          </Text>
+        <View style={styles.leftContent}>
+          <View style={styles.topRow}>
+            <View style={[styles.typeBadge, { backgroundColor: badgeColor + "20" }]}>
+              <Text style={[styles.typeText, { color: badgeColor }]}>
+                {TASK_DISPLAY_NAMES[job.taskType] ?? job.taskType}
+              </Text>
+            </View>
+            <Text style={styles.timestamp}>{formatRelativeTime(job.timestamp)}</Text>
+          </View>
+          {job.prompt && (
+            <Text style={styles.promptPreview} numberOfLines={1}>
+              {job.prompt.length > 50 ? job.prompt.slice(0, 50) + "..." : job.prompt}
+            </Text>
+          )}
         </View>
-        <Text style={styles.timestamp}>{formatRelativeTime(job.timestamp)}</Text>
       </View>
 
       <View style={styles.rightSection}>
@@ -84,6 +100,11 @@ function JobRow({
         {job.feedbackTxHash && (
           <View style={styles.txBadge}>
             <Text style={styles.txBadgeText}>TX</Text>
+          </View>
+        )}
+        {job.paymentTxHash && (
+          <View style={styles.paymentBadge}>
+            <Text style={styles.paymentBadgeText}>BOLT</Text>
           </View>
         )}
         <Text style={styles.chevron}>{"\u203A"}</Text>
@@ -118,7 +139,7 @@ export function JobHistory({ jobs, isConnected = false }: JobHistoryProps) {
       <EmptyState
         icon={"\u26A1"}
         title="Ready when you are"
-        subtitle="Tap Go Live to start earning"
+        subtitle="Tap Go Live to start earning BOLT"
       />
     );
   }
@@ -170,6 +191,21 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: spacing.md,
+    flex: 1,
+  },
+  leftContent: {
+    flex: 1,
+    gap: spacing.xs,
+  },
+  topRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.md,
+  },
+  promptPreview: {
+    fontSize: fontSize.xs,
+    fontFamily: fontFamily.regular,
+    color: colors.textDim,
   },
   rightSection: {
     flexDirection: "row",
@@ -221,6 +257,18 @@ const styles = StyleSheet.create({
     fontSize: fontSize.xs,
     fontFamily: fontFamily.bold,
     color: "#8b5cf6",
+    letterSpacing: 0.5,
+  },
+  paymentBadge: {
+    backgroundColor: "#d4a24620",
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: borderRadius.sm,
+  },
+  paymentBadgeText: {
+    fontSize: fontSize.xs,
+    fontFamily: fontFamily.bold,
+    color: "#d4a246",
     letterSpacing: 0.5,
   },
 });

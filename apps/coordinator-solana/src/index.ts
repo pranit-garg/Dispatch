@@ -1,4 +1,4 @@
-import { createServer, startServer, configFromEnv, buildPaymentConfig, type ERC8004Config, type StakeConfig } from "@dispatch/coordinator-core";
+import { createServer, startServer, configFromEnv, buildPaymentConfig, BoltDistributor, type BoltSettlementResult, type ERC8004Config, type StakeConfig } from "@dispatch/coordinator-core";
 import { getReputationSummary, giveFeedback, buildJobFeedback } from "@dispatch/erc8004";
 import { paymentMiddleware, x402ResourceServer } from "@x402/express";
 import { ExactSvmScheme } from "@x402/svm/exact/server";
@@ -118,12 +118,57 @@ if (boltMint) {
   console.log(`[Solana Coordinator] BOLT staking: DISABLED (no BOLT_MINT)`);
 }
 
+// ── BOLT distribution (optional) ─────────────────
+// Batched SPL token payouts to workers after job completion.
+// Activated when BOLT_MINT and BOLT_AUTHORITY_KEYPAIR env vars are set.
+
+let boltDistributor: BoltDistributor | undefined;
+
+// Late-bound reference — set after server creation so onSettled can access hub
+let serverRef: ReturnType<typeof createServer> | null = null;
+
+const boltAuthorityKey = process.env.BOLT_AUTHORITY_KEYPAIR;
+if (boltMint && boltAuthorityKey) {
+  const { Connection, Keypair, PublicKey } = await import("@solana/web3.js");
+  const bs58Module = "bs58";
+  const { default: bs58 } = await import(bs58Module);
+
+  const connection = new Connection(
+    process.env.SOLANA_RPC ?? "https://api.devnet.solana.com",
+    "confirmed"
+  );
+  const authority = Keypair.fromSecretKey(bs58.decode(boltAuthorityKey));
+
+  boltDistributor = new BoltDistributor({
+    connection,
+    authority,
+    boltMint: new PublicKey(boltMint),
+    onSettled(result: BoltSettlementResult) {
+      // Send payment_posted WS message to the worker via the hub
+      serverRef?.hub.sendToWorker(result.workerPubkey, {
+        type: "payment_posted",
+        job_ids: result.jobIds,
+        tx_hash: result.txHash,
+        amount: String(result.amount),
+        network: "solana-devnet",
+        explorer_url: `https://explorer.solana.com/tx/${result.txHash}?cluster=devnet`,
+      });
+    },
+  });
+
+  console.log(`[Solana Coordinator] BOLT distribution: ENABLED (authority: ${authority.publicKey.toBase58().slice(0, 8)}...)`);
+} else {
+  console.log(`[Solana Coordinator] BOLT distribution: DISABLED (need BOLT_MINT + BOLT_AUTHORITY_KEYPAIR)`);
+}
+
 // ── Start server ────────────────────────────────
 const server = createServer(config, {
   ...(middleware && { paymentMiddleware: middleware }),
   ...(erc8004 && { erc8004 }),
   ...(stakeConfig && { stakeConfig }),
+  ...(boltDistributor && { boltDistributor }),
 });
+serverRef = server; // Wire up late-bound reference for onSettled callback
 startServer(config, server);
 
 console.log(`[Solana Coordinator] x402 payment gating: ${testnetMode ? "DISABLED (testnet mode)" : "ENABLED"}`);

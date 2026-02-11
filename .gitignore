@@ -21,6 +21,7 @@ mobile/seeker-solana/publishing/.asset-manifest*.json
 
 # Demo/test keys
 .worker-key-demo.json
+bolt-mint-authority.json
 
 # Personal task tracker
 checklist.html

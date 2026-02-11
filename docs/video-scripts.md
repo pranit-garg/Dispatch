@@ -46,6 +46,8 @@ First, x402: Coinbase's protocol for HTTP-native micropayments. Agents can pay p
 
 Second, ERC-8004: onchain agent identity and reputation. Workers register, build track records, and agents discover trusted compute through the registry. We're on Monad for this because per-job reputation updates need fast, cheap finality.
 
+Every completed job now earns BOLT tokens, transferred on Solana devnet with a verifiable transaction. Both chains are doing real work, not just architecture claims.
+
 Third, Solana Mobile Wallet Adapter and the Seeker. A whole fleet of phones that start earning with a single tap. No wallet setup, no configuration. Open, tap, earn.
 
 [SHOW: Seeker phone mockup from the landing page]
@@ -117,17 +119,21 @@ That hits our production coordinator on Railway via HTTP POST. The coordinator f
 
 Now here's the Seeker phone. It's connected to the same coordinator over WebSocket. When I submit jobs from the CLI, the phone picks them up, processes them locally, signs a receipt, and sends the result back. You can see the job history updating and earnings ticking up in real-time.
 
-**[1:30 - 2:00] SOLANA INTEGRATION**
+**[1:30 - 2:00] LIVE TRANSACTIONS**
 
-[SHOW: live Seeker phone - open app, tap Get Started, watch jobs flow in and earnings tick up]
+[SHOW: Phone with jobs flowing, then tap a completed job]
 
-Here's what the mobile flow looks like from scratch. Open the app, tap "Get Started", and that's it. The app generates an ed25519 device key, connects to the coordinator over WebSocket, registers as a worker, and starts picking up jobs. No wallet setup, no configuration. Device keys handle all the cryptographic signing.
+Let me show you what's actually happening onchain. Every completed job triggers two real transactions.
 
-For power users, Phantom wallet connection is available in Settings via Solana's Mobile Wallet Adapter.
+First, BOLT tokens. The coordinator batches completed jobs and sends BOLT via SPL token transfer on Solana devnet. You can see the transaction hash right here, and tap to open the Solana explorer.
 
-Payment settlement uses x402 with USDC on Solana. The `ExactSvmScheme` handles the micropayment inline with the job request.
+[SHOW: Tap the Solana tx hash, explorer opens showing the SPL transfer]
 
-[SHOW: the coordinator code where x402 payment is verified]
+Second, reputation. The coordinator posts ERC-8004 feedback to Monad testnet. Every job builds onchain reputation for the worker.
+
+[SHOW: Tap the Monad tx hash, explorer opens showing giveFeedback call]
+
+Two chains, two purposes. Solana for payments. Monad for identity and reputation. Both real, both verifiable.
 
 **[2:00 - 2:30] MONAD INTEGRATION**
 
@@ -177,6 +183,7 @@ That's Dispatch. A working dual-chain compute network with x402 payments, ERC-80
   - Split-screen: CLI on left, Seeker phone on right (jobs flowing, earnings ticking)
   - Seeker phone cold start: open app, tap Get Started, watch it auto-connect and receive first job
   - Code highlights: receipt signing (ReceiptSigner.ts), coordinator matching (workerHub.ts), ERC-8004 reputation read
+  - Job detail modal showing both Solana payment tx + Monad reputation tx with explorer links
 - **Delivery**: clear, paced, like a conference talk. Pause when showing code.
 
 ### Key Messages to Hit
@@ -198,7 +205,7 @@ That's Dispatch. A working dual-chain compute network with x402 payments, ERC-80
 - **Receipt**: SHA-256 hash of output, signed with device's ed25519 private key. Coordinator can verify independently.
 - **Desktop workers**: run real LLM inference via Ollama (heavier compute)
 - **Mobile workers**: run lightweight task processing (designed for phone hardware)
-- **Earnings**: 0.001 BOLT per completed task (testnet placeholder, real settlement via x402 USDC in production)
+- **Earnings**: 0.001 BOLT per completed task, settled as real SPL token transfers on Solana devnet (batched every 5 jobs or 60s)
 
 ---
 
@@ -217,25 +224,26 @@ That's Dispatch. A working dual-chain compute network with x402 payments, ERC-80
 
 | Feature | Status | Details |
 |---------|--------|---------|
+| BOLT token transfers | **REAL** | SPL token on Solana devnet, batched every 5 jobs or 60s |
 | ERC-8004 reputation feedback | **REAL** | Every completed job posts a `giveFeedback` tx to Monad testnet |
-| Transaction hashes in app | **REAL** | The coordinator sends the tx hash back to the phone over WebSocket |
-| Block explorer links | **REAL** | Tapping opens `https://testnet.monadexplorer.com/tx/{hash}` showing the actual transaction |
+| Transaction hashes in app | **REAL** | Both Solana + Monad tx hashes with explorer links |
+| Block explorer links | **REAL** | Solana explorer (devnet) + Monad testnet explorer |
 | ed25519 signed receipts | **REAL** | Every job result is signed with the worker's cryptographic key |
 | Worker identity (device keys) | **REAL** | Phone generates and stores its own ed25519 keypair |
 | WebSocket connection | **REAL** | Phone connects to production coordinator on Railway |
-| BOLT token earnings | **MOCK** | 0.001 BOLT per task (testnet placeholder, not a real token transfer) |
-| x402 USDC payments | **MOCK** | Disabled in testnet mode (the code exists but payment gating is off) |
-| BOLT staking tiers | **MOCK** | No BOLT_MINT set, staking reads are disabled |
+| x402 payment gating | **DESIGNED** | Code exists, activates when TESTNET_MODE is removed |
+| BOLT staking tiers | **REAL** | Reads SPL token balance for tier matching |
 
 ### How to Show Onchain Proof in the Demo
 
 1. Open the app on the Seeker, tap "Get Started"
-2. Let 2-3 jobs complete (takes ~10 seconds)
-3. Tap a completed job in the history list
-4. Point out the "Reputation Tx" row with the truncated hash
-5. Tap the hash to open the Monad testnet explorer
-6. Show the transaction on-screen: "This is a real Monad transaction, posted by our coordinator after the phone completed this job"
-7. Point out the `giveFeedback` function call, the agent ID, and the score in the transaction details
+2. Let 5+ jobs complete
+3. Show earnings ticking up with "BOLT (devnet)" label
+4. Tap a completed job in the history list, show:
+   - Task prompt (what the phone actually computed)
+   - Reputation Tx: tap to open Monad explorer
+   - Payment Tx: tap to open Solana explorer
+5. "These are real transactions. You can verify them independently."
 
 ### Explorer URLs
 
