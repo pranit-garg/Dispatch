@@ -37,21 +37,22 @@ export function Hero() {
           transition={{ duration: 0.6, delay: 0.1 }}
           className="text-4xl font-bold leading-tight tracking-tight md:text-6xl lg:text-7xl"
         >
+          Cheap AI compute for agents.{" "}
           <span className="bg-gradient-to-r from-[#d4a246] to-[#f0c674] bg-clip-text text-transparent">
-            Dispatch
+            Passive income
           </span>{" "}
-          turns idle devices into an AI compute network.
+          for workers.
         </motion.h1>
 
-        {/* Subheadline, updated for BOLT */}
+        {/* Subheadline */}
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
           className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-text-muted md:text-xl"
         >
-          Agents pay USDC. Workers earn $BOLT. Every job builds onchain
-          reputation via ERC-8004.
+          Agents pay pennies per job via HTTP. Workers earn USDC from idle
+          phones and laptops. Every result is cryptographically verified.
         </motion.p>
 
         {/* CTA buttons */}
@@ -62,26 +63,28 @@ export function Hero() {
           className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center"
         >
           <a
-            href="https://docs.dispatch.computer/docs"
+            href="https://docs.dispatch.computer/docs/getting-started/quickstart"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 rounded-lg bg-accent px-6 py-3 font-medium text-[#0a0a0e] transition-colors hover:bg-accent-bright"
           >
+            {/* Terminal icon */}
             <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
-            Read the Docs
+            Run Your First Job
           </a>
           <a
-            href="https://github.com/pranit-garg/Dispatch/raw/main/docs/Dispatch_Litepaper.pdf"
+            href="https://docs.dispatch.computer/docs/guides/run-worker"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 rounded-lg border border-border px-6 py-3 font-medium text-text-muted transition-colors hover:border-border-bright hover:text-text"
           >
+            {/* Device/hardware icon */}
             <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
             </svg>
-            View Litepaper
+            Earn as a Worker
           </a>
         </motion.div>
 

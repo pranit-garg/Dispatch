@@ -1,11 +1,11 @@
 ---
 title: Quickstart
-description: Get a Dispatch coordinator, worker, and demo client running locally in 5 minutes with testnet mode.
+description: "Get started with Dispatch as an agent or worker. Submit your first job or start earning in 5 minutes."
 ---
 
 # Quickstart
 
-Get a coordinator, worker, and demo client running locally. This guide uses testnet mode (no real payments).
+Get started with Dispatch as an agent or worker. Submit your first job or start earning in 5 minutes.
 
 ## Prerequisites
 
@@ -51,7 +51,13 @@ pnpm build
 
 Compiles all packages and apps with TypeScript project references.
 
-## 4. Start the coordinator
+---
+
+## Agent Quickstart
+
+Submit your first compute job to the Dispatch network.
+
+### Start the coordinator
 
 Run the Monad testnet coordinator with payment gating disabled:
 
@@ -66,9 +72,9 @@ You should see:
 [Monad Coordinator] x402 payment gating: DISABLED (testnet mode)
 ```
 
-## 5. Start a worker
+### Start a worker
 
-In a second terminal, start the desktop worker:
+In a second terminal, start the desktop worker (you need at least one worker running to process jobs):
 
 ```bash
 pnpm --filter worker-desktop start
@@ -82,9 +88,9 @@ The worker generates an ed25519 keypair on first run (stored at `./data/worker-k
 [Desktop Worker] Registered as worker_abc123
 ```
 
-## 6. Submit a job
+### Submit a job
 
-### Option A: Using curl
+#### Option A: Using curl
 
 Get a quote, then submit:
 
@@ -110,7 +116,7 @@ curl -X POST http://localhost:4010/v1/jobs/commit/cheap \
 curl http://localhost:4010/v1/jobs/JOB_ID
 ```
 
-### Option B: Using the SDK
+#### Option B: Using the SDK
 
 ```typescript
 import { ComputeRouter } from "@dispatch/compute-router";
@@ -135,7 +141,7 @@ console.log(result.route);    // "decentralized:monad"
 console.log(result.price);    // "$0.001"
 ```
 
-## 7. Verify the receipt
+### Verify the receipt
 
 The poll response includes a cryptographic receipt signed by the worker:
 
@@ -151,9 +157,84 @@ The poll response includes a cryptographic receipt signed by the worker:
 }
 ```
 
+### Using the CLI (coming soon)
+
+```bash
+# Install the CLI
+npm install -g @dispatch/cli
+
+# Set up your config
+dispatch init
+
+# Submit an LLM job
+dispatch agent run --type llm --prompt "Explain quantum computing" --policy fast
+
+# Check job status
+dispatch agent status <job-id>
+```
+
+> The CLI is under active development. See the SDK examples above for the current recommended approach.
+
+---
+
+## Worker Quickstart
+
+Start earning from your idle hardware by processing Dispatch jobs.
+
+### Start the coordinator
+
+If you haven't already started the coordinator (see Agent Quickstart above):
+
+```bash
+TESTNET_MODE=true pnpm --filter coordinator-monad start
+```
+
+### Start your worker
+
+In a new terminal, start the desktop worker:
+
+```bash
+pnpm --filter worker-desktop start
+```
+
+The worker generates an ed25519 keypair on first run, connects via WebSocket, and registers with the coordinator.
+
+### Verify it's working
+
+You should see output like this:
+
+```
+[Desktop Worker] Public key: a1b2c3d4e5f6...
+[Desktop Worker] Connecting to ws://localhost:4010
+[Desktop Worker] Registered as worker_abc123
+```
+
+Once registered, the worker will automatically receive and process jobs from the coordinator. Submit a test job (see Agent Quickstart above) to confirm everything works end to end.
+
+### Using the CLI (coming soon)
+
+```bash
+# Install the CLI
+npm install -g @dispatch/cli
+
+# Set up as a worker
+dispatch init
+
+# Start earning
+dispatch worker start --coordinator http://localhost:4010
+
+# Check status
+dispatch worker status
+```
+
+> The CLI is under active development. See the pnpm commands above for the current recommended approach.
+
+---
+
 ## Next steps
 
 - [Architecture deep-dive](/docs/getting-started/architecture): understand how all the pieces fit together
-- [Run a Seeker](/docs/guides/run-seeker): use the SDK to submit jobs programmatically
+- [Submit a Job](/docs/guides/submit-job): full guide with all job types and payment options
+- [Run a Worker](/docs/guides/run-worker): detailed worker setup, trust pairing, and multi-chain config
 - [Trust Pairing](/docs/guides/trust-pairing): set up private job routing
 - [Monad chain config](/docs/chains/monad): configure x402 payments on Monad

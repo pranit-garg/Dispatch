@@ -10,7 +10,7 @@ const features = [
       </svg>
     ),
     title: "Passive Income, Zero Effort",
-    description: "Your phone picks up AI tasks over WebSocket while you sleep. $BOLT earnings accumulate automatically, no interaction needed.",
+    description: "Your phone picks up AI tasks over WebSocket while you sleep. USDC earnings accumulate automatically, no interaction needed.",
   },
   {
     icon: (
@@ -186,9 +186,9 @@ export function Seeker() {
               transition={{ delay: 0.1 }}
               className="mt-4 text-text-muted leading-relaxed"
             >
-              The Seeker app turns any idle phone into a compute node. Connect to
-              the network, execute AI tasks in the background, and build onchain
-              reputation, all from your pocket.
+              The Seeker app turns any idle phone into a worker node. Connect to
+              the network, process AI tasks in the background, and earn USDC for
+              every completed job. All from your pocket.
             </motion.p>
 
             <div className="mt-8 space-y-5">

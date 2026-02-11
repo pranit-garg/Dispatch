@@ -1,20 +1,31 @@
 ---
 title: Dispatch
-description: AI agents buy compute from idle hardware, pay in USDC via x402, and build onchain reputation with ERC-8004 on Monad and Solana.
+description: "Cheap AI compute for agents. Passive income for workers. Pay USDC per job, earn from idle hardware, every result cryptographically verified."
 ---
 
 # Dispatch
 
-Dispatch idle compute to AI agents.
+Cheap AI compute for agents. Passive income for workers.
 
-Dispatch is the layer where AI agents submit compute jobs over HTTP, pay with USDC via x402, and receive results from idle hardware (phones, laptops, and desktops). Workers build verifiable reputation through ERC-8004 on Monad. Live on Monad and Solana testnet.
+Dispatch is a compute service where AI agents submit jobs over HTTP and get verified results from idle phones, laptops, and desktops. Workers earn USDC for every completed job. Live on Monad and Solana testnet.
+
+## Quick links
+
+- **[Agent Quickstart](/docs/getting-started/quickstart): submit your first job in 5 minutes**
+- **[Worker Setup](/docs/guides/run-worker): start earning from your hardware**
+- [Architecture](/docs/getting-started/architecture): full system deep-dive
+- [REST API](/docs/api/rest-api): complete endpoint reference
+- [SDK Reference](/docs/api/sdk): `ComputeRouter` usage
+- [ERC-8004 Reputation](/docs/concepts/erc8004-reputation): onchain worker identity and trust
+- [BOLT Token](/docs/concepts/bolt-token): settlement, staking, and value accrual
+- [Dual-Chain Architecture](/docs/concepts/dual-chain): why Solana + Monad
 
 ## Three pillars
 
-- **Agent-native compute.** AI agents are the customers. They submit HTTP requests with x402 payment headers. No SDK required, no wallet setup. Just HTTP and USDC.
-- **Idle hardware as supply.** Phones and desktops earn BOLT by processing AI inference while idle. The network scales with devices people already own.
+- **Agent-native compute.** Agents submit HTTP requests with x402 payment headers. No SDK required. Just HTTP and USDC.
+- **Idle hardware as supply.** Phones and desktops earn USDC by processing AI inference while idle. The network scales with devices people already own.
 - **Onchain trust.** Workers register as ERC-8004 agents on Monad. Every job builds verifiable reputation. Ed25519 receipts prove every result.
-- **BOLT-powered settlement.** Every job auto-converts USDC to BOLT via Jupiter. Workers earn BOLT with upside: hold, stake for priority, or sell. 5% protocol fee burned per job.
+- **BOLT-powered settlement (upcoming).** When BOLT launches, every job will auto-convert USDC to BOLT via Jupiter. Workers earn BOLT with upside: hold, stake for priority, or sell. 5% protocol fee burned per job.
 
 ## What it does
 
@@ -23,7 +34,7 @@ Dispatch is the layer where AI agents submit compute jobs over HTTP, pay with US
 - **Workers** execute jobs and return signed receipts
 - **x402** settles stablecoin payments automatically on every job commit
 - **ERC-8004** tracks worker identity and reputation on Monad
-- **BOLT** settles worker payments via Jupiter DEX with built-in value accrual
+- **BOLT** (upcoming): planned settlement token with value accrual via Jupiter DEX
 
 ## Architecture at a glance
 
@@ -62,14 +73,3 @@ apps/
   seeker-simulator/   → Mobile worker simulator (TASK only)
   dispatch-demo/      → Demo CLI for end-to-end testing
 ```
-
-## Quick links
-
-- [Quickstart](/docs/getting-started/quickstart): get running in 5 minutes
-- [Architecture](/docs/getting-started/architecture): full system deep-dive
-- [REST API](/docs/api/rest-api): complete endpoint reference
-- [SDK Reference](/docs/api/sdk): `ComputeRouter` usage
-- [Run a Worker](/docs/guides/run-worker): join the network as a worker
-- [ERC-8004 Reputation](/docs/concepts/erc8004-reputation): onchain worker identity and trust
-- [BOLT Token](/docs/concepts/bolt-token): settlement, staking, and value accrual
-- [Dual-Chain Architecture](/docs/concepts/dual-chain): why Solana + Monad

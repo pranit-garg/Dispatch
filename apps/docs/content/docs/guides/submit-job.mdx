@@ -197,6 +197,36 @@ The SDK:
 4. Polls every 500ms until complete
 5. Returns a `ComputeResult` with output, route, price, latency, and receipt
 
+## Using the CLI (Coming Soon)
+
+The Dispatch CLI wraps the full quote-commit-poll flow into single commands:
+
+### LLM inference
+
+```bash
+dispatch agent run --type llm --prompt "Explain quantum computing in one paragraph." --policy fast
+```
+
+### Task job
+
+```bash
+dispatch agent run --type task --input "This product is amazing and works perfectly." --task-type classify
+```
+
+### Get a quote without submitting
+
+```bash
+dispatch agent quote --type llm --policy fast
+```
+
+### Check job status
+
+```bash
+dispatch agent status <job-id> --poll
+```
+
+> The CLI is under active development. Use the SDK or curl examples above for production workloads.
+
 ## Job types reference
 
 ### LLM_INFER

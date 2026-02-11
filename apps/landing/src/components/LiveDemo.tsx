@@ -3,34 +3,19 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 
-const requestJson = `{
-  "job_type": "TASK",
-  "payload": {
-    "task_type": "summarize",
-    "input": "Dispatch is a decentralized compute..."
-  },
-  "policy": "FAST",
-  "privacy_class": "PUBLIC"
-}`;
+const cliCommand = `$ dispatch agent run \\
+    --type llm \\
+    --prompt "Summarize quantum computing in one paragraph" \\
+    --policy fast`;
 
-const responseJson = `{
-  "job_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-  "status": "completed",
-  "output": {
-    "summary": "Decentralized compute network for AI agents...",
-    "word_count": 42
-  },
-  "receipt": {
-    "provider_pubkey": "7f3a92c1...",
-    "output_hash": "6fa2faf...",
-    "signature": "ed25519..."
-  },
-  "bolt_payment": {
-    "usdc_amount": "$0.010",
-    "bolt_earned": "12.4 $BOLT",
-    "protocol_fee": "0.65 $BOLT burned"
-  }
-}`;
+const cliResponse = `Quantum computing leverages quantum mechanical phenomena
+like superposition and entanglement to perform computations
+that would be impractical for classical computers...
+
+  Route:   decentralized:monad
+  Price:   $0.010
+  Latency: 342ms
+  Receipt: hash=6fa2faf... worker=7f3a92c1...`;
 
 export function LiveDemo() {
   const [submitted, setSubmitted] = useState(false);
@@ -50,9 +35,9 @@ export function LiveDemo() {
 
   useEffect(() => {
     if (!submitted) return;
-    if (visibleChars >= responseJson.length) return;
+    if (visibleChars >= cliResponse.length) return;
     const timer = setTimeout(() => {
-      setVisibleChars((prev) => Math.min(prev + 8, responseJson.length));
+      setVisibleChars((prev) => Math.min(prev + 8, cliResponse.length));
     }, 10);
     return () => clearTimeout(timer);
   }, [submitted, visibleChars]);
@@ -66,10 +51,9 @@ export function LiveDemo() {
           viewport={{ once: true }}
           className="mb-16 text-center"
         >
-          <h2 className="text-3xl font-bold md:text-4xl">Try the API</h2>
+          <h2 className="text-3xl font-bold md:text-4xl">Try the CLI</h2>
           <p className="mx-auto mt-4 max-w-xl text-text-muted">
-            Submit a job, get a verified result with BOLT settlement.
-            One HTTP request is all it takes.
+            Submit a job, get a verified result. One command is all it takes.
           </p>
         </motion.div>
 
@@ -81,12 +65,16 @@ export function LiveDemo() {
             viewport={{ once: true }}
           >
             <div className="mb-3 flex items-center gap-2">
-              <span className="rounded bg-accent/20 px-2 py-0.5 text-xs font-bold text-accent-bright">POST</span>
-              <span className="font-mono text-sm text-text-muted">/v1/jobs/commit/fast</span>
+              <span className="rounded bg-[#333] px-2 py-0.5 text-xs font-bold font-mono text-emerald-400">
+                CLI
+              </span>
+              <span className="font-mono text-sm text-text-muted">
+                dispatch agent run
+              </span>
             </div>
             <div className="code-block relative p-5">
               <pre className="text-xs leading-relaxed">
-                <code className="text-text-muted">{requestJson}</code>
+                <code className="text-text-muted">{cliCommand}</code>
               </pre>
             </div>
             <button
@@ -96,13 +84,24 @@ export function LiveDemo() {
             >
               {loading ? (
                 <span className="flex items-center justify-center gap-2">
-                  <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
-                    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" strokeDasharray="30 70" />
+                  <svg
+                    className="h-4 w-4 animate-spin"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                  >
+                    <circle
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="3"
+                      strokeDasharray="30 70"
+                    />
                   </svg>
                   Matching worker...
                 </span>
               ) : (
-                "Submit Job"
+                "Run Command"
               )}
             </button>
           </motion.div>
@@ -114,24 +113,30 @@ export function LiveDemo() {
             viewport={{ once: true }}
           >
             <div className="mb-3 flex items-center gap-2">
-              <span className={`rounded px-2 py-0.5 text-xs font-bold ${
-                submitted ? "bg-green/20 text-green" : "bg-bg-card text-text-dim"
-              }`}>
+              <span
+                className={`rounded px-2 py-0.5 text-xs font-bold ${
+                  submitted
+                    ? "bg-green/20 text-green"
+                    : "bg-bg-card text-text-dim"
+                }`}
+              >
                 {submitted ? "200 OK" : "Waiting..."}
               </span>
-              <span className="font-mono text-sm text-text-muted">Response</span>
+              <span className="font-mono text-sm text-text-muted">Output</span>
             </div>
             <div className="code-block relative p-5 min-h-[300px]">
               {submitted ? (
-                <pre className="text-xs leading-relaxed">
-                  <code className="text-green">{responseJson.slice(0, visibleChars)}</code>
-                  {visibleChars < responseJson.length && (
-                    <span className="animate-pulse text-accent">▌</span>
+                <pre className="text-xs leading-relaxed whitespace-pre-wrap">
+                  <code className="text-green">
+                    {cliResponse.slice(0, visibleChars)}
+                  </code>
+                  {visibleChars < cliResponse.length && (
+                    <span className="animate-pulse text-accent">&#9612;</span>
                   )}
                 </pre>
               ) : (
                 <div className="flex h-full min-h-[260px] items-center justify-center text-text-dim text-sm">
-                  Click &ldquo;Submit Job&rdquo; to see the response
+                  Click &ldquo;Run Command&rdquo; to see the output
                 </div>
               )}
             </div>
@@ -148,21 +153,31 @@ export function LiveDemo() {
         >
           <div className="flex items-center gap-2 rounded-full border border-border px-4 py-2">
             <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none">
-              <path d="M12 3C9.40096 3 3 9.40082 3 12C3 14.5991 9.40096 21 12 21C14.5989 21 21 14.599 21 12C21 9.40093 14.599 3 12 3ZM10.5975 17.1464C9.5015 16.8478 6.55489 11.6934 6.85359 10.5974C7.15229 9.50142 12.3065 6.55489 13.4025 6.85357C14.4985 7.15223 17.4451 12.3065 17.1464 13.4025C16.8477 14.4985 11.6934 17.4451 10.5975 17.1464Z" fill="#836EF9"/>
+              <path
+                d="M12 3C9.40096 3 3 9.40082 3 12C3 14.5991 9.40096 21 12 21C14.5989 21 21 14.599 21 12C21 9.40093 14.599 3 12 3ZM10.5975 17.1464C9.5015 16.8478 6.55489 11.6934 6.85359 10.5974C7.15229 9.50142 12.3065 6.55489 13.4025 6.85357C14.4985 7.15223 17.4451 12.3065 17.1464 13.4025C16.8477 14.4985 11.6934 17.4451 10.5975 17.1464Z"
+                fill="#836EF9"
+              />
             </svg>
             <span className="text-sm text-text-muted">Monad</span>
           </div>
           <div className="flex items-center gap-2 rounded-full border border-border px-4 py-2">
             <svg viewBox="0 0 32 32" className="h-4 w-4" fill="none">
               <defs>
-                <linearGradient id="sol-g" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
-                  <stop stopColor="#9945FF"/>
-                  <stop offset="1" stopColor="#14F195"/>
+                <linearGradient
+                  id="sol-g"
+                  x1="0"
+                  y1="0"
+                  x2="32"
+                  y2="32"
+                  gradientUnits="userSpaceOnUse"
+                >
+                  <stop stopColor="#9945FF" />
+                  <stop offset="1" stopColor="#14F195" />
                 </linearGradient>
               </defs>
-              <path d="M6 22l3-3h17l-3 3H6z" fill="url(#sol-g)"/>
-              <path d="M6 13l3 3h17l-3-3H6z" fill="url(#sol-g)"/>
-              <path d="M6 10l3-3h17l-3 3H6z" fill="url(#sol-g)"/>
+              <path d="M6 22l3-3h17l-3 3H6z" fill="url(#sol-g)" />
+              <path d="M6 13l3 3h17l-3-3H6z" fill="url(#sol-g)" />
+              <path d="M6 10l3-3h17l-3 3H6z" fill="url(#sol-g)" />
             </svg>
             <span className="text-sm text-text-muted">Solana</span>
           </div>

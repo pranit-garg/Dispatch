@@ -140,3 +140,33 @@ The public key (hex-encoded) is the worker's identity across the network. It app
 | `OLLAMA_BASE_URL` | `http://localhost:11434` | Ollama API URL for LLM inference |
 | `WORKER_KEY_PATH` | `./data/worker-key.json` | Path to the worker's keypair file |
 | `TRUST_PAIRING_CODE` | (none) | 6-char hex code to claim on startup |
+
+## Using the CLI (Coming Soon)
+
+The Dispatch CLI provides a unified interface for worker operations:
+
+### Start a worker
+
+```bash
+dispatch worker start --coordinator http://localhost:4010 --capabilities llm,task
+```
+
+### Check worker status
+
+```bash
+dispatch worker status
+```
+
+### Register on ERC-8004 (Monad)
+
+```bash
+dispatch worker register --name "My Worker" --private-key $WORKER_PRIVATE_KEY
+```
+
+### With trust pairing
+
+```bash
+dispatch worker start --trust-code A3F2B1
+```
+
+> The CLI is under active development. Use the pnpm commands above for current setup.

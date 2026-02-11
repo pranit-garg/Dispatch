@@ -1,19 +1,25 @@
 ---
-title: BOLT Token
-description: BOLT is the settlement token that powers every Dispatch job, creating buy pressure, supply lock, and burns through 100% payment flow-through.
+title: BOLT Token (Upcoming)
+description: "BOLT is the planned settlement token for the Dispatch network. Currently workers earn USDC per job. When BOLT launches, every dollar of compute will flow through the token."
 ---
 
-# BOLT Token
+# BOLT Token (Upcoming)
 
-**Pay in USDC. Earn in BOLT.**
+**USDC today. BOLT tomorrow.**
 
-BOLT is the settlement layer of the Dispatch compute network. Agents pay stablecoins (USDC via x402). Their UX is unchanged. Under the hood, every USDC payment auto-converts to BOLT before reaching the worker.
+> **Current status:** Workers earn USDC per job via x402 micropayments. BOLT is designed but not yet deployed. The information below describes the planned token economics.
 
-## BOLT-as-Settlement Model
+BOLT is the planned settlement layer of the Dispatch compute network. Today, agents pay USDC via x402 and workers earn USDC directly. When BOLT launches, every USDC payment will auto-convert to BOLT before reaching the worker.
+
+## BOLT-as-Settlement Model (Planned)
 
 The key insight: instead of skimming a percentage fee, **100% of economic activity flows through BOLT**. If the network processes $1M in compute, $1M of buy pressure hits the BOLT token, not $50K.
 
+Currently, workers earn USDC directly for every completed job.
+
 ### Flow
+
+When BOLT launches, the flow will be:
 
 1. **Agent pays USDC.** Standard x402 payment header, same as always.
 2. **Coordinator receives USDC.** x402 facilitator verifies payment.
@@ -26,7 +32,7 @@ Workers choose what to do with earned BOLT:
 - **Stake.** Lock BOLT for priority matching and reputation multiplier.
 - **Sell.** Swap back to USDC on Jupiter anytime.
 
-## Value Accrual Flywheel
+## Value Accrual Flywheel (Planned)
 
 Three sources of pressure work together:
 
@@ -34,11 +40,13 @@ Three sources of pressure work together:
 2. **Supply lock.** Workers stake BOLT for better matching priority. Staked BOLT is locked, reducing circulating supply.
 3. **Burn.** 5% protocol fee is permanently burned on every job. Total supply decreases over time.
 
-Result: More jobs → more buying → less supply → price appreciation → workers earn more value per job → more workers → more capacity → more jobs.
+Result: More jobs, more buying, less supply, price appreciation, workers earn more value per job, more workers, more capacity, more jobs.
 
 ## Staking Tiers
 
-Staking is optional. Any worker can earn BOLT with zero stake, preserving the "100x lower barrier to entry" philosophy. Staking unlocks priority matching and reputation multipliers.
+> Staking activates when BOLT launches on Solana.
+
+Staking is optional. Any worker can earn with zero stake, preserving the "100x lower barrier to entry" philosophy. Staking unlocks priority matching and reputation multipliers.
 
 | Tier | Required Stake | Job Access | Priority Bonus | Rep Multiplier | Additional |
 |------|---------------|------------|----------------|----------------|------------|
@@ -70,7 +78,7 @@ Fixed supply of 1 billion BOLT. No inflation mechanism.
 
 ## Jupiter DEX Integration
 
-BOLT trades on Jupiter with real liquidity [DESIGNED]. The swap happens atomically in the job commit flow:
+BOLT will trade on Jupiter with real liquidity (planned). The swap happens atomically in the job commit flow:
 
 1. x402 verifies USDC payment
 2. Coordinator calls Jupiter Quote API (`GET /v6/quote`)

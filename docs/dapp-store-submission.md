@@ -11,6 +11,36 @@ Dispatch mobile worker app (`mobile/seeker-solana/`) to the Solana dApp Store.
 - Publishing docs: `https://docs.solanamobile.com/dapp-publishing/intro`
 - Discord review channel: `#dev-answers` in Solana Mobile Community
 - Review contact email: `publishersupport@dappstore.solanamobile.com`
+- Positioning: "Earn USDC from idle compute" (service-first, not protocol-first)
+
+## App Store Description Copy
+
+Use this copy for all app store listings (Solana dApp Store, future Google Play/Apple App Store):
+
+**Short description** (30 chars max): "Earn USDC from idle compute"
+
+**Long description:**
+Dispatch turns your phone into a compute worker for AI agents. Process lightweight AI tasks (summarization, classification, data extraction) while your device is idle and earn USDC for every completed job.
+
+How it works:
+1. Open the app and connect your wallet
+2. Tap "Go Online" to join the network
+3. Your phone picks up AI jobs automatically over WebSocket
+4. Earn USDC for every completed task
+
+Features:
+- Passive income from idle hardware (no interaction needed)
+- No GPU required (runs on your phone's CPU)
+- Build onchain reputation via ERC-8004 on Monad
+- Ed25519 signed receipts for every job
+- Real-time earnings dashboard
+- One-tap on/off toggle
+
+Currently live on Monad and Solana testnet. BOLT token with staking tiers coming soon.
+
+**Keywords:** DePIN, compute, AI, inference, passive income, Solana, Monad, idle hardware
+
+**Category:** DeFi / Infrastructure
 
 ## Mainnet Submission (Submitted Feb 10, 2026)
 

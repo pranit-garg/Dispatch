@@ -1,10 +1,134 @@
 # Dispatch
 
-**Pay in USDC. Earn in BOLT.**
+**Cheap AI compute for agents. Passive income for workers.**
 
-Agents submit HTTP requests with x402 payment headers. USDC auto-converts to BOLT via Jupiter DEX. Workers earn BOLT: hold for upside, stake for priority matching, or sell.
+Dispatch is a compute service where AI agents submit jobs over HTTP and get verified results from idle hardware. Workers earn USDC for every completed job. Every result includes an ed25519 cryptographic receipt.
 
 [dispatch.computer](https://www.dispatch.computer) · [Docs](https://docs.dispatch.computer) · [Android APK](https://expo.dev/artifacts/eas/pRku9ZWEqdSGS2poEU9VjN.apk)
+
+---
+
+## Quick Start: Agents
+
+Submit a compute job with one HTTP request:
+
+```bash
+# Get a price quote
+curl "http://localhost:4010/v1/quote?job_type=LLM_INFER&policy=AUTO"
+
+# Submit an LLM job
+curl -X POST http://localhost:4010/v1/jobs/commit/fast \
+  -H "Content-Type: application/json" \
+  -d '{
+    "job_type": "LLM_INFER",
+    "user_id": "quickstart-user",
+    "privacy_class": "PUBLIC",
+    "payload": {
+      "job_type": "LLM_INFER",
+      "prompt": "Explain quantum computing in one paragraph.",
+      "max_tokens": 256
+    }
+  }'
+```
+
+Or use the SDK:
+
+```typescript
+import { ComputeRouter } from "@dispatch/compute-router";
+
+const router = new ComputeRouter({
+  coordinatorUrls: { monad: "http://localhost:4010" },
+});
+
+const result = await router.runLLM({
+  prompt: "Explain quantum computing in one paragraph.",
+  max_tokens: 256,
+  user_id: "demo",
+  chainPreference: "monad",
+});
+
+console.log(result.output);  // The response text
+console.log(result.price);   // "$0.010"
+console.log(result.receipt);  // ed25519 signed receipt
+```
+
+## Quick Start: Workers
+
+Earn USDC by processing AI jobs on your idle hardware:
+
+```bash
+# Install and build
+git clone https://github.com/pranit-garg/Dispatch.git
+cd Dispatch && pnpm install && pnpm build
+
+# Start a coordinator (testnet mode, no payments)
+TESTNET_MODE=true pnpm --filter coordinator-monad start
+
+# Start your worker
+COORDINATOR_URL=http://localhost:4010 pnpm --filter worker-desktop start
+```
+
+Your worker generates an ed25519 keypair, connects via WebSocket, and starts picking up jobs automatically.
+
+For mobile: download the [Android APK](https://expo.dev/artifacts/eas/pRku9ZWEqdSGS2poEU9VjN.apk) and start earning from your phone.
+
+---
+
+## Why Agents?
+
+AI agents need cheap inference at scale. They operate autonomously and can't negotiate GPU leases. Dispatch gives them a simple interface: HTTP request in, verified result out, payment handled inline.
+
+---
+
+## How It Works
+
+```
+Agent (HTTP + x402)  →  Coordinator  →  Worker (phone/desktop)
+                            ↓                    ↓
+                     Route by reputation    Process job
+                     + device type          Sign ed25519 receipt
+                            ↓                    ↓
+                     USDC settles  ←──────── Result returned
+```
+
+1. **Agent submits a job.** HTTP POST with an x402 payment header. No SDK required.
+2. **Coordinator routes it.** Matches to the best worker by device type, reputation score, and routing policy (FAST / CHEAP / PRIVATE).
+3. **Worker processes.** Summarization, classification, extraction, or LLM inference via Ollama.
+4. **Worker signs a receipt.** ed25519 signature over the output hash. Cryptographic proof of who computed what.
+5. **USDC settles.** Worker receives payment for completed job. 5% protocol fee.
+
+## What's Working (Testnet)
+
+- Full end-to-end flow: agent → coordinator → worker → receipt → settlement
+- Android app picking up jobs via WebSocket ([APK](https://expo.dev/artifacts/eas/pRku9ZWEqdSGS2poEU9VjN.apk))
+- Desktop workers with Ollama LLM inference
+- Ed25519 receipt signing and verification
+- Dual-chain coordinators (Monad + Solana)
+- Real-time dashboard showing completed jobs and earnings
+- Three routing policies: FAST, CHEAP, PRIVATE
+- Trust pairing for private job routing
+- ERC-8004 worker registration and per-job reputation on Monad
+
+## BOLT Token (Upcoming)
+
+BOLT is the planned settlement token for the Dispatch network. Currently, workers earn USDC per job via x402 micropayments. When BOLT launches on Solana devnet, USDC will auto-convert to BOLT, giving workers token upside.
+
+**How it will work (planned):** Agents pay USDC (unchanged UX). At the coordinator, USDC auto-swaps to BOLT via Jupiter DEX. Workers receive BOLT as payment. 100% of economic activity flows through BOLT, so every job creates buy pressure.
+
+**Value accrual (planned):**
+1. **Buy pressure.** Every job converts USDC to BOLT on Jupiter
+2. **Supply lock.** Workers stake BOLT for priority matching
+3. **Burn.** 5% protocol fee permanently burned per job
+
+**Staking tiers** (planned, zero stake required to earn):
+
+| Tier | Stake | Benefits |
+|------|-------|----------|
+| Open | 0 BOLT | CHEAP tier jobs, standard matching |
+| Verified | 100 BOLT | All tiers, +5 priority, 1.5x rep multiplier |
+| Sentinel | 1,000 BOLT | Priority matching, +10 bonus, 2x rep, revenue share |
+
+BOLT will be a native SPL token on Solana. Wrapped BOLT (ERC-20) on Monad for governance.
 
 ---
 
@@ -20,60 +144,6 @@ Agents submit HTTP requests with x402 payment headers. USDC auto-converts to BOL
 
 ---
 
-## How It Works
-
-```
-Agent (HTTP + x402)  →  Coordinator  →  Worker (phone/desktop)
-                            ↓                    ↓
-                     Route by reputation    Process job
-                     + device type          Sign ed25519 receipt
-                            ↓                    ↓
-                     BOLT settles ←──────── Result returned
-```
-
-1. **Agent submits a job.** HTTP POST with an x402 payment header. No SDK required.
-2. **Coordinator routes it.** Matches to the best worker by device type, reputation score, and routing policy (FAST / CHEAP / PRIVATE).
-3. **Worker processes.** Summarization, classification, extraction, or LLM inference via Ollama.
-4. **Worker signs a receipt.** ed25519 signature over the output hash. Cryptographic proof of who computed what.
-5. **BOLT settles.** USDC auto-swaps to BOLT. Worker earns BOLT per job. 5% protocol fee burned.
-
-## BOLT Token
-
-BOLT is the settlement token that powers every Dispatch job.
-
-**How it works:** Agents pay USDC (unchanged UX). At the coordinator, USDC auto-swaps to BOLT via Jupiter DEX. Workers receive BOLT as payment. 100% of economic activity flows through BOLT, so every job creates buy pressure.
-
-**Value accrual:**
-1. **Buy pressure.** Every job converts USDC → BOLT on Jupiter
-2. **Supply lock.** Workers stake BOLT for priority matching
-3. **Burn.** 5% protocol fee permanently burned per job
-
-**Staking tiers** (optional, zero stake required to earn):
-
-| Tier | Stake | Benefits |
-|------|-------|----------|
-| Open | 0 BOLT | CHEAP tier jobs, standard matching |
-| Verified | 100 BOLT | All tiers, +5 priority, 1.5x rep multiplier |
-| Sentinel | 1,000 BOLT | Priority matching, +10 bonus, 2x rep, revenue share |
-
-BOLT is a native SPL token on Solana. Wrapped BOLT (ERC-20) on Monad for governance.
-
-## Why Agents?
-
-AI agents need cheap inference at scale. They operate autonomously and can't negotiate GPU leases. Dispatch gives them a simple interface: HTTP request in, verified result out, payment handled inline.
-
-## What's Working (Testnet)
-
-- Full end-to-end flow: agent → coordinator → worker → receipt → settlement
-- Android app picking up jobs via WebSocket ([APK](https://expo.dev/artifacts/eas/pRku9ZWEqdSGS2poEU9VjN.apk))
-- Desktop workers with Ollama LLM inference
-- Ed25519 receipt signing and verification
-- Dual-chain coordinators (Monad + Solana)
-- Real-time dashboard showing completed jobs and earnings
-- Three routing policies: FAST, CHEAP, PRIVATE
-- Trust pairing for private job routing
-- ERC-8004 worker registration and per-job reputation on Monad
-
 ## Solana + Seeker
 
 - **Mobile Wallet Adapter** for worker authentication via Phantom
@@ -86,7 +156,7 @@ AI agents need cheap inference at scale. They operate autonomously and can't neg
 
 Dispatch is the first project to combine [x402](https://www.x402.org/) payments with [ERC-8004](https://github.com/erc-8004/erc-8004-contracts) reputation, both designed by the same team at Coinbase.
 
-- **Worker identity.** Workers register as ERC-8004 agents on Monad → receive an agent NFT
+- **Worker identity.** Workers register as ERC-8004 agents on Monad and receive an agent NFT
 - **Per-job reputation.** After every completed job, the coordinator posts onchain feedback: score, skill tag, feedback hash
 - **Reputation-aware routing.** Higher-reputation workers get priority in job matching
 - **Monad's fast finality** makes per-job reputation updates practical at scale
@@ -133,15 +203,13 @@ chain/
 | Landing + Docs | Next.js 15, Tailwind, Fumadocs |
 | Chains | Solana devnet + Monad testnet |
 
-## Quick Start
-
-```bash
-pnpm install && pnpm build
-```
+## Full E2E Setup
 
 ### Run Monad E2E
 
 ```bash
+pnpm install && pnpm build
+
 # Terminal 1: Coordinator
 pnpm dev:monad
 
