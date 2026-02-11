@@ -23,6 +23,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import * as Clipboard from "expo-clipboard";
+import * as Haptics from "expo-haptics";
 import { useWorker } from "../../src/hooks/useWorker";
 import { resetKeypair } from "../../src/services/KeyManager";
 import { colors, spacing, borderRadius, fontSize, fontFamily } from "../../src/theme";
@@ -38,6 +39,7 @@ export default function SettingsScreen() {
     const trimmed = urlInput.trim();
     if (!trimmed) return;
     worker.setCoordinatorUrl(trimmed);
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     Alert.alert("Updated", "Network endpoint saved. Reconnecting...");
   };
 
@@ -81,6 +83,7 @@ export default function SettingsScreen() {
           text: "Reset",
           style: "destructive",
           onPress: async () => {
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
             worker.disconnect();
             await resetKeypair();
             Alert.alert(

@@ -1,5 +1,6 @@
 import { Navbar } from "@/components/Navbar";
 import { Hero } from "@/components/Hero";
+import { FounderVideo } from "@/components/FounderVideo";
 import { HowItWorks } from "@/components/HowItWorks";
 import { WhyDispatch } from "@/components/WhyDispatch";
 import { LiveDemo } from "@/components/LiveDemo";
@@ -14,6 +15,7 @@ export default function Home() {
     <main>
       <Navbar />
       <Hero />
+      <FounderVideo />
       <HowItWorks />
       <WhyDispatch />
       <LiveDemo />

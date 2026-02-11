@@ -53,7 +53,7 @@ export function CTA() {
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ delay: 0.15 }}
-          className="mt-6 flex items-center justify-center gap-6 text-sm text-text-dim"
+          className="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-text-dim"
         >
           <span className="font-mono">2 chains</span>
           <span className="text-border">&middot;</span>

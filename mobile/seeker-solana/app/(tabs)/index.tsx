@@ -16,6 +16,8 @@ import {
   Image,
   ActivityIndicator,
   RefreshControl,
+  Pressable,
+  Alert,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useWorker } from "../../src/hooks/useWorker";
@@ -30,6 +32,7 @@ import { colors, spacing, fontSize, fontFamily } from "../../src/theme";
 export default function DashboardScreen() {
   const worker = useWorker();
   const [refreshing, setRefreshing] = React.useState(false);
+  const [connectingWallet, setConnectingWallet] = React.useState(false);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -41,6 +44,18 @@ export default function DashboardScreen() {
       setTimeout(() => setRefreshing(false), 1000);
     }
   }, [worker]);
+
+  const handleConnectWallet = useCallback(async () => {
+    if (connectingWallet) return;
+    setConnectingWallet(true);
+    try {
+      await worker.connectWallet();
+    } catch (err) {
+      Alert.alert("Connection Failed", (err as Error).message);
+    } finally {
+      setConnectingWallet(false);
+    }
+  }, [connectingWallet, worker]);
 
   if (worker.isLoading) {
     return (
@@ -85,6 +100,20 @@ export default function DashboardScreen() {
             <Text style={styles.walletBannerText}>
               Link your Phantom wallet to earn BOLT for compute jobs
             </Text>
+            <Pressable
+              style={({ pressed }) => [
+                styles.walletBannerButton,
+                { opacity: pressed || connectingWallet ? 0.8 : 1 },
+              ]}
+              onPress={handleConnectWallet}
+              disabled={connectingWallet}
+            >
+              {connectingWallet ? (
+                <ActivityIndicator size="small" color={colors.background} />
+              ) : (
+                <Text style={styles.walletBannerButtonText}>Connect Wallet</Text>
+              )}
+            </Pressable>
           </View>
         )}
 
@@ -169,6 +198,21 @@ const styles = StyleSheet.create({
     color: colors.warning,
     fontFamily: fontFamily.semibold,
     textAlign: "center",
+    marginBottom: spacing.sm,
+  },
+  walletBannerButton: {
+    backgroundColor: colors.warning,
+    borderRadius: 10,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.sm,
+    minHeight: 38,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  walletBannerButtonText: {
+    fontSize: fontSize.sm,
+    color: colors.background,
+    fontFamily: fontFamily.semibold,
   },
   testnetBanner: {
     backgroundColor: colors.warning + "15",

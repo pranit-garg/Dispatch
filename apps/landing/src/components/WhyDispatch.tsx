@@ -121,25 +121,45 @@ export function WhyDispatch() {
             <div className="h-px flex-1 bg-gradient-to-l from-transparent to-accent/30" />
           </motion.div>
 
-          <div className="grid gap-6 md:grid-cols-3">
-            {agentCards.map((card, i) => (
-              <motion.div
-                key={card.title}
-                initial={{ opacity: 0, x: -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                className="rounded-xl border border-accent/20 bg-bg-card/40 p-6"
-              >
-                <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg border border-accent/30 bg-accent/10 text-accent">
-                  {card.icon}
-                </div>
-                <h4 className="text-base font-semibold">{card.title}</h4>
-                <p className="mt-2 text-sm text-text-muted leading-relaxed">
-                  {card.description}
+          {/* Featured first card + 2-col for remaining — breaks the generic 3-col pattern */}
+          <div className="space-y-6">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="rounded-xl border border-accent/30 bg-gradient-to-br from-accent/[0.08] to-transparent p-8 md:flex md:items-start md:gap-6"
+            >
+              <div className="mb-4 flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-accent/30 bg-accent/10 text-accent md:mb-0">
+                {agentCards[0].icon}
+              </div>
+              <div>
+                <h4 className="text-lg font-semibold">{agentCards[0].title}</h4>
+                <p className="mt-2 text-text-muted leading-relaxed">
+                  {agentCards[0].description}
                 </p>
-              </motion.div>
-            ))}
+              </div>
+            </motion.div>
+
+            <div className="grid gap-6 md:grid-cols-2">
+              {agentCards.slice(1).map((card, i) => (
+                <motion.div
+                  key={card.title}
+                  initial={{ opacity: 0, x: -20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: (i + 1) * 0.1 }}
+                  className="rounded-xl border border-accent/20 bg-bg-card/40 p-6"
+                >
+                  <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg border border-accent/30 bg-accent/10 text-accent">
+                    {card.icon}
+                  </div>
+                  <h4 className="text-base font-semibold">{card.title}</h4>
+                  <p className="mt-2 text-sm text-text-muted leading-relaxed">
+                    {card.description}
+                  </p>
+                </motion.div>
+              ))}
+            </div>
           </div>
         </div>
 
@@ -156,25 +176,43 @@ export function WhyDispatch() {
             <div className="h-px flex-1 bg-gradient-to-l from-transparent to-green/30" />
           </motion.div>
 
-          <div className="grid gap-6 md:grid-cols-3">
-            {workerCards.map((card, i) => (
-              <motion.div
-                key={card.title}
-                initial={{ opacity: 0, x: 20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                className="rounded-xl border border-green/20 bg-bg-card/40 p-6"
-              >
-                <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg border border-green/30 bg-green/10 text-green">
-                  {card.icon}
-                </div>
-                <h4 className="text-base font-semibold">{card.title}</h4>
-                <p className="mt-2 text-sm text-text-muted leading-relaxed">
-                  {card.description}
-                </p>
-              </motion.div>
-            ))}
+          {/* Workers: 2-col left + tall right — visual contrast with agents section */}
+          <div className="grid gap-6 md:grid-cols-5">
+            <div className="space-y-6 md:col-span-3">
+              {workerCards.slice(0, 2).map((card, i) => (
+                <motion.div
+                  key={card.title}
+                  initial={{ opacity: 0, x: 20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.1 }}
+                  className="rounded-xl border border-green/20 bg-bg-card/40 p-6"
+                >
+                  <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg border border-green/30 bg-green/10 text-green">
+                    {card.icon}
+                  </div>
+                  <h4 className="text-base font-semibold">{card.title}</h4>
+                  <p className="mt-2 text-sm text-text-muted leading-relaxed">
+                    {card.description}
+                  </p>
+                </motion.div>
+              ))}
+            </div>
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2 }}
+              className="rounded-xl border border-green/30 bg-gradient-to-b from-green/[0.06] to-transparent p-6 md:col-span-2 md:flex md:flex-col md:justify-center"
+            >
+              <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg border border-green/30 bg-green/10 text-green">
+                {workerCards[2].icon}
+              </div>
+              <h4 className="text-base font-semibold">{workerCards[2].title}</h4>
+              <p className="mt-2 text-sm text-text-muted leading-relaxed">
+                {workerCards[2].description}
+              </p>
+            </motion.div>
           </div>
         </div>
 

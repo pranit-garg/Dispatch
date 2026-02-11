@@ -1,6 +1,11 @@
-export const metadata = {
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
   title: "Privacy Policy | Dispatch",
   description: "Privacy policy for Dispatch, the decentralized compute network.",
+  alternates: {
+    canonical: "https://www.dispatch.computer/privacy",
+  },
 };
 
 export default function PrivacyPage() {

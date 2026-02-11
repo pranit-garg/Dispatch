@@ -41,5 +41,21 @@ export async function generateMetadata(props: {
   return {
     title: page.data.title,
     description: page.data.description,
+    alternates: {
+      canonical: page.url,
+    },
+    openGraph: {
+      title: page.data.title,
+      description: page.data.description,
+      url: page.url,
+      siteName: 'Dispatch Docs',
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary',
+      title: page.data.title,
+      description: page.data.description,
+      creator: '@pranit',
+    },
   };
 }

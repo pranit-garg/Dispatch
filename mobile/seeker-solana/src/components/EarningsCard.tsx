@@ -25,7 +25,7 @@ export function EarningsCard({ totalEarnings, jobsCompleted }: EarningsCardProps
             <Text style={styles.amountInt}>{intPart}</Text>
             <Text style={styles.amountDec}>.{decPart}</Text>
           </View>
-          <Text style={styles.currency}>BOLT</Text>
+          <Text style={styles.currency}>Testnet</Text>
         </View>
       </View>
 

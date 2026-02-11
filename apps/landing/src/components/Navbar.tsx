@@ -17,6 +17,11 @@ const navLinks = [
     href: "https://docs.dispatch.computer/docs",
     external: true,
   },
+  {
+    label: "GitHub",
+    href: "https://github.com/pranit-garg/Dispatch",
+    external: true,
+  },
 ];
 
 export function Navbar() {
@@ -39,7 +44,7 @@ export function Navbar() {
     >
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
         {/* Logo */}
-        <a href="#" className="flex items-center gap-2 text-lg font-bold text-text">
+        <a href="/" className="flex items-center gap-2 text-lg font-bold text-text">
           <img src="/images/icon.png" alt="" className="h-7 w-7 rounded-lg" />
           Dispatch
         </a>

@@ -1,6 +1,11 @@
-export const metadata = {
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
   title: "Terms of Service | Dispatch",
   description: "Terms of service for Dispatch, the decentralized compute network.",
+  alternates: {
+    canonical: "https://www.dispatch.computer/terms",
+  },
 };
 
 export default function TermsPage() {

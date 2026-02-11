@@ -24,6 +24,8 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
+import { useWallet, type SigningMode } from "../src/contexts/WalletProvider";
 import {
   colors,
   spacing,
@@ -34,6 +36,7 @@ import {
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 const ONBOARDED_KEY = "dispatch_has_onboarded";
+const SIGNING_MODE_KEY = "dispatch_signing_mode";
 const TOTAL_STEPS = 3;
 
 // ---------------------------------------------------------------------------
@@ -111,8 +114,8 @@ function StepHow() {
 // ---------------------------------------------------------------------------
 // Step 3: Get started (signing mode choice)
 // ---------------------------------------------------------------------------
-function StepStart({ onComplete }: { onComplete: () => void }) {
-  const [selected, setSelected] = useState<"device" | "wallet" | null>(null);
+function StepStart({ onComplete }: { onComplete: (mode: SigningMode) => void }) {
+  const [selected, setSelected] = useState<SigningMode | null>(null);
 
   return (
     <View style={[styles.page, styles.centeredStart]}>
@@ -123,12 +126,12 @@ function StepStart({ onComplete }: { onComplete: () => void }) {
         <Pressable
           style={[
             styles.card,
-            selected === "device" && styles.cardSelected,
+            selected === "device-key" && styles.cardSelected,
           ]}
-          onPress={() => setSelected("device")}
+          onPress={() => setSelected("device-key")}
         >
           <View style={styles.cardIconWrap}>
-            <Text style={styles.cardIcon}>🔑</Text>
+            <Ionicons name="key-outline" size={22} color={colors.accent} />
           </View>
           <Text style={styles.cardTitle}>Device Key</Text>
           <Text style={styles.cardDesc}>
@@ -145,7 +148,7 @@ function StepStart({ onComplete }: { onComplete: () => void }) {
           onPress={() => setSelected("wallet")}
         >
           <View style={styles.cardIconWrap}>
-            <Text style={styles.cardIcon}>👻</Text>
+            <Ionicons name="wallet-outline" size={22} color={colors.accent} />
           </View>
           <Text style={styles.cardTitle}>Wallet</Text>
           <Text style={styles.cardDesc}>
@@ -157,7 +160,7 @@ function StepStart({ onComplete }: { onComplete: () => void }) {
       <Pressable
         style={[styles.ctaButton, !selected && styles.ctaDisabled]}
         disabled={!selected}
-        onPress={onComplete}
+        onPress={() => selected && onComplete(selected)}
       >
         <Text style={styles.ctaText}>Start Earning BOLT</Text>
       </Pressable>
@@ -186,6 +189,7 @@ function Dots({ active }: { active: number }) {
 // ---------------------------------------------------------------------------
 export default function OnboardingScreen() {
   const router = useRouter();
+  const wallet = useWallet();
   const scrollRef = useRef<ScrollView>(null);
   const [activeStep, setActiveStep] = useState(0);
 
@@ -194,8 +198,12 @@ export default function OnboardingScreen() {
     setActiveStep(page);
   };
 
-  const handleComplete = async () => {
-    await AsyncStorage.setItem(ONBOARDED_KEY, "true");
+  const handleComplete = async (mode: SigningMode) => {
+    await AsyncStorage.multiSet([
+      [ONBOARDED_KEY, "true"],
+      [SIGNING_MODE_KEY, mode],
+    ]);
+    wallet.switchSigningMode(mode);
     router.replace("/(tabs)");
   };
 

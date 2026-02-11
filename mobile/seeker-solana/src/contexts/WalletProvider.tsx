@@ -60,10 +60,11 @@ const STORAGE_EARNINGS = "dispatch_total_earnings";
 const STORAGE_JOBS_COMPLETED = "dispatch_jobs_completed";
 const STORAGE_JOB_HISTORY = "dispatch_job_history";
 const STORAGE_COORDINATOR_URL = "dispatch_coordinator_url";
+const STORAGE_SIGNING_MODE = "dispatch_signing_mode";
 
 // Coordinator URL. Set via EXPO_PUBLIC_COORDINATOR_URL or change in Settings
 const DEFAULT_COORDINATOR_URL =
-  process.env.EXPO_PUBLIC_COORDINATOR_URL ?? "ws://localhost:4020";
+  process.env.EXPO_PUBLIC_COORDINATOR_URL ?? "wss://dispatch-solana.up.railway.app";
 
 // ── Provider ──────────────────────────────────
 
@@ -91,12 +92,14 @@ export function WalletProvider({ children }: { children: ReactNode }) {
           storedJobsCompleted,
           storedHistory,
           storedUrl,
+          storedSigningMode,
           storedWorkerId,
         ] = await Promise.all([
           AsyncStorage.getItem(STORAGE_EARNINGS),
           AsyncStorage.getItem(STORAGE_JOBS_COMPLETED),
           AsyncStorage.getItem(STORAGE_JOB_HISTORY),
           AsyncStorage.getItem(STORAGE_COORDINATOR_URL),
+          AsyncStorage.getItem(STORAGE_SIGNING_MODE),
           getWorkerId(),
         ]);
 
@@ -113,16 +116,20 @@ export function WalletProvider({ children }: { children: ReactNode }) {
           setJobHistory(history);
           wsService.setJobHistory(history);
         }
-        if (storedUrl) {
-          setCoordinatorUrlState(storedUrl);
-          wsService.setCoordinatorUrl(storedUrl);
-        }
+        const effectiveCoordinatorUrl = storedUrl ?? DEFAULT_COORDINATOR_URL;
+        setCoordinatorUrlState(effectiveCoordinatorUrl);
+        wsService.setCoordinatorUrl(effectiveCoordinatorUrl);
+
+        const effectiveSigningMode: SigningMode =
+          storedSigningMode === "wallet" ? "wallet" : "device-key";
+        setSigningMode(effectiveSigningMode);
+        wsService.setSigningProvider(
+          effectiveSigningMode === "wallet" ? mwaProvider : deviceKeyProvider
+        );
+
         if (storedWorkerId) {
           setWorkerId(storedWorkerId);
         }
-
-        // Set device key provider as default
-        wsService.setSigningProvider(deviceKeyProvider);
       } catch (err) {
         console.warn("[Wallet] Failed to load persisted state:", err);
       } finally {
@@ -131,7 +138,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     }
 
     void loadPersistedState();
-  }, [deviceKeyProvider]);
+  }, [deviceKeyProvider, mwaProvider]);
 
   // Subscribe to WebSocketService events
   useEffect(() => {
@@ -181,25 +188,37 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const setCoordinatorUrl = useCallback((url: string) => {
-    setCoordinatorUrlState(url);
-    wsService.setCoordinatorUrl(url);
-    void AsyncStorage.setItem(STORAGE_COORDINATOR_URL, url);
-  }, []);
+    const nextUrl = url.trim();
+    if (!nextUrl || nextUrl === coordinatorUrl) return;
+
+    const shouldReconnect = status === "connected" || status === "reconnecting";
+    if (shouldReconnect) {
+      wsService.disconnect();
+    }
+
+    setCoordinatorUrlState(nextUrl);
+    wsService.setCoordinatorUrl(nextUrl);
+    void AsyncStorage.setItem(STORAGE_COORDINATOR_URL, nextUrl);
+
+    if (shouldReconnect) {
+      void wsService.connect();
+    }
+  }, [coordinatorUrl, status]);
 
   // Connect to wallet via MWA (opens Phantom for authorization)
   const connectWallet = useCallback(async () => {
-    try {
-      const available = await mwaProvider.isAvailable();
-      if (!available) {
-        console.warn("[Wallet] MWA not available on this platform, Android only");
-        return;
-      }
+    const available = await mwaProvider.isAvailable();
+    if (!available) {
+      throw new Error("Mobile Wallet Adapter is only available on Android.");
+    }
 
+    try {
       await mwaProvider.connect();
       const address = mwaProvider.getWalletAddress();
       setWalletAddress(address);
       setSigningMode("wallet");
       wsService.setSigningProvider(mwaProvider);
+      void AsyncStorage.setItem(STORAGE_SIGNING_MODE, "wallet");
 
       console.log(`[Wallet] Connected: ${address}`);
     } catch (err) {
@@ -207,6 +226,8 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       // Fallback to device key
       wsService.setSigningProvider(deviceKeyProvider);
       setSigningMode("device-key");
+      void AsyncStorage.setItem(STORAGE_SIGNING_MODE, "device-key");
+      throw err;
     }
   }, [mwaProvider, deviceKeyProvider]);
 
@@ -216,6 +237,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     // Switch back to device key
     wsService.setSigningProvider(deviceKeyProvider);
     setSigningMode("device-key");
+    void AsyncStorage.setItem(STORAGE_SIGNING_MODE, "device-key");
   }, [deviceKeyProvider, mwaProvider]);
 
   const switchSigningMode = useCallback((mode: SigningMode) => {
@@ -228,6 +250,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       setSigningMode("wallet");
       wsService.setSigningProvider(mwaProvider);
     }
+    void AsyncStorage.setItem(STORAGE_SIGNING_MODE, mode);
   }, [deviceKeyProvider, mwaProvider]);
 
   return (

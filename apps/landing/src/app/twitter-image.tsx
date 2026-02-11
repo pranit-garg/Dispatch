@@ -6,7 +6,48 @@ export const alt =
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
-export default function TwitterImage() {
+const GOOGLE_FONTS_USER_AGENT =
+  "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36";
+
+async function loadSpaceGrotesk(weight: 400 | 700): Promise<ArrayBuffer> {
+  const cssUrl = `https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@${weight}&display=swap`;
+  const cssResponse = await fetch(cssUrl, {
+    headers: { "User-Agent": GOOGLE_FONTS_USER_AGENT },
+    cache: "force-cache",
+  });
+
+  if (!cssResponse.ok) {
+    throw new Error(`Failed to fetch Space Grotesk CSS (${cssResponse.status})`);
+  }
+
+  const cssText = await cssResponse.text();
+  const latinMatch = cssText.match(
+    /\/\* latin \*\/[\s\S]*?src: url\(([^)]+)\) format\('woff2'\)/
+  );
+  const fallbackMatch = cssText.match(/src: url\(([^)]+)\) format\('woff2'\)/);
+  const fontUrl = latinMatch?.[1] ?? fallbackMatch?.[1];
+
+  if (!fontUrl) {
+    throw new Error("Could not find Space Grotesk font URL in Google Fonts CSS");
+  }
+
+  const fontResponse = await fetch(fontUrl, { cache: "force-cache" });
+  if (!fontResponse.ok) {
+    throw new Error(`Failed to fetch Space Grotesk font (${fontResponse.status})`);
+  }
+
+  return fontResponse.arrayBuffer();
+}
+
+const spaceGroteskRegular = loadSpaceGrotesk(400);
+const spaceGroteskBold = loadSpaceGrotesk(700);
+
+export default async function TwitterImage() {
+  const [regularFontData, boldFontData] = await Promise.all([
+    spaceGroteskRegular,
+    spaceGroteskBold,
+  ]);
+
   return new ImageResponse(
     (
       <div
@@ -18,7 +59,7 @@ export default function TwitterImage() {
           justifyContent: "center",
           alignItems: "center",
           background: "#0a0a0f",
-          fontFamily: "Inter, sans-serif",
+          fontFamily: "\"Space Grotesk\", sans-serif",
           position: "relative",
           overflow: "hidden",
         }}
@@ -164,6 +205,22 @@ export default function TwitterImage() {
         </div>
       </div>
     ),
-    { ...size }
+    {
+      ...size,
+      fonts: [
+        {
+          name: "Space Grotesk",
+          data: regularFontData,
+          weight: 400,
+          style: "normal",
+        },
+        {
+          name: "Space Grotesk",
+          data: boldFontData,
+          weight: 700,
+          style: "normal",
+        },
+      ],
+    }
   );
 }

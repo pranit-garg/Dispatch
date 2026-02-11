@@ -15,6 +15,7 @@ import {
   StyleSheet,
   Animated,
 } from "react-native";
+import * as Haptics from "expo-haptics";
 import type { ConnectionStatus } from "../services/WebSocketService";
 import type { SigningMode } from "../contexts/WalletProvider";
 import { colors, spacing, borderRadius, fontSize, fontFamily } from "../theme";
@@ -157,7 +158,10 @@ export function WorkerToggle({
       />
       <Animated.View style={{ transform: [{ scale: combinedScale }] }}>
         <Pressable
-          onPress={onToggle}
+          onPress={() => {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+            onToggle();
+          }}
           disabled={isToggling || needsWallet}
           style={({ pressed }) => [
             styles.button,
