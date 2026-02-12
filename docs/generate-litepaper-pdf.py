@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 """Generate academic-style PDF of the Dispatch litepaper.
 
-Uses pandoc + tectonic (XeTeX) for authentic IEEE/whitepaper formatting.
+Uses pandoc + tectonic (XeTeX) for NeurIPS/SIGGRAPH-quality typesetting.
 Two-pass approach: pandoc generates LaTeX, then tectonic compiles to PDF.
 """
 
 import re
 import subprocess
 import tempfile
+import textwrap
 from pathlib import Path
 
 DOCS_DIR = Path(__file__).parent
@@ -46,13 +47,7 @@ def clean_markdown(md_text: str) -> str:
 
     md_text = re.sub(r'```\n?(.*?)```', replace_ascii_diagram, md_text, flags=re.DOTALL)
 
-    # Remove the wide comparison table (Section 9) — 6 columns can't fit
-    # in a two-column PDF layout. The prose comparison remains.
-    md_text = re.sub(
-        r'\|[^\n]*Dispatch[^\n]*Akash[^\n]*\n\|[-| ]+\n(\|[^\n]+\n)+',
-        '*See online version for full comparison table.*\n',
-        md_text
-    )
+    # NOTE: Wide comparison table (Section 9) is kept — handled as table* in LaTeX
 
     # Remove leading whitespace/dashes
     md_text = md_text.lstrip('\n -')
@@ -64,10 +59,8 @@ def fix_longtable_in_latex(latex: str) -> str:
     """Replace longtable environments with tabular for twocolumn compat."""
 
     # Step 1: Handle the full {\def\LTcaptype{none} ... \end{longtable}\n} blocks
-    # These wrap every longtable pandoc generates
     def replace_lt_block(m):
         inner = m.group(1)
-        # Process the inner longtable content
         return process_longtable_inner(inner)
 
     latex = re.sub(
@@ -77,7 +70,7 @@ def fix_longtable_in_latex(latex: str) -> str:
         flags=re.DOTALL
     )
 
-    # Step 2: Handle any remaining bare longtable (shouldn't be any, but just in case)
+    # Step 2: Handle any remaining bare longtable
     latex = re.sub(
         r'\\begin\{longtable\}.*?\\end\{longtable\}',
         lambda m: process_longtable_inner(m.group(0)),
@@ -110,26 +103,37 @@ def process_longtable_inner(inner: str) -> str:
     else:
         ncols = 2
 
-    # Use tabularx so tables fit cleanly in a two-column layout.
-    # Y is a ragged-right X column (defined in the LaTeX template).
-    if ncols == 5:
+    # Wide tables (6+ columns) get full-width table* environment
+    is_wide = ncols >= 6
+
+    # Use tabularx so tables fit cleanly
+    if is_wide:
+        # Full-width: use textwidth, all columns flexible
+        env = "tabularx"
+        colspec = "l" + "Y" * (ncols - 1)
+        width_cmd = r"\textwidth"
+    elif ncols == 5:
         env = "tabularx"
         colspec = r"lrrrY"
+        width_cmd = r"\columnwidth"
     elif ncols == 4:
         env = "tabularx"
         colspec = r"lrrY"
+        width_cmd = r"\columnwidth"
     elif ncols == 3:
         env = "tabularx"
         colspec = r"lrY"
+        width_cmd = r"\columnwidth"
     elif ncols == 2:
         env = "tabularx"
         colspec = r"lY"
+        width_cmd = r"\columnwidth"
     else:
         env = "tabular"
         colspec = "l" * ncols
+        width_cmd = None
 
-    # Remove everything from \begin{longtable} up to (but not including) \toprule
-    # This handles both simple and complex multiline column specs
+    # Remove everything from \begin{longtable} up to \toprule
     inner = re.sub(
         r'\\begin\{longtable\}.*?(?=\\toprule)',
         '',
@@ -141,56 +145,83 @@ def process_longtable_inner(inner: str) -> str:
     inner = inner.replace(r'\end{longtable}', '')
 
     if env == "tabularx":
-        begin = r"\begin{tabularx}{\columnwidth}{" + colspec + "}"
+        begin = rf"\begin{{tabularx}}{{{width_cmd}}}{{{colspec}}}"
         end = r"\end{tabularx}"
     else:
         begin = r"\begin{tabular}{" + colspec + "}"
         end = r"\end{tabular}"
 
-    return (
-        r"\begin{center}\scriptsize" "\n"
-        r"\setlength{\tabcolsep}{3pt}" "\n"
-        + begin + "\n"
-        + inner.strip() + "\n"
-        + end + "\n"
-        r"\end{center}"
-    )
+    # Wide tables use table* (full-width float spanning both columns)
+    if is_wide:
+        return (
+            r"\begin{table*}[t]" "\n"
+            r"\centering\footnotesize" "\n"
+            r"\setlength{\tabcolsep}{4pt}" "\n"
+            + begin + "\n"
+            + inner.strip() + "\n"
+            + end + "\n"
+            r"\end{table*}"
+        )
+    else:
+        return (
+            r"\begin{center}\footnotesize" "\n"
+            r"\setlength{\tabcolsep}{4pt}" "\n"
+            + begin + "\n"
+            + inner.strip() + "\n"
+            + end + "\n"
+            r"\end{center}"
+        )
 
 
+# ─────────────────────────────────────────────────
+# LaTeX Template — NeurIPS/SIGGRAPH-quality B&W
+# ─────────────────────────────────────────────────
 LATEX_TEMPLATE = r"""
 \documentclass[10pt,twocolumn,letterpaper]{article}
 
-% ── Packages ──
+% ── Fonts (Palatino + Menlo — academic standard) ──
 \usepackage{fontspec}
-\setmainfont{Times New Roman}[
-  BoldFont = Times New Roman Bold,
-  ItalicFont = Times New Roman Italic,
-  BoldItalicFont = Times New Roman Bold Italic
+\setmainfont{Palatino}[
+  BoldFont       = Palatino Bold,
+  ItalicFont     = Palatino Italic,
+  BoldItalicFont = Palatino Bold Italic,
+  Ligatures      = TeX
 ]
-\setmonofont{Courier New}[Scale=0.85]
+\setmonofont{Menlo}[Scale=0.82]
+\frenchspacing  % single space after periods (modern academic standard)
 
-\usepackage[margin=0.85in,top=1in,bottom=1in]{geometry}
+% ── Layout ──
+\usepackage[
+  margin=0.75in,
+  top=0.85in,
+  bottom=0.85in,
+  columnsep=0.3in
+]{geometry}
+
+% ── Core packages ──
 \usepackage{graphicx}
 \usepackage{booktabs}
 \usepackage{array}
 \usepackage{tabularx}
-\usepackage{longtable}   % needed for \real{} in column specs
+\usepackage{longtable}
 \usepackage{xurl}
 \usepackage{hyperref}
 \usepackage{xcolor}
 \usepackage{fancyhdr}
 \usepackage{titlesec}
-% abstract formatting done manually (abstract package conflicts with fontspec)
 \usepackage{enumitem}
-\usepackage{microtype}
 \usepackage{fancyvrb}
 \usepackage{fvextra}
 \usepackage{float}
+\usepackage[protrusion=true]{microtype}
 
-% ── Colors ──
+% ── Colors (B&W only — no brand colors) ──
 \definecolor{linkblue}{RGB}{0,51,153}
-\definecolor{codebg}{RGB}{245,245,245}
-\definecolor{codeframe}{RGB}{200,200,200}
+\definecolor{codebg}{HTML}{F5F5F5}
+\definecolor{codeframe}{HTML}{CCCCCC}
+\definecolor{rulecolor}{HTML}{333333}
+\definecolor{headergray}{HTML}{888888}
+\definecolor{tableheadbg}{HTML}{F0F0F0}
 
 % ── Hyperref ──
 \hypersetup{
@@ -203,49 +234,69 @@ LATEX_TEMPLATE = r"""
     pdfauthor={$for(author)$$author$$sep$, $endfor$},
 }
 
-% Better wrapping for long links/monospace tokens in narrow two-column layout
+% Better wrapping for long links/monospace in narrow columns
 \Urlmuskip=0mu plus 2mu\relax
 \setlength{\emergencystretch}{5em}
+
+% ── Code blocks: gray background + thin frame ──
 \fvset{
   breaklines=true,
   breakanywhere=true,
   fontsize=\footnotesize
 }
+\RecustomVerbatimEnvironment{verbatim}{Verbatim}{
+  breaklines=true,
+  breakanywhere=true,
+  frame=single,
+  rulecolor=\color{codeframe},
+  fillcolor=\color{codebg},
+  framesep=6pt,
+  fontsize=\footnotesize
+}
 
-% Pandoc emits \begin{verbatim} for fenced code blocks. Re-map it to Verbatim
-% so long lines wrap in a two-column layout.
-\RecustomVerbatimEnvironment{verbatim}{Verbatim}{breaklines=true,breakanywhere=true}
+% ── Disable section auto-numbering (markdown has manual numbers) ──
+\setcounter{secnumdepth}{-1}
 
-% ── Headers/footers ──
+% ── Section formatting: thin rule beneath ──
+\titleformat{\section}
+    {\normalfont\large\bfseries}
+    {}{0pt}{}[\vspace{2pt}\titlerule]
+\titleformat{\subsection}
+    {\normalfont\normalsize\bfseries}
+    {}{0pt}{}
+\titleformat{\subsubsection}
+    {\normalfont\normalsize\itshape\bfseries}
+    {}{0pt}{}
+
+\titlespacing*{\section}{0pt}{14pt plus 2pt minus 2pt}{6pt plus 1pt}
+\titlespacing*{\subsection}{0pt}{10pt plus 2pt minus 1pt}{4pt plus 1pt}
+\titlespacing*{\subsubsection}{0pt}{8pt plus 1pt minus 1pt}{3pt}
+
+% ── Paragraph spacing ──
+\setlength{\parskip}{3pt plus 1pt minus 1pt}
+\setlength{\parindent}{1em}
+
+% ── Headers & footers ──
 \pagestyle{fancy}
 \fancyhf{}
-\fancyfoot[C]{\thepage}
-\renewcommand{\headrulewidth}{0pt}
+\fancyhead[L]{\small\color{headergray}\textit{Dispatch: Agent-Native Compute}}
+\fancyhead[R]{\small\color{headergray}\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
 \renewcommand{\footrulewidth}{0pt}
 
-% ── Section formatting ──
-\titleformat{\section}
-    {\normalfont\large\bfseries\MakeUppercase}
-    {\thesection.}{0.5em}{}
-\titleformat{\subsection}
-    {\normalfont\normalsize\bfseries\itshape}
-    {\thesubsection}{0.5em}{}
-\titleformat{\subsubsection}
-    {\normalfont\normalsize\bfseries}
-    {\thesubsubsection}{0.5em}{}
-
-\titlespacing*{\section}{0pt}{12pt}{6pt}
-\titlespacing*{\subsection}{0pt}{8pt}{4pt}
-\titlespacing*{\subsubsection}{0pt}{6pt}{3pt}
-
-% ── Abstract formatting (manual) ──
+% First page: no header
+\fancypagestyle{plain}{
+  \fancyhf{}
+  \fancyfoot[C]{\small\thepage}
+  \renewcommand{\headrulewidth}{0pt}
+}
 
 % ── List formatting ──
-\setlist[itemize]{nosep,leftmargin=1.5em}
-\setlist[enumerate]{nosep,leftmargin=1.5em}
+\setlist[itemize]{nosep,leftmargin=1.5em,topsep=2pt}
+\setlist[enumerate]{nosep,leftmargin=1.5em,topsep=2pt}
 
 % ── Table formatting ──
-\renewcommand{\arraystretch}{1.3}
+\renewcommand{\arraystretch}{1.4}
 \newcolumntype{Y}{>{\raggedright\arraybackslash}X}
 
 % ── Pandoc tightlist ──
@@ -256,39 +307,47 @@ $if(highlighting-macros)$
 $highlighting-macros$
 $endif$
 
+% (abstract box is inlined in the template body — no macro needed)
+
 % ── Begin document ──
 \begin{document}
 \sloppy
 \setlength{\emergencystretch}{3em}
+\thispagestyle{plain}
 
 % ── Title block (full-width) ──
 \twocolumn[
 \begin{@twocolumnfalse}
 \begin{center}
+    \vspace{4pt}
     {\LARGE\bfseries $title$ \par}
-    \vspace{12pt}
+    \vspace{14pt}
     {\large $for(author)$$author$$sep$ \and $endfor$ \par}
     \vspace{4pt}
-    {\normalsize\itshape Dispatch \par}
+    {\normalsize Dispatch \par}
     \vspace{4pt}
     {\small $date$ \par}
     \vspace{2pt}
-    {\small\color{gray} \url{https://www.dispatch.computer} \par}
-    \vspace{12pt}
+    {\small\url{https://www.dispatch.computer} \par}
+    \vspace{16pt}
 \end{center}
 
 $if(abstract)$
-\vspace{4pt}
-\begin{center}\textbf{\small ABSTRACT}\end{center}
+\setlength{\fboxsep}{10pt}%
+\noindent\fcolorbox{black}{codebg}{%
+\begin{minipage}{\dimexpr\textwidth-20pt-2\fboxrule}%
+\begin{center}{\small\bfseries\scshape Abstract}\end{center}
 \vspace{2pt}
-\begin{quote}
 \small\noindent $abstract$
-\end{quote}
+$if(keywords)$
+\vspace{8pt}
+\noindent\textbf{\footnotesize Keywords:} {\footnotesize $keywords$}
+$endif$
+\end{minipage}%
+}
 $endif$
 
-\vspace{8pt}
-\noindent\rule{\textwidth}{0.4pt}
-\vspace{4pt}
+\vspace{12pt}
 \end{@twocolumnfalse}
 ]
 
@@ -315,6 +374,9 @@ def main():
     cleaned = re.sub(r'## Abstract\s*\n.*?(?=\n---|\n## )', '', cleaned, flags=re.DOTALL)
     cleaned = cleaned.lstrip('\n -')
 
+    # Indent abstract for YAML block scalar (every line needs 2-space indent)
+    abstract_indented = textwrap.indent(abstract_text, "  ")
+
     # Build the pandoc-ready markdown with YAML frontmatter
     pandoc_md = f"""---
 title: "Dispatch: Agent-Native Compute via x402 Payment, ERC-8004 Reputation, and BOLT Token Settlement"
@@ -322,7 +384,8 @@ author:
   - Pranit Garg
 date: "February 2026"
 abstract: |
-  {abstract_text}
+{abstract_indented}
+keywords: "agent compute, x402 micropayments, ERC-8004, onchain reputation, BOLT token, decentralized inference, Solana, Monad, ed25519 receipts"
 ---
 
 {cleaned}
@@ -364,11 +427,10 @@ abstract: |
 
     # Step 3: Compile with tectonic
     print("Step 3: Compiling PDF with tectonic...")
-    # Do not keep intermediates; it creates noisy .aux/.out files in docs/.
     cmd_pdf = ["tectonic", "-X", "compile", latex_path, "-o", str(DOCS_DIR)]
     r2 = subprocess.run(cmd_pdf, capture_output=True, text=True)
 
-    # Check if PDF was actually produced (nonstopmode means exit code may still be non-zero)
+    # Check if PDF was actually produced
     tex_name = Path(latex_path).stem
     generated_pdf = DOCS_DIR / f"{tex_name}.pdf"
     if not generated_pdf.exists() and r2.returncode != 0:
@@ -376,8 +438,6 @@ abstract: |
         raise SystemExit(1)
 
     # Rename output (tectonic names it after the .tex file)
-    tex_name = Path(latex_path).stem
-    generated_pdf = DOCS_DIR / f"{tex_name}.pdf"
     if generated_pdf.exists():
         generated_pdf.rename(OUTPUT_PDF)
 
