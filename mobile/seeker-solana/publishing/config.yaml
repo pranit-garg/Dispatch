@@ -19,7 +19,7 @@ app:
       uri: media/app_icon.png
 release:
   version: 1.2.0
-  address: F17PWWV7YmJFwmdQ3d199oWuFonccz4zTxVfA8TKcdez
+  address: 7dN3wn6CEvXjNfDAZCjjcTTFMkWN75dui3w84mmKg69p
   media:
     - purpose: icon
       width: 512
@@ -31,19 +31,19 @@ release:
       uri: media/banner.png
     - purpose: screenshot
       width: 1080
-      height: 1920
+      height: 2424
       uri: media/screenshot_dashboard_offline.png
     - purpose: screenshot
       width: 1080
-      height: 1920
+      height: 2424
       uri: media/screenshot_dashboard_earning.png
     - purpose: screenshot
       width: 1080
-      height: 1920
+      height: 2424
       uri: media/screenshot_onboarding.png
     - purpose: screenshot
       width: 1080
-      height: 1920
+      height: 2424
       uri: media/screenshot_settings.png
   files:
     - purpose: install
@@ -71,7 +71,7 @@ release:
 
         Currently in devnet/beta. The protocol and cryptographic
         signing are production-grade, running against live coordinators.
-      new_in_version: New Activity tab shows all jobs and transactions. Cleaner dashboard. Fixed payment display for both Solana and Monad chains.
+      new_in_version: Copy quality pass across all screens. Dashboard shows both chains clearly. Wallet-generic language (works with any Solana wallet). Updated About section with version 1.2.0 and dual-chain network info.
       saga_features: ''
   android_details:
     cert_fingerprint: 41e018ef799059435c8e59c242263f5f15690ecf7a8d5f5e83f5bee0d4eb0f0d
@@ -87,8 +87,8 @@ solana_mobile_dapp_publisher_portal:
     (BOLT tokens). Reputation posts to Monad Testnet. Both the
     protocol and cryptographic signing are production-grade.
 lastSubmittedVersionOnChain:
-  address: F17PWWV7YmJFwmdQ3d199oWuFonccz4zTxVfA8TKcdez
-  version_code: 2
-  apk_hash: 2p5ENJ3awF7/dyplQdR1RlUMiGLK7i8Sncr0xJKI4nw=
+  address: 7dN3wn6CEvXjNfDAZCjjcTTFMkWN75dui3w84mmKg69p
+  version_code: 3
+  apk_hash: /HcxPdOptB8S1sPkNE4ZpQaVNhbrkQXecfJf0G9Xc8Y=
 lastUpdatedVersionOnStore:
-  address: F17PWWV7YmJFwmdQ3d199oWuFonccz4zTxVfA8TKcdez
+  address: 7dN3wn6CEvXjNfDAZCjjcTTFMkWN75dui3w84mmKg69p
