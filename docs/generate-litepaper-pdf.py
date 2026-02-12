@@ -85,7 +85,8 @@ def process_longtable_inner(inner: str) -> str:
     """Convert a longtable block to a tabular block."""
     # Remove longtable-specific commands
     inner = re.sub(r'\\endhead\s*', '', inner)
-    inner = re.sub(r'\\endlastfoot\s*', '', inner)
+    inner = re.sub(r'\\bottomrule\s*\\endlastfoot\s*', '', inner)  # remove paired bottomrule
+    inner = re.sub(r'\\endlastfoot\s*', '', inner)  # safety net
     inner = re.sub(r'\\endfirsthead\s*', '', inner)
     inner = re.sub(r'\\endfoot\s*', '', inner)
 
@@ -104,7 +105,7 @@ def process_longtable_inner(inner: str) -> str:
         ncols = 2
 
     # Wide tables (6+ columns) get full-width table* environment
-    is_wide = ncols >= 6
+    is_wide = ncols >= 5
 
     # Use tabularx so tables fit cleanly
     if is_wide:
@@ -112,10 +113,6 @@ def process_longtable_inner(inner: str) -> str:
         env = "tabularx"
         colspec = "l" + "Y" * (ncols - 1)
         width_cmd = r"\textwidth"
-    elif ncols == 5:
-        env = "tabularx"
-        colspec = r"lrrrY"
-        width_cmd = r"\columnwidth"
     elif ncols == 4:
         env = "tabularx"
         colspec = r"lrrY"
@@ -213,6 +210,8 @@ LATEX_TEMPLATE = r"""
 \usepackage{fancyvrb}
 \usepackage{fvextra}
 \usepackage{float}
+\usepackage{mdframed}
+\usepackage{etoolbox}
 \usepackage[protrusion=true]{microtype}
 
 % ── Colors (B&W only — no brand colors) ──
@@ -247,12 +246,17 @@ LATEX_TEMPLATE = r"""
 \RecustomVerbatimEnvironment{verbatim}{Verbatim}{
   breaklines=true,
   breakanywhere=true,
-  frame=single,
-  rulecolor=\color{codeframe},
-  fillcolor=\color{codebg},
-  framesep=6pt,
   fontsize=\footnotesize
 }
+\surroundwithmdframed[
+  backgroundcolor=codebg,
+  linecolor=codeframe,
+  linewidth=0.4pt,
+  innertopmargin=6pt,
+  innerbottommargin=6pt,
+  innerleftmargin=6pt,
+  innerrightmargin=6pt
+]{Verbatim}
 
 % ── Disable section auto-numbering (markdown has manual numbers) ──
 \setcounter{secnumdepth}{-1}
@@ -366,6 +370,7 @@ def main():
         md_text, re.DOTALL
     )
     abstract_text = abstract_match.group(1).strip() if abstract_match else ""
+    abstract_text = abstract_text.replace("\n\n", r" \par\medskip\noindent ")
 
     # Clean the markdown
     cleaned = clean_markdown(md_text)

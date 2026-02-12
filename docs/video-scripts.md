@@ -56,7 +56,7 @@ Third, Solana Mobile Wallet Adapter and the Seeker. A whole fleet of phones that
 
 [SHOW: docs.dispatch.computer, GitHub repo]
 
-This is a working MVP. Dual-chain: Solana for payments and mobile, Monad for identity and reputation. 12,000+ lines of TypeScript. Full end-to-end flow running on testnet.
+This is a working MVP. Dual-chain: Solana for payments and mobile, Monad for identity and reputation. 16,000+ lines of TypeScript. Full end-to-end flow running on testnet.
 
 Desktop workers running Ollama for real LLM inference. Mobile workers handling lightweight task jobs: summarize, classify, extract. Both signing ed25519 receipts on every result.
 
@@ -92,13 +92,14 @@ This is a technical walkthrough of Dispatch. I'll show the architecture, run a l
 
 [SHOW: VS Code with the monorepo open, file tree visible]
 
-Dispatch is a TypeScript monorepo. Six packages:
+Dispatch is a TypeScript monorepo. Fifteen packages and apps:
 
-- `coordinator`: the routing and matching layer, Express + WebSocket
-- `worker`: desktop workers running Node.js with Ollama
+- `coordinator-core`, plus Monad and Solana variants: the routing layer, Express + WebSocket
+- `worker-desktop`: desktop workers running Node.js with Ollama
 - `cli`: the agent-facing CLI for submitting jobs
 - `erc8004`: viem wrappers for Monad's Identity and Reputation registries
 - `bolt`: token distribution and staking logic
+- `compute-router`: client SDK with decentralized and hosted adapters
 - Mobile app in `mobile/seeker-solana/`: React Native + Expo
 
 [SHOW: briefly scroll through the packages/ directory]
@@ -157,7 +158,7 @@ The contracts are live on Monad testnet. Identity Registry at `0x8004A8...`, Rep
 
 That's Dispatch. A working dual-chain compute network with x402 payments, ERC-8004 reputation, and Solana mobile support.
 
-12,000 lines of TypeScript, MIT licensed, built entirely by AI agents. The coordinator is live on Railway, the mobile app is running on a real Seeker phone, and the whole thing is on GitHub. The code is at docs.dispatch.computer and it's running on testnet right now.
+16,000+ lines of TypeScript, MIT licensed, built entirely by AI agents. The coordinator is live on Railway, the mobile app is running on a real Seeker phone, and the whole thing is on GitHub. The code is at docs.dispatch.computer and it's running on testnet right now.
 
 ---
 
@@ -205,7 +206,7 @@ That's Dispatch. A working dual-chain compute network with x402 payments, ERC-80
 - **Receipt**: SHA-256 hash of output, signed with device's ed25519 private key. Coordinator can verify independently.
 - **Desktop workers**: run real LLM inference via Ollama (heavier compute)
 - **Mobile workers**: run lightweight task processing (designed for phone hardware)
-- **Earnings**: 0.001 BOLT per completed task, settled as real SPL token transfers on Solana devnet (batched every 5 jobs or 60s)
+- **Earnings**: 0.001 BOLT per completed task, settled as real SPL token transfers on Solana devnet (settled per job)
 
 ---
 
@@ -224,7 +225,7 @@ That's Dispatch. A working dual-chain compute network with x402 payments, ERC-80
 
 | Feature | Status | Details |
 |---------|--------|---------|
-| BOLT token transfers | **REAL** | SPL token on Solana devnet, batched every 5 jobs or 60s |
+| BOLT token transfers | **REAL** | SPL token on Solana devnet, settled per job |
 | ERC-8004 reputation feedback | **REAL** | Every completed job posts a `giveFeedback` tx to Monad testnet |
 | Transaction hashes in app | **REAL** | Both Solana + Monad tx hashes with explorer links |
 | Block explorer links | **REAL** | Solana explorer (devnet) + Monad testnet explorer |
