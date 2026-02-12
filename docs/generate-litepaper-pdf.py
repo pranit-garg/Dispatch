@@ -210,7 +210,7 @@ LATEX_TEMPLATE = r"""
 \usepackage{fancyvrb}
 \usepackage{fvextra}
 \usepackage{float}
-\usepackage{mdframed}
+\usepackage{framed}
 \usepackage{etoolbox}
 \usepackage[protrusion=true]{microtype}
 
@@ -248,15 +248,9 @@ LATEX_TEMPLATE = r"""
   breakanywhere=true,
   fontsize=\footnotesize
 }
-\surroundwithmdframed[
-  backgroundcolor=codebg,
-  linecolor=codeframe,
-  linewidth=0.4pt,
-  innertopmargin=6pt,
-  innerbottommargin=6pt,
-  innerleftmargin=6pt,
-  innerrightmargin=6pt
-]{Verbatim}
+\definecolor{shadecolor}{HTML}{F5F5F5}
+\BeforeBeginEnvironment{Verbatim}{\begin{snugshade}\vspace{-2pt}}
+\AfterEndEnvironment{Verbatim}{\vspace{-2pt}\end{snugshade}}
 
 % ── Disable section auto-numbering (markdown has manual numbers) ──
 \setcounter{secnumdepth}{-1}

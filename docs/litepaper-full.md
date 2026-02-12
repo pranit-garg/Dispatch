@@ -10,7 +10,7 @@ AI agents are becoming autonomous economic actors, but they lack infrastructure 
 
 Dispatch is a protocol that routes AI inference jobs from agents to idle consumer hardware (phones and desktops) using x402 micropayments for settlement and ERC-8004 onchain reputation for trust. Agents pay in USDC via standard HTTP headers. Workers process jobs and sign ed25519 receipts over their outputs. Coordinators match jobs to workers based on device type, routing policy, and onchain reputation scores. The system runs on a dual-chain architecture: Solana as the economic layer (BOLT token, staking, USDC payments, Seeker device support) and Monad as the trust layer (ERC-8004 identity and reputation, governance, receipt anchoring).
 
-Dispatch is the first protocol to combine x402 HTTP payments with ERC-8004 onchain reputation into a working compute marketplace built on idle consumer devices. BOLT is the settlement token that aligns network incentives: agents pay USDC, coordinators auto-swap to BOLT via Jupiter DEX, workers earn BOLT (Solana) and wBOLT (Monad), and a 5% burn on every job creates deflationary pressure. The testnet MVP is live on Monad and Solana with 12,000+ lines of TypeScript, dual-chain coordinators, mobile and desktop workers, and end-to-end cryptographic verification.
+Dispatch is the first protocol to combine x402 HTTP payments with ERC-8004 onchain reputation into a working compute marketplace built on idle consumer devices. BOLT is the settlement token that aligns network incentives: agents pay USDC, coordinators auto-swap to BOLT via Jupiter DEX, workers earn BOLT (Solana) and wBOLT (Monad), and a 5% burn on every job creates deflationary pressure. The testnet MVP is live on Monad and Solana with 16,000+ lines of TypeScript, dual-chain coordinators, mobile and desktop workers, and end-to-end cryptographic verification.
 
 ---
 
@@ -100,7 +100,7 @@ Both coordinators share the same core codebase (`@dispatch/coordinator-core`) bu
 
 | Layer | Technology |
 |-------|-----------|
-| Protocol | TypeScript monorepo, 8,000+ lines |
+| Protocol | TypeScript monorepo, 16,000+ lines |
 | Coordinators | Express, SQLite, WebSocket (ws) |
 | Payments | x402 USDC micropayments (@x402/express, @x402/core) |
 | Verification | Ed25519 receipts (tweetnacl) |
@@ -517,6 +517,4 @@ Dispatch's closest analogy is Helium's approach to hardware onboarding, leveragi
 9. **Akash Network.** Decentralized GPU compute marketplace. Container-granularity comparison.
 10. **Render Network.** Distributed GPU rendering. Datacenter-class hardware comparison.
 
----
-
-*Dispatch is open source under the MIT license. Codebase: 8,000+ lines of TypeScript across 14 packages and applications.*
+**Code availability.** Dispatch is open source under the MIT license. The full codebase (16,000+ lines of TypeScript across 15 packages and applications) is available at [github.com/pranit-garg/Dispatch](https://github.com/pranit-garg/Dispatch).
