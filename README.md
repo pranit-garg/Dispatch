@@ -95,11 +95,14 @@ Agent (HTTP + x402)  →  Coordinator  →  Worker (phone/desktop)
 2. **Coordinator routes it.** Matches to the best worker by device type, reputation score, and routing policy (FAST / CHEAP / PRIVATE).
 3. **Worker processes.** Summarization, classification, extraction, or LLM inference via Ollama.
 4. **Worker signs a receipt.** ed25519 signature over the output hash. Cryptographic proof of who computed what.
-5. **Payment settles.** Worker receives BOLT (Solana) or USDC (Monad) for completed job. 5% protocol fee.
+5. **Payment settles.** Worker receives BOLT (Solana) or wBOLT (Monad) for completed job. 5% protocol fee burned.
 
 ## What's Working (Testnet)
 
-- Full end-to-end flow: agent → coordinator → worker → receipt → settlement
+- Full end-to-end flow: agent → coordinator → worker → receipt → BOLT settlement
+- BOLT distribution on Solana devnet via BoltDistributor (batched SPL payouts)
+- wBOLT distribution on Monad testnet via WrappedBoltDistributor (ERC-20 minting)
+- Jupiter DEX swap integration (USDC→BOLT, with fallback to direct distribution)
 - Android app picking up jobs via WebSocket ([APK](https://expo.dev/artifacts/eas/pRku9ZWEqdSGS2poEU9VjN.apk))
 - Desktop workers with Ollama LLM inference
 - Ed25519 receipt signing and verification
@@ -109,18 +112,18 @@ Agent (HTTP + x402)  →  Coordinator  →  Worker (phone/desktop)
 - Trust pairing for private job routing
 - ERC-8004 worker registration and per-job reputation on Monad
 
-## BOLT Token (Upcoming)
+## BOLT Token
 
-BOLT is the planned settlement token for the Dispatch network. Currently, workers earn USDC per job via x402 micropayments. When BOLT launches on Solana devnet, USDC will auto-convert to BOLT, giving workers token upside.
+BOLT is the settlement token for the Dispatch network. Agents pay USDC via x402 micropayments. The coordinator auto-swaps USDC to BOLT via Jupiter DEX (with fallback to direct authority distribution when no DEX pool exists). Workers earn BOLT on Solana devnet and wBOLT (ERC-20) on Monad testnet.
 
-**How it will work (planned):** Agents pay USDC (unchanged UX). At the coordinator, USDC auto-swaps to BOLT via Jupiter DEX. Workers receive BOLT as payment. 100% of economic activity flows through BOLT, so every job creates buy pressure.
+**How it works:** Agents pay USDC (unchanged UX). On Solana, the coordinator swaps USDC to BOLT via Jupiter, then transfers BOLT to workers. On Monad, the coordinator mints wBOLT (Wrapped BOLT) to workers after each job. Both chains distribute tokens via batched settlement (threshold or interval-based).
 
-**Value accrual (planned):**
-1. **Buy pressure.** Every job converts USDC to BOLT on Jupiter
+**Value accrual:**
+1. **Buy pressure.** Every job converts USDC to BOLT on Jupiter (when pool exists)
 2. **Supply lock.** Workers stake BOLT for priority matching
 3. **Burn.** 5% protocol fee permanently burned per job
 
-**Staking tiers** (planned, zero stake required to earn):
+**Staking tiers** (zero stake required to earn):
 
 | Tier | Stake | Benefits |
 |------|-------|----------|
@@ -128,7 +131,11 @@ BOLT is the planned settlement token for the Dispatch network. Currently, worker
 | Verified | 100 BOLT | All tiers, +5 priority, 1.5x rep multiplier |
 | Sentinel | 1,000 BOLT | Priority matching, +10 bonus, 2x rep, revenue share |
 
-BOLT will be a native SPL token on Solana. Wrapped BOLT (ERC-20) on Monad for governance.
+**Token status:**
+- BOLT (SPL): Live on Solana devnet, distributed via BoltDistributor
+- wBOLT (ERC-20): Live on Monad testnet, minted via WrappedBoltDistributor (custodial)
+- Jupiter swap: Built with fallback (activates when BOLT/USDC pool is created)
+- Staking: Designed, reads balance for tier assignment (no lockup program yet)
 
 ---
 
@@ -138,7 +145,7 @@ BOLT will be a native SPL token on Solana. Wrapped BOLT (ERC-20) on Monad for go
 >
 > Dispatch is a protocol that routes AI inference jobs from agents to idle consumer hardware (phones and desktops) using x402 micropayments for settlement and ERC-8004 onchain reputation for trust. Agents pay in USDC via standard HTTP headers. Workers process jobs and sign ed25519 receipts over their outputs. Coordinators match jobs to workers based on device type, routing policy, and onchain reputation scores. The system runs on a dual-chain architecture: Solana as the economic layer (BOLT token, staking, USDC payments, Seeker device support) and Monad as the trust layer (ERC-8004 identity and reputation, governance, receipt anchoring).
 >
-> Dispatch is the first protocol to combine x402 payments with ERC-8004 reputation, both co-authored by the same team at Coinbase, into a working compute marketplace built on idle consumer devices.
+> Dispatch is the first protocol to combine x402 HTTP payments with ERC-8004 onchain reputation into a working compute marketplace built on idle consumer devices.
 
 **[Read the full litepaper (PDF)](docs/Dispatch_Litepaper.pdf)** · *Pranit Garg, February 2026*
 
@@ -154,7 +161,7 @@ BOLT will be a native SPL token on Solana. Wrapped BOLT (ERC-20) on Monad for go
 
 ## Monad + ERC-8004
 
-Dispatch is the first project to combine [x402](https://www.x402.org/) payments with [ERC-8004](https://github.com/erc-8004/erc-8004-contracts) reputation, both designed by the same team at Coinbase.
+Dispatch is the first project to combine [x402](https://www.x402.org/) payments with [ERC-8004](https://github.com/erc-8004/erc-8004-contracts) onchain reputation into a working compute marketplace.
 
 - **Worker identity.** Workers register as ERC-8004 agents on Monad and receive an agent NFT
 - **Per-job reputation.** After every completed job, the coordinator posts onchain feedback: score, skill tag, feedback hash
@@ -195,7 +202,7 @@ chain/
 |-------|------|
 | Protocol | TypeScript monorepo, 12K+ lines |
 | Coordinators | Express, SQLite, WebSocket |
-| Payments | x402 USDC micropayments (Coinbase) |
+| Payments | x402 USDC micropayments |
 | Verification | ed25519 signed receipts |
 | Reputation | ERC-8004 on Monad (viem) |
 | Mobile | React Native, Expo, Solana MWA |

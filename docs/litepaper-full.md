@@ -10,7 +10,7 @@ AI agents are becoming autonomous economic actors, but they lack infrastructure 
 
 Dispatch is a protocol that routes AI inference jobs from agents to idle consumer hardware (phones and desktops) using x402 micropayments for settlement and ERC-8004 onchain reputation for trust. Agents pay in USDC via standard HTTP headers. Workers process jobs and sign ed25519 receipts over their outputs. Coordinators match jobs to workers based on device type, routing policy, and onchain reputation scores. The system runs on a dual-chain architecture: Solana as the economic layer (BOLT token, staking, USDC payments, Seeker device support) and Monad as the trust layer (ERC-8004 identity and reputation, governance, receipt anchoring).
 
-Dispatch is the first protocol to combine x402 payments with ERC-8004 reputation, both co-authored by the same team at Coinbase, into a working compute marketplace built on idle consumer devices. BOLT is the settlement token that aligns network incentives: agents pay USDC, coordinators auto-swap to BOLT, workers earn BOLT, and a 5% burn on every job creates deflationary pressure. The testnet MVP is live on Monad and Solana with 8,000+ lines of TypeScript, dual-chain coordinators, mobile and desktop workers, and end-to-end cryptographic verification.
+Dispatch is the first protocol to combine x402 HTTP payments with ERC-8004 onchain reputation into a working compute marketplace built on idle consumer devices. BOLT is the settlement token that aligns network incentives: agents pay USDC, coordinators auto-swap to BOLT via Jupiter DEX, workers earn BOLT (Solana) and wBOLT (Monad), and a 5% burn on every job creates deflationary pressure. The testnet MVP is live on Monad and Solana with 12,000+ lines of TypeScript, dual-chain coordinators, mobile and desktop workers, and end-to-end cryptographic verification.
 
 ---
 
@@ -251,7 +251,7 @@ Both coordinators validate payments through an x402 facilitator service. The pay
 
 ### 4.2 ERC-8004 Reputation [IMPLEMENTED]
 
-ERC-8004 (Trustless Agents) is a Coinbase-authored ERC standard that provides onchain identity and reputation for autonomous agents. Dispatch uses both registries:
+ERC-8004 (Trustless Agents) is an open ERC standard that provides onchain identity and reputation for autonomous agents. Dispatch uses both registries:
 
 **Identity Registry** (Monad Testnet)
 
@@ -507,7 +507,7 @@ Dispatch's closest analogy is Helium's approach to hardware onboarding, leveragi
 ## 10. References
 
 1. **x402 Protocol.** HTTP-native payments by Coinbase. Specification: [https://www.x402.org/](https://www.x402.org/)
-2. **ERC-8004: Trustless Agents.** Onchain agent identity and reputation by Coinbase. Contracts: [https://github.com/erc-8004/erc-8004-contracts](https://github.com/erc-8004/erc-8004-contracts)
+2. **ERC-8004: Trustless Agents.** Open standard for onchain agent identity and reputation. Contracts: [https://github.com/erc-8004/erc-8004-contracts](https://github.com/erc-8004/erc-8004-contracts)
 3. **Ed25519.** Edwards-curve Digital Signature Algorithm. RFC 8032.
 4. **tweetnacl.** JavaScript implementation of NaCl cryptographic library. Used for receipt signature verification.
 5. **viem.** TypeScript interface for Ethereum. Used for ERC-8004 contract interactions on Monad.

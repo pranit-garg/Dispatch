@@ -42,110 +42,14 @@ function PhoneMockup() {
       <div className="absolute -left-[3px] top-[100px] h-10 w-[3px] rounded-l-sm bg-[#3a3a4a]" />
       <div className="absolute -right-[3px] top-[90px] h-8 w-[3px] rounded-r-sm bg-[#3a3a4a]" />
 
-      {/* Solana Seeker frame, modern Android proportions, gray matte */}
+      {/* Solana Seeker frame */}
       <div className="rounded-[2.5rem] border-[1.5px] border-[#4a4a5a] bg-gradient-to-b from-[#35353f] to-[#2a2a35] p-[5px] shadow-xl shadow-black/40">
-        {/* Screen, edge-to-edge display */}
-        <div className="rounded-[2rem] bg-[#0a0a0f] px-3 pb-3 pt-2 relative overflow-hidden">
-          {/* Earpiece / speaker slit */}
-          <div className="absolute top-[3px] left-1/2 -translate-x-1/2 h-[2px] w-10 rounded-full bg-[#2a2a35]" />
-          {/* Punch-hole camera */}
-          <div className="absolute top-[10px] left-1/2 -translate-x-1/2 h-[6px] w-[6px] rounded-full bg-[#15151f] ring-1 ring-[#3a3a4a]" />
-
-          {/* Android status bar */}
-          <div className="mt-3 mb-3 flex items-center justify-between text-[10px] text-[#64748b]">
-            <span>12:42</span>
-            <div className="flex items-center gap-1.5">
-              <svg className="h-2.5 w-2.5" fill="#64748b" viewBox="0 0 24 24"><path d="M2 22h4V12H2v10zm6 0h4V7H8v15zm6 0h4V2h-4v20z" /></svg>
-              <svg className="h-2.5 w-2.5" fill="#64748b" viewBox="0 0 24 24"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z" /></svg>
-              <div className="flex items-center gap-0.5">
-                <div className="h-2 w-4 rounded-sm border border-[#64748b] p-px">
-                  <div className="h-full w-3/4 rounded-[1px] bg-[#34d399]" />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* App header */}
-          <div className="mb-3 text-center">
-            <div className="text-sm font-extrabold tracking-wide text-[#f8fafc]">Dispatch</div>
-            <div className="text-[8px] font-semibold uppercase tracking-[2px] text-[#e8b84a]">Compute Node</div>
-          </div>
-
-          {/* StatusCard */}
-          <div className="mb-2 rounded-xl border border-[#2a2a45] bg-[#1a1a2e] p-2.5">
-            <div className="mb-1.5 flex items-center justify-between">
-              <div className="flex items-center gap-1.5">
-                <span className="inline-block h-2 w-2 rounded-full bg-[#34d399] animate-pulse" />
-                <span className="text-[10px] font-semibold text-[#34d399]">Online</span>
-              </div>
-              <span className="rounded bg-[#252540] px-1.5 py-0.5 text-[7px] font-bold tracking-wide text-[#d4a246]">DEVICE KEY</span>
-            </div>
-            <div className="flex items-center justify-between text-[9px]">
-              <span className="text-[#64748b]">Network</span>
-              <span className="font-mono text-[#94a3b8]">ws://coordinator:4020</span>
-            </div>
-            <div className="mt-1 flex items-center justify-between text-[9px]">
-              <span className="text-[#64748b]">Node ID</span>
-              <span className="font-mono text-[#94a3b8]">7f3a92c1...d4e8b0f2</span>
-            </div>
-          </div>
-
-          {/* EarningsCard */}
-          <div className="mb-2 flex items-center rounded-xl border border-[#34d399] bg-[#1a1a2e] p-2.5">
-            <div className="flex-1">
-              <div className="text-[7px] font-semibold uppercase tracking-wide text-[#64748b]">Earnings</div>
-              <div className="flex items-baseline gap-1">
-                <span className="font-mono text-lg font-bold text-[#f8fafc]">12.40</span>
-                <span className="text-[10px] font-semibold text-[#34d399]">BOLT</span>
-              </div>
-            </div>
-            <div className="mx-3 h-8 w-px bg-[#2a2a45]" />
-            <div className="text-center">
-              <div className="text-[7px] font-semibold uppercase tracking-wide text-[#64748b]">Completed</div>
-              <span className="font-mono text-lg font-bold text-[#f8fafc]">42</span>
-            </div>
-          </div>
-
-          {/* WorkerToggle */}
-          <div className="my-3 flex justify-center">
-            <div className="relative flex h-20 w-20 items-center justify-center rounded-full border-[2px] border-[#e8b84a] bg-[#d4a246]">
-              <div className="absolute inset-1.5 rounded-full border border-[#e8b84a40]" />
-              <div className="text-center">
-                <div className="text-[10px] font-extrabold tracking-[2px] text-[#f8fafc]">EARNING</div>
-                <div className="text-[7px] text-[#f8fafc99]">Tap to go offline</div>
-              </div>
-            </div>
-          </div>
-
-          {/* JobHistory */}
-          <div>
-            <div className="mb-1.5 text-[8px] font-semibold uppercase tracking-wide text-[#64748b]">Job History</div>
-            <div className="mb-1 flex items-center justify-between rounded-lg bg-[#1a1a2e] px-2 py-1.5">
-              <div className="flex items-center gap-1.5">
-                <span className="rounded bg-[#d4a24620] px-1 py-0.5 text-[7px] font-bold text-[#d4a246]">SUMMARIZE</span>
-                <span className="text-[8px] text-[#64748b]">2m ago</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <span className="font-mono text-[8px] text-[#94a3b8]">340ms</span>
-                <span className="inline-block h-1.5 w-1.5 rounded-full bg-[#34d399]" />
-              </div>
-            </div>
-            <div className="flex items-center justify-between rounded-lg bg-[#1a1a2e] px-2 py-1.5">
-              <div className="flex items-center gap-1.5">
-                <span className="rounded bg-[#8b5cf620] px-1 py-0.5 text-[7px] font-bold text-[#8b5cf6]">CLASSIFY</span>
-                <span className="text-[8px] text-[#64748b]">5m ago</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <span className="font-mono text-[8px] text-[#94a3b8]">128ms</span>
-                <span className="inline-block h-1.5 w-1.5 rounded-full bg-[#34d399]" />
-              </div>
-            </div>
-          </div>
-
-          {/* Android nav bar */}
-          <div className="mt-3 flex items-center justify-center">
-            <div className="h-1 w-24 rounded-full bg-[#4a4a5a]" />
-          </div>
+        <div className="rounded-[2rem] overflow-hidden relative">
+          <img
+            src="/images/app-screenshot.png"
+            alt="Dispatch Seeker app dashboard showing earnings and job history"
+            className="w-full h-auto block"
+          />
         </div>
       </div>
     </div>
@@ -176,7 +80,7 @@ export function Seeker() {
               className="mt-3 inline-flex items-center gap-2 rounded-full border border-border bg-bg-card px-3 py-1 text-xs text-text-dim"
             >
               <span className="inline-block h-1.5 w-1.5 rounded-full bg-accent" />
-              Built for Solana Seeker · Available on dApp Store
+              Built for Solana Seeker
             </motion.div>
 
             <motion.p

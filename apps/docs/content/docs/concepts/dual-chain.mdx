@@ -25,7 +25,8 @@ Solana handles money and mobile devices:
 Monad handles identity and governance:
 
 - **ERC-8004 reputation.** The ERC-8004 standard is EVM-only Solidity. It can't run on Solana. Workers register as agents and build verifiable, onchain track records.
-- **Governance.** Wrapped BOLT (ERC-20) on Monad for protocol proposals and voting.
+- **wBOLT distribution.** Wrapped BOLT (ERC-20) live on Monad testnet. Workers earn wBOLT per job via WrappedBoltDistributor.
+- **Governance.** wBOLT holders will participate in protocol proposals and voting (planned).
 - **Receipt anchoring.** Job receipt hashes anchored onchain for permanent, verifiable proof.
 - **Smart contract programmability.** Monad's EVM compatibility enables complex reputation logic (validation registries, slashing conditions, cross-protocol composability).
 
@@ -58,6 +59,6 @@ This is a read-only cross-chain operation. No bridge, no wrapped tokens for stak
 |----------|-------|---------|
 | Identity Registry | Monad Testnet | `0x8004A818BFB912233c491871b3d84c89A494BD9e` |
 | Reputation Registry | Monad Testnet | `0x8004B663056A597Dffe9eCcC1965A193B7388713` |
-| BOLT Token | Solana Devnet | [DESIGNED] |
-| BOLT Staking | Solana Devnet | [DESIGNED] |
-| Wrapped BOLT | Monad Testnet | [DESIGNED] |
+| BOLT Token (SPL) | Solana Devnet | Live (see `BOLT_MINT` env var) |
+| BOLT Staking | Solana Devnet | Balance-based (lockup program planned) |
+| Wrapped BOLT (wBOLT) | Monad Testnet | Live (see `WBOLT_CONTRACT` env var) |

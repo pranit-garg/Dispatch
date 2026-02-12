@@ -101,8 +101,8 @@ export function Tokenomics() {
           viewport={{ once: true }}
           className="mb-16 text-center"
         >
-          {/* Coming Soon badge */}
-          <span className="mb-4 inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent/5 px-4 py-1.5 text-sm font-medium text-accent-bright">
+          {/* Live badge */}
+          <span className="mb-4 inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/5 px-4 py-1.5 text-sm font-medium text-emerald-400">
             <svg
               className="h-4 w-4"
               fill="none"
@@ -113,18 +113,18 @@ export function Tokenomics() {
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"
+                d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
               />
             </svg>
-            Coming Soon
+            Live on Testnet
           </span>
           <h2 className="text-3xl font-bold md:text-4xl">
-            BOLT on Solana. USDC on Monad. One token to unify them.
+            BOLT on Solana. wBOLT on Monad. Earn on both chains.
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-text-muted">
-            Workers earn BOLT on Solana and USDC on Monad today. When BOLT
-            launches on mainnet, all payments converge to a single token,
-            creating buy pressure, supply lock, and burns.
+            Workers earn BOLT (SPL) on Solana devnet and wBOLT (ERC-20) on
+            Monad testnet. Every job creates buy pressure, supply lock, and
+            burns. No token required to participate.
           </p>
         </motion.div>
 
@@ -139,8 +139,9 @@ export function Tokenomics() {
             Current Status
           </p>
           <p className="mt-2 text-sm text-text-muted">
-            Today: Workers earn BOLT on Solana devnet and USDC on Monad
-            testnet via x402. No token required to participate.
+            Workers earn BOLT on Solana devnet and wBOLT on Monad testnet.
+            Agents pay USDC via x402. Jupiter auto-swap activates when
+            BOLT/USDC pool is created. No token required to participate.
           </p>
         </motion.div>
 
@@ -153,8 +154,8 @@ export function Tokenomics() {
         >
           <div className="mb-8 flex items-center justify-center gap-3">
             <h3 className="text-lg font-semibold">Value Accrual Flywheel</h3>
-            <span className="rounded-full border border-accent/30 bg-accent/10 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-accent">
-              Planned
+            <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-emerald-400">
+              Active
             </span>
           </div>
 

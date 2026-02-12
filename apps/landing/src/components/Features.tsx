@@ -12,7 +12,7 @@ const features = [
     title: "x402 Micropayments",
     description:
       "Attach a payment to any HTTP request. Workers get USDC on completion. No custom token. No staking.",
-    tag: "Coinbase x402",
+    tag: "x402 Protocol",
   },
   {
     icon: (

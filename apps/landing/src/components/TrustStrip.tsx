@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 
 const technologies = [
-  "Coinbase x402",
+  "x402 Payments",
   "Monad",
   "Solana",
   "$BOLT Token",

@@ -3,7 +3,7 @@
  *
  * Abstracts away HOW signing happens so the worker can use either:
  * 1. DeviceKeyProvider — local tweetnacl keypair (existing behavior)
- * 2. MWAProvider — Phantom wallet via Mobile Wallet Adapter
+ * 2. MWAProvider — Solana wallet via Mobile Wallet Adapter
  *
  * Both produce ed25519 signatures, so the coordinator doesn't care
  * which one is used — it just verifies with nacl.sign.detached.verify().
@@ -18,7 +18,7 @@ export interface SigningProvider {
 
   /**
    * Sign arbitrary bytes. Returns base64-encoded ed25519 signature.
-   * For MWA, this may trigger a wallet popup (Phantom approval).
+   * For MWA, this may trigger a wallet popup for approval.
    */
   signMessage(message: Uint8Array): Promise<string>;
 

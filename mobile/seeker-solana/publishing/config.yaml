@@ -57,10 +57,12 @@ release:
 
         Open the app, tap Go Live, and your device starts processing
         lightweight AI tasks from the network. You earn BOLT tokens
-        for every job completed. No GPU needed, no setup, no babysitting.
+        on Solana and wBOLT tokens on Monad for every job completed.
+        No GPU needed, no setup, no babysitting.
 
         Two chains, one app:
-        - Payments settle on Solana Devnet in BOLT tokens
+        - Earn BOLT on Solana Devnet via BoltDistributor
+        - Earn wBOLT on Monad Testnet via WrappedBoltDistributor
         - Reputation builds on Monad Testnet via ERC-8004 attestations
 
         Every result is signed with an ed25519 receipt, so agents know
@@ -71,7 +73,7 @@ release:
 
         Currently in devnet/beta. The protocol and cryptographic
         signing are production-grade, running against live coordinators.
-      new_in_version: Copy quality pass across all screens. Dashboard shows both chains clearly. Wallet-generic language (works with any Solana wallet). Updated About section with version 1.2.0 and dual-chain network info.
+      new_in_version: BOLT tokenomics build-out. Workers now earn on both chains (BOLT on Solana, wBOLT on Monad). Jupiter DEX swap integration built with fallback. Dual-chain earnings display.
       saga_features: ''
   android_details:
     cert_fingerprint: 41e018ef799059435c8e59c242263f5f15690ecf7a8d5f5e83f5bee0d4eb0f0d

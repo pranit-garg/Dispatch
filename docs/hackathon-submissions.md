@@ -21,7 +21,7 @@ Dispatch routes AI inference jobs from autonomous agents to a distributed networ
 2. **Coordinator matches a worker.** Routes to the best available worker based on device type, reputation, and pricing policy (FAST prefers desktops, CHEAP prefers mobile).
 3. **Worker processes the job.** Summarization, classification, extraction, or LLM inference via Ollama.
 4. **Worker signs a receipt.** ed25519 signature over the output hash. Cryptographic proof of who computed what.
-5. **Settlement.** x402 USDC micropayment settles on Solana. Worker gets paid per job.
+5. **Settlement.** x402 USDC payment received, auto-swapped to BOLT via Jupiter (or direct distribution). Worker earns BOLT per job.
 
 ### Why Agents?
 AI agents are the natural customers for decentralized compute. They need cheap inference at scale, they operate autonomously, and they can't negotiate GPU leases. Dispatch gives them a simple interface: HTTP request in, verified result out, payment handled inline.
@@ -31,23 +31,25 @@ AI agents are the natural customers for decentralized compute. They need cheap i
 - **Coordinators**: Dual-chain, Solana (SPL/x402) + Monad (EVM/x402)
 - **Workers**: Desktop (Node.js + Ollama) + Mobile (React Native)
 - **Mobile**: Solana MWA authentication, WebSocket job delivery
-- **Payments**: x402 stablecoin micropayments (Coinbase protocol)
+- **Payments**: x402 stablecoin micropayments (open protocol)
 - **Verification**: ed25519 signed receipts, onchain anchoring ready
 - **Reputation**: ERC-8004 agent identity + reputation on Monad
 
 ### What's Working (Testnet MVP)
-- Full E2E flow: agent → coordinator → worker → receipt → settlement
+- Full E2E flow: agent → coordinator → worker → receipt → BOLT settlement
 - Mobile Android app (APK) picking up jobs via WebSocket
 - Desktop workers with Ollama LLM inference
 - Ed25519 receipt signing and verification
 - Dual-chain coordinators (Monad + Solana)
-- Real-time dashboard showing completed jobs
+- BOLT distribution on Solana devnet, wBOLT distribution on Monad testnet
+- Real-time dashboard showing completed jobs and earnings
 - Three routing policies: FAST, CHEAP, PRIVATE
 - Trust pairing for private job routing
 
 ### Solana-Specific
 - Mobile Wallet Adapter for worker authentication
-- SPL USDC settlement via x402 ExactSvmScheme
+- BOLT SPL token settlement via BoltDistributor (batched payouts)
+- Jupiter DEX integration for USDC→BOLT auto-swap (with fallback)
 - Compatible with Solana Seeker devices
 - Ed25519 receipts use Solana's native signature scheme
 
@@ -98,10 +100,10 @@ This is the core Monad-native feature:
 - Contract: `0x8004B663056A597Dffe9eCcC1965A193B7388713` on Monad Testnet
 
 **BOLT staking amplifies ERC-8004 reputation:**
-Workers who stake BOLT earn higher reputation multipliers. Verified (100 BOLT) gets 1.5x, Sentinel (1,000 BOLT) gets 2x. Staking creates skin-in-the-game alignment: workers with economic stake are incentivized to maintain high-quality output, and the reputation system reflects that commitment. Wrapped BOLT (ERC-20) on Monad enables governance votes and proposals.
+Workers who stake BOLT earn higher reputation multipliers. Verified (100 BOLT) gets 1.5x, Sentinel (1,000 BOLT) gets 2x. Staking creates skin-in-the-game alignment: workers with economic stake are incentivized to maintain high-quality output, and the reputation system reflects that commitment. Wrapped BOLT (wBOLT, ERC-20) is live on Monad testnet. The coordinator mints wBOLT to workers after each completed job via the WrappedBoltDistributor.
 
 **Why ERC-8004 + Dispatch is a natural pairing:**
-ERC-8004 was co-authored by Erik Reppel (Coinbase, x402 creator). Dispatch already uses x402 for payments. Adding ERC-8004 for trust completes the stack: the same team at Coinbase designed both the payment layer and the trust layer. Dispatch is the first project to combine them.
+ERC-8004 is an open standard for onchain agent identity and reputation. Dispatch already uses x402 for payments. Adding ERC-8004 for trust completes the stack: x402 handles the economic layer and ERC-8004 handles the trust layer. Dispatch is the first project to combine them into a working compute marketplace.
 
 ### How It Works
 1. **Worker registers onchain.** Mints an ERC-8004 agent NFT on Monad. Sets agent URI pointing to a registration file with capabilities.

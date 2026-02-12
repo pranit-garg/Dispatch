@@ -10,7 +10,7 @@ AI agents are becoming autonomous economic actors that need compute on their own
 
 Dispatch is a compute service that routes AI inference jobs from agents to idle consumer hardware (phones and desktops). Agents pay USDC per job via x402 HTTP payment headers. Workers process jobs and return ed25519 signed receipts over their outputs. Coordinators match jobs to workers based on device type, routing policy, and onchain reputation scores. The system runs on a dual-chain architecture: Solana for economics (USDC payments, Seeker device support) and Monad for trust (ERC-8004 identity and reputation, receipt anchoring).
 
-Dispatch combines x402 payments with ERC-8004 reputation, both co-authored by the same team at Coinbase, into a working compute marketplace built on idle consumer devices. BOLT is the planned settlement token that will align network incentives: agents pay USDC, coordinators auto-swap to BOLT via Jupiter DEX, workers earn BOLT with token upside, and a 5% burn on every job creates deflationary pressure. The testnet MVP is live on Monad and Solana with 12,000+ lines of TypeScript, dual-chain coordinators, mobile and desktop workers, and end-to-end cryptographic verification.
+Dispatch combines x402 HTTP payments with ERC-8004 onchain reputation into a working compute marketplace built on idle consumer devices. BOLT is the settlement token that aligns network incentives: agents pay USDC, coordinators auto-swap to BOLT via Jupiter DEX, workers earn BOLT (Solana) and wBOLT (Monad) with token upside, and a 5% burn on every job creates deflationary pressure. The testnet MVP is live on Monad and Solana with 12,000+ lines of TypeScript, dual-chain coordinators, mobile and desktop workers, and end-to-end cryptographic verification.
 
 ---
 
@@ -27,13 +27,14 @@ Dispatch combines x402 payments with ERC-8004 reputation, both co-authored by th
 | ERC-8004 per-job reputation | Live on Monad testnet |
 | ComputeRouter SDK | Implemented |
 | CLI (`@dispatch/cli`) | In development |
-| BOLT token (SPL) | Designed, not yet deployed |
-| Jupiter DEX integration | Designed, not yet deployed |
-| BOLT staking tiers | Designed, not yet deployed |
+| BOLT token (SPL) | Live on Solana devnet |
+| Wrapped BOLT (ERC-20) | Live on Monad testnet |
+| Jupiter DEX integration | Built with fallback (pool pending) |
+| BOLT staking tiers | Designed, reads balance for tier assignment |
 
-**What's working today:** Full end-to-end flow from agent to coordinator to worker, with USDC settlement, ed25519 receipts, and ERC-8004 reputation. Desktop and mobile workers processing real AI inference (summarization, classification, extraction, LLM via Ollama).
+**What's working today:** Full end-to-end flow from agent to coordinator to worker, with USDC settlement, ed25519 receipts, ERC-8004 reputation, and BOLT token distribution on both chains. Desktop and mobile workers processing real AI inference (summarization, classification, extraction, LLM via Ollama).
 
-**What's next:** BOLT token deployment on Solana devnet, CLI release, Jupiter DEX integration for automatic USDC-to-BOLT settlement.
+**What's next:** BOLT/USDC liquidity pool on devnet (enables Jupiter auto-swap), CLI release, staking lockup program.
 
 ---
 

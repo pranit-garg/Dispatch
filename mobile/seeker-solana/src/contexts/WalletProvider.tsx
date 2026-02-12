@@ -222,7 +222,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     }
   }, [coordinatorUrl, status]);
 
-  // Connect to wallet via MWA (opens Phantom for authorization)
+  // Connect to wallet via MWA (opens wallet app for authorization)
   const connectWallet = useCallback(async () => {
     const available = await mwaProvider.isAvailable();
     if (!available) {

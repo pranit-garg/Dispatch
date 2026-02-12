@@ -31,15 +31,6 @@ export function Hero() {
           Live on Monad Testnet + Solana Devnet
         </motion.div>
 
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          className="mt-2 text-xs text-text-dim"
-        >
-          Available on the Solana dApp Store
-        </motion.p>
-
         <motion.h1
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

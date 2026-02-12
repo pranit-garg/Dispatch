@@ -1,38 +1,34 @@
 ---
-title: BOLT Token (Upcoming)
-description: "BOLT is the planned settlement token for the Dispatch network. Currently workers earn USDC per job. When BOLT launches, every dollar of compute will flow through the token."
+title: BOLT Token
+description: "BOLT is the settlement token for the Dispatch network. Workers earn BOLT on Solana devnet and wBOLT on Monad testnet for every completed job."
 ---
 
-# BOLT Token (Upcoming)
+# BOLT Token
 
-**USDC today. BOLT tomorrow.**
+**Workers earn BOLT on every job, on both chains.**
 
-> **Current status:** Workers earn USDC per job via x402 micropayments. BOLT is designed but not yet deployed. The information below describes the planned token economics.
+> **Current status:** BOLT (SPL) is live on Solana devnet. wBOLT (ERC-20) is live on Monad testnet. Jupiter auto-swap is built with fallback to direct distribution until a BOLT/USDC pool is created.
 
-BOLT is the planned settlement layer of the Dispatch compute network. Today, agents pay USDC via x402 and workers earn USDC directly. When BOLT launches, every USDC payment will auto-convert to BOLT before reaching the worker.
+BOLT is the settlement layer of the Dispatch compute network. Agents pay USDC via x402 micropayments. The coordinator auto-swaps USDC to BOLT via Jupiter DEX (when a pool exists) or distributes BOLT directly from the authority. Workers earn BOLT on Solana and wBOLT on Monad.
 
-## BOLT-as-Settlement Model (Planned)
+## BOLT-as-Settlement Model
 
 The key insight: instead of skimming a percentage fee, **100% of economic activity flows through BOLT**. If the network processes $1M in compute, $1M of buy pressure hits the BOLT token, not $50K.
 
-Currently, workers earn USDC directly for every completed job.
-
 ### Flow
-
-When BOLT launches, the flow will be:
 
 1. **Agent pays USDC.** Standard x402 payment header, same as always.
 2. **Coordinator receives USDC.** x402 facilitator verifies payment.
-3. **Auto-swap via Jupiter.** USDC converts to BOLT on Jupiter DEX (atomic, in the job commit flow).
+3. **Auto-swap via Jupiter.** USDC converts to BOLT on Jupiter DEX (with fallback to direct authority distribution).
 4. **Protocol fee.** 5% of BOLT permanently burned.
-5. **Worker receives BOLT.** Remaining 95% deposited to worker's wallet.
+5. **Worker receives BOLT.** Remaining 95% deposited to worker via batched settlement.
 
 Workers choose what to do with earned BOLT:
 - **Hold.** Price upside as network usage grows.
 - **Stake.** Lock BOLT for priority matching and reputation multiplier.
 - **Sell.** Swap back to USDC on Jupiter anytime.
 
-## Value Accrual Flywheel (Planned)
+## Value Accrual Flywheel
 
 Three sources of pressure work together:
 
@@ -44,7 +40,7 @@ Result: More jobs, more buying, less supply, price appreciation, workers earn mo
 
 ## Staking Tiers
 
-> Staking activates when BOLT launches on Solana.
+> Staking reads BOLT balance for tier assignment. Dedicated lockup program is planned.
 
 Staking is optional. Any worker can earn with zero stake, preserving the "100x lower barrier to entry" philosophy. Staking unlocks priority matching and reputation multipliers.
 
@@ -73,30 +69,33 @@ Fixed supply of 1 billion BOLT. No inflation mechanism.
 ## Cross-Chain Design
 
 - **Solana.** BOLT is a native SPL token. Workers earn, stake, and trade where they already have wallets. Deeper consumer DeFi via Jupiter and Raydium.
-- **Monad.** Wrapped BOLT (ERC-20) for governance. Protocol proposals and voting happen on Monad alongside the ERC-8004 reputation system.
+- **Monad.** Wrapped BOLT (wBOLT, ERC-20) live on testnet. Workers earn wBOLT per job via WrappedBoltDistributor. Protocol proposals and voting planned for Monad alongside the ERC-8004 reputation system.
 - Both coordinators read Solana stake levels to determine worker tier.
 
 ## Jupiter DEX Integration
 
-BOLT will trade on Jupiter with real liquidity (planned). The swap happens atomically in the job commit flow:
+The coordinator auto-swaps USDC to BOLT via Jupiter. When no pool exists, it falls back to direct authority distribution.
 
 1. x402 verifies USDC payment
 2. Coordinator calls Jupiter Quote API (`GET /v6/quote`)
-3. Builds swap transaction (USDC input, BOLT output, 0.5% slippage)
-4. Signs and submits as part of the job commit
+3. POST to Jupiter Swap API for serialized transaction
+4. Sign and submit the swap (USDC input, BOLT output, 0.5% slippage)
+5. On failure: fall back to direct BOLT distribution from authority
 
-On Solana devnet: BOLT SPL token deployed with seeded liquidity pool.
-On mainnet: BOLT trades with organic liquidity.
+BOLT/USDC liquidity pool creation is the next step to activate Jupiter routing on devnet.
 
 ## Implementation Status
 
 | Component | Status |
 |-----------|--------|
-| BOLT types + constants | [IMPLEMENTED] |
-| Staking tier matching in coordinator | [IMPLEMENTED] |
-| Jupiter swap integration | [DESIGNED] |
-| SPL token mint program | [DESIGNED] |
-| Dedicated staking program | [DESIGNED] |
-| Wrapped BOLT on Monad | [DESIGNED] |
-| Worker reward emissions | [FUTURE] |
-| Governance voting | [FUTURE] |
+| BOLT types + constants | Live |
+| BOLT SPL token on Solana devnet | Live |
+| wBOLT ERC-20 on Monad testnet | Live |
+| BoltDistributor (batched SPL payouts) | Live |
+| WrappedBoltDistributor (EVM minting) | Live |
+| Staking tier matching in coordinator | Live |
+| Jupiter swap integration | Built (fallback mode, pool pending) |
+| BOLT/USDC liquidity pool | Pending |
+| Dedicated staking program | Planned |
+| Worker reward emissions | Planned |
+| Governance voting | Planned |

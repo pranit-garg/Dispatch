@@ -2,7 +2,7 @@
 
 ## Intro (30s)
 
-**What is Dispatch?** The dispatch layer where AI agents buy compute from idle hardware. Agents submit jobs over HTTP, pay in USDC via x402, and workers build onchain reputation through ERC-8004 on Monad. Live on Monad and Solana testnet.
+**What is Dispatch?** The dispatch layer where AI agents buy compute from idle hardware. Agents submit jobs over HTTP, pay in USDC via x402, and workers build onchain reputation through ERC-8004 on Monad. Workers earn BOLT on Solana devnet and wBOLT on Monad testnet.
 
 **The problem:** AI inference is centralized, expensive, and opaque. You pay OpenAI and trust they ran your model. Dispatch makes compute verifiable, permissionless, and multi-chain, with AI agents as first-class customers.
 
@@ -44,7 +44,7 @@ Tap "Start Worker" in the app.
 - Status changes to "Online, waiting for jobs"
 - Dashboard updates to show +1 worker online
 
-**Say:** "This phone is now a dispatch node on the network. It registered its capabilities and public key over WebSocket. While idle, it picks up AI jobs and earns USDC."
+**Say:** "This phone is now a dispatch node on the network. It registered its capabilities and public key over WebSocket. While idle, it picks up AI jobs and earns BOLT tokens."
 
 ---
 
@@ -114,7 +114,7 @@ If Solana anchoring is enabled, show the transaction on Solana Explorer.
 - **Multi-chain:** Same coordinator protocol works on Monad (EVM) and Solana (SVM). Workers register on either chain.
 - **x402 payments:** Jobs are paid via the x402 HTTP payment protocol. The fee is embedded in the HTTP request itself. No token approvals, no separate payment step.
 - **ERC-8004 reputation:** Workers register as agents on Monad with verifiable onchain reputation. Every job builds track record.
-- **Idle hardware:** The Dispatch app runs on Solana Mobile Stack. Any Android phone becomes a compute node while idle, earning USDC for processing AI tasks.
+- **Idle hardware:** The Dispatch app runs on Solana Mobile Stack. Any Android phone becomes a compute node while idle, earning BOLT tokens for processing AI tasks.
 - **Atomic matching:** The coordinator uses a synchronous claim-and-assign pattern. No race conditions, no double-booking workers.
 
 ---

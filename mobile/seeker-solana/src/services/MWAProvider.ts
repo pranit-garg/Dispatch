@@ -1,7 +1,7 @@
 /**
  * MWAProvider — SigningProvider using Mobile Wallet Adapter (MWA).
  *
- * Connects to Phantom (or any Solana wallet app) via the MWA protocol.
+ * Connects to any Solana wallet app (Phantom, Solflare, etc.) via the MWA protocol.
  * The wallet's ed25519 public key becomes the worker's identity, and
  * receipt signing happens via the wallet's signMessages() API.
  *

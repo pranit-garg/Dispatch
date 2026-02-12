@@ -42,7 +42,7 @@ On mobile, it's even simpler. Open the app, tap once, and your phone connects to
 
 Three things make this possible today that didn't exist a year ago.
 
-First, x402: Coinbase's protocol for HTTP-native micropayments. Agents can pay per request without accounts or API keys.
+First, x402: an open protocol for HTTP-native micropayments. Agents can pay per request without accounts or API keys.
 
 Second, ERC-8004: onchain agent identity and reputation. Workers register, build track records, and agents discover trusted compute through the registry. We're on Monad for this because per-job reputation updates need fast, cheap finality.
 
@@ -189,7 +189,7 @@ That's Dispatch. A working dual-chain compute network with x402 payments, ERC-80
 ### Key Messages to Hit
 1. "One HTTP request in, one verified result out"
 2. "Written entirely by AI agents" (Colosseum Agent Hackathon requirement)
-3. "x402 + ERC-8004 from the same team at Coinbase"
+3. "x402 payments + ERC-8004 reputation, two open standards, one compute marketplace"
 4. "Working MVP, not a spec" (live coordinator on Railway, real phone)
 5. "Dual-chain: each chain does what it's best at"
 6. "Zero friction: open, tap, earn" (mobile demo)
