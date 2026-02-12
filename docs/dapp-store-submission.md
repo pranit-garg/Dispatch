@@ -62,6 +62,17 @@ terminology, fresh screenshots, updated About section.
 - Screenshots: 1080x2424 from emulator (dashboard earning, dashboard offline, onboarding, settings)
 - Review ETA: 1-2 business days
 
+## Update Submission v1.4.0 (Submitted Feb 12, 2026)
+
+v1.4.0 update with per-job BOLT settlement, Monad explorer URL fixes, copyable
+tx hashes in job detail modal, and stale job selection fix.
+
+- Release NFT (v1.4.0): `HMXfgMdQRhQjRoUPMSy4XgTMNRXHkHNM956VWnwAuHGp`
+- [Explorer link](https://explorer.solana.com/address/HMXfgMdQRhQjRoUPMSy4XgTMNRXHkHNM956VWnwAuHGp?cluster=mainnet)
+- APK built via EAS cloud (preview profile), 95.4MB
+- APK Arweave: `https://arweave.net/igj5mFVoRfQGaXsL0YrrmP7MK2vnZLmsRCu7itIrONQ`
+- Review ETA: 1-2 business days
+
 ## Commands (Mainnet)
 
 Run from `mobile/seeker-solana/publishing/` (the CLI expects this).

@@ -19,7 +19,7 @@ app:
       uri: media/app_icon.png
 release:
   version: 1.4.0
-  address: ''
+  address: HMXfgMdQRhQjRoUPMSy4XgTMNRXHkHNM956VWnwAuHGp
   media:
     - purpose: icon
       width: 512
@@ -89,8 +89,8 @@ solana_mobile_dapp_publisher_portal:
     (BOLT tokens). Reputation posts to Monad Testnet. Both the
     protocol and cryptographic signing are production-grade.
 lastSubmittedVersionOnChain:
-  address: XkPjMeGC4ReNtjXhrRSXnWBiPJHVtdwfRa9nR5RF611
-  version_code: 4
-  apk_hash: udDNhafI3PCU26oVyzPiZ+tzxp+fz/v2FrMKex9/z68=
+  address: HMXfgMdQRhQjRoUPMSy4XgTMNRXHkHNM956VWnwAuHGp
+  version_code: 5
+  apk_hash: +eQVKY3C/YEsHWM2sG9h9kfAOrOAcoWcapUmb4oQC+o=
 lastUpdatedVersionOnStore:
-  address: XkPjMeGC4ReNtjXhrRSXnWBiPJHVtdwfRa9nR5RF611
+  address: HMXfgMdQRhQjRoUPMSy4XgTMNRXHkHNM956VWnwAuHGp
