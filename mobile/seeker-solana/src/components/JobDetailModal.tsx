@@ -99,32 +99,54 @@ export function JobDetailModal({ job, visible, onClose }: JobDetailModalProps) {
             {/* Onchain section */}
             <View style={styles.onchainSection}>
               {hasPaymentTx && (
-                <Pressable
-                  style={({ pressed }) => [
-                    styles.explorerButton,
-                    styles.paymentButton,
-                    pressed && { opacity: 0.8 },
-                  ]}
-                  onPress={() => job.paymentExplorerUrl && Linking.openURL(job.paymentExplorerUrl)}
-                >
-                  <Text style={styles.paymentButtonText}>
-                    View on Solana Explorer
-                  </Text>
-                </Pressable>
+                <>
+                  <Pressable
+                    style={({ pressed }) => [
+                      styles.explorerButton,
+                      styles.paymentButton,
+                      pressed && { opacity: 0.8 },
+                    ]}
+                    onPress={() => job.paymentExplorerUrl && Linking.openURL(job.paymentExplorerUrl)}
+                  >
+                    <Text style={styles.paymentButtonText}>
+                      View on Solana Explorer
+                    </Text>
+                  </Pressable>
+                  <Pressable
+                    style={styles.txHashRow}
+                    onPress={() => {
+                      try { Clipboard.setString(job.paymentTxHash!); } catch {}
+                    }}
+                  >
+                    <Text style={styles.txHashLabel}>Payment Tx</Text>
+                    <Text style={styles.txHashValue}>{truncateId(job.paymentTxHash!, 20)}</Text>
+                  </Pressable>
+                </>
               )}
               {hasFeedbackTx && (
-                <Pressable
-                  style={({ pressed }) => [
-                    styles.explorerButton,
-                    styles.reputationButton,
-                    pressed && { opacity: 0.8 },
-                  ]}
-                  onPress={() => job.feedbackExplorerUrl && Linking.openURL(job.feedbackExplorerUrl)}
-                >
-                  <Text style={styles.reputationButtonText}>
-                    View on Monad Explorer
-                  </Text>
-                </Pressable>
+                <>
+                  <Pressable
+                    style={({ pressed }) => [
+                      styles.explorerButton,
+                      styles.reputationButton,
+                      pressed && { opacity: 0.8 },
+                    ]}
+                    onPress={() => job.feedbackExplorerUrl && Linking.openURL(job.feedbackExplorerUrl)}
+                  >
+                    <Text style={styles.reputationButtonText}>
+                      View on Monad Explorer
+                    </Text>
+                  </Pressable>
+                  <Pressable
+                    style={styles.txHashRow}
+                    onPress={() => {
+                      try { Clipboard.setString(job.feedbackTxHash!); } catch {}
+                    }}
+                  >
+                    <Text style={styles.txHashLabel}>Feedback Tx</Text>
+                    <Text style={styles.txHashValue}>{truncateId(job.feedbackTxHash!, 20)}</Text>
+                  </Pressable>
+                </>
               )}
               {pendingTx && job.success && (
                 <Text style={styles.pendingText}>Transaction processing...</Text>
@@ -263,6 +285,23 @@ const styles = StyleSheet.create({
     fontSize: fontSize.sm,
     fontFamily: fontFamily.semibold,
     color: "#8b5cf6",
+  },
+  txHashRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingVertical: spacing.xs,
+    paddingHorizontal: spacing.sm,
+  },
+  txHashLabel: {
+    fontSize: 11,
+    fontFamily: fontFamily.medium,
+    color: colors.textDim,
+  },
+  txHashValue: {
+    fontSize: 11,
+    fontFamily: "monospace",
+    color: colors.textSecondary,
   },
   pendingText: {
     fontSize: fontSize.sm,

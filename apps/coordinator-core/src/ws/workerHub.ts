@@ -194,7 +194,7 @@ export class WorkerHub {
               job_id: msg.job_id,
               tx_hash: txHash,
               network: "monad-testnet",
-              explorer_url: `https://testnet.monadexplorer.com/tx/${txHash}`,
+              explorer_url: `https://testnet.monadvision.com/tx/${txHash}`,
             });
           }
         }).catch((err) => {
@@ -246,7 +246,7 @@ export class WorkerHub {
             job_id: msg.job_id,
             tx_hash: txHash,
             network: "monad-testnet",
-            explorer_url: `https://testnet.monadexplorer.com/tx/${txHash}`,
+            explorer_url: `https://testnet.monadvision.com/tx/${txHash}`,
           });
         }
       }).catch((err) => {

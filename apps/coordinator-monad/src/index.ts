@@ -151,7 +151,7 @@ if (wboltAddress && wboltKey) {
         amount: String(result.amount),
         token: "wBOLT",
         network: "monad-testnet",
-        explorer_url: `https://testnet.monadexplorer.com/tx/${result.txHash}`,
+        explorer_url: `https://testnet.monadvision.com/tx/${result.txHash}`,
       });
     },
     onFailed(workerPubkey: string, jobIds: string[], error: string) {

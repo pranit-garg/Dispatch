@@ -13,7 +13,7 @@ export const monadTestnet = defineChain({
     default: { http: ["https://testnet-rpc.monad.xyz"] },
   },
   blockExplorers: {
-    default: { name: "Monad Explorer", url: "https://testnet.monadexplorer.com" },
+    default: { name: "Monad Explorer", url: "https://testnet.monadvision.com" },
   },
   testnet: true,
 });
