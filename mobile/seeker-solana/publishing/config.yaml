@@ -18,8 +18,8 @@ app:
     - purpose: icon
       uri: media/app_icon.png
 release:
-  version: 1.3.0
-  address: XkPjMeGC4ReNtjXhrRSXnWBiPJHVtdwfRa9nR5RF611
+  version: 1.4.0
+  address: ''
   media:
     - purpose: icon
       width: 512
@@ -73,13 +73,13 @@ release:
 
         Currently in devnet/beta. The protocol and cryptographic
         signing are production-grade, running against live coordinators.
-      new_in_version: Transaction reliability fixes. Nonce queue prevents ERC-8004 feedback conflicts. Retry logic for BOLT settlements. WebSocket reconnection and real-time status improvements.
+      new_in_version: Per-job BOLT settlement with visible Solana tx hashes. Updated Monad explorer URLs. Copyable transaction hashes in job detail modal. Fixed stale job selection state.
       saga_features: ''
   android_details:
     cert_fingerprint: 41e018ef799059435c8e59c242263f5f15690ecf7a8d5f5e83f5bee0d4eb0f0d
     min_sdk: 24
-    version: 1.3.0
-    version_code: 4
+    version: 1.4.0
+    version_code: 5
     locales:
       - en-US
 solana_mobile_dapp_publisher_portal:
