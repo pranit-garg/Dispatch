@@ -181,13 +181,21 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       }),
 
       wsService.on("feedbackPosted", () => {
-        // Force re-render by creating new array ref
-        setJobHistory((prev) => [...prev]);
+        // Re-render AND re-persist so success state survives app restart
+        setJobHistory((prev) => {
+          const next = [...prev];
+          void AsyncStorage.setItem(STORAGE_JOB_HISTORY, JSON.stringify(next));
+          return next;
+        });
       }),
 
       wsService.on("paymentPosted", () => {
-        // Force re-render by creating new array ref
-        setJobHistory((prev) => [...prev]);
+        // Re-render AND re-persist so success state survives app restart
+        setJobHistory((prev) => {
+          const next = [...prev];
+          void AsyncStorage.setItem(STORAGE_JOB_HISTORY, JSON.stringify(next));
+          return next;
+        });
       }),
     ];
 

@@ -1,8 +1,9 @@
 import { createServer, startServer, configFromEnv, buildPaymentConfig, BoltDistributor, type BoltSettlementResult, type ERC8004Config, type StakeConfig } from "@dispatch/coordinator-core";
-import { getReputationSummary, giveFeedback, buildJobFeedback } from "@dispatch/erc8004";
+import { getReputationSummary, giveFeedback, buildJobFeedback, getChainConfig, identityRegistryAbi, monadTestnet } from "@dispatch/erc8004";
 import { paymentMiddleware, x402ResourceServer } from "@x402/express";
 import { ExactSvmScheme } from "@x402/svm/exact/server";
 import { HTTPFacilitatorClient } from "@x402/core/server";
+import { createPublicClient, http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 
 // ── Monad tx queue (serialize writes to prevent nonce conflicts) ──
@@ -12,6 +13,39 @@ function queueMonadTx<T>(fn: () => Promise<T>): Promise<T> {
   const result = monadTxQueue.then(fn);
   monadTxQueue = result.then(() => {}, () => {});
   return result;
+}
+
+// ── Auto-discover a valid ERC-8004 target agent ──
+// Scans the Identity Registry for an agent NOT owned by the coordinator
+// (self-feedback is disallowed on ERC-8004).
+async function discoverTargetAgent(coordinatorAddress: string): Promise<bigint> {
+  const cfg = getChainConfig();
+  const client = createPublicClient({
+    chain: monadTestnet,
+    transport: http(cfg.rpcUrl),
+  });
+
+  for (let i = 0; i <= 30; i++) {
+    try {
+      const owner = await client.readContract({
+        address: cfg.identityRegistry,
+        abi: identityRegistryAbi,
+        functionName: "ownerOf",
+        args: [BigInt(i)],
+      });
+      if ((owner as string).toLowerCase() !== coordinatorAddress.toLowerCase()) {
+        console.log(`[ERC-8004] Discovered target agent ${i} (owner: ${(owner as string).slice(0, 10)}...)`);
+        return BigInt(i);
+      }
+    } catch {
+      break; // Sequential IDs — first gap means no more agents
+    }
+  }
+
+  throw new Error(
+    "No target agent found. Need at least one ERC-8004 agent not owned by the coordinator. " +
+    "Run: npx tsx apps/coordinator-solana/find-agent.ts"
+  );
 }
 
 const config = configFromEnv({
@@ -43,10 +77,9 @@ if (!testnetMode) {
 let erc8004: ERC8004Config | undefined;
 
 const erc8004Key = process.env.ERC8004_PRIVATE_KEY;
-const erc8004AgentId = process.env.ERC8004_AGENT_ID;
-if (erc8004Key && erc8004AgentId) {
+if (erc8004Key) {
   const account = privateKeyToAccount(erc8004Key as `0x${string}`);
-  const agentId = BigInt(erc8004AgentId);
+  const agentId = await discoverTargetAgent(account.address);
   const coordinatorEndpoint = process.env.RAILWAY_PUBLIC_DOMAIN
     ? `https://${process.env.RAILWAY_PUBLIC_DOMAIN}`
     : `http://localhost:${config.port}`;
@@ -70,15 +103,31 @@ if (erc8004Key && erc8004AgentId) {
         jobType: "COMPUTE",
         endpoint: coordinatorEndpoint,
       });
-      const txHash = await queueMonadTx(() => giveFeedback(entry, account));
-      console.log(`[ERC-8004] Feedback tx: ${txHash} for job ${jobId}`);
-      return txHash;
+
+      // Retry up to 3 times with 2s/4s backoff before surfacing failure
+      let lastError: unknown;
+      for (let attempt = 1; attempt <= 3; attempt++) {
+        try {
+          const txHash = await queueMonadTx(() => giveFeedback(entry, account));
+          console.log(`[ERC-8004] Feedback tx: ${txHash} for job ${jobId}`);
+          return txHash;
+        } catch (err) {
+          lastError = err;
+          if (attempt < 3) {
+            const delay = attempt * 2000;
+            console.warn(`[ERC-8004] Feedback attempt ${attempt}/3 failed, retrying in ${delay}ms...`);
+            await new Promise((r) => setTimeout(r, delay));
+          }
+        }
+      }
+
+      throw lastError;
     },
   };
 
   console.log(`[Solana Coordinator] ERC-8004 reputation: ENABLED (agent: ${agentId}, account: ${account.address})`);
 } else {
-  console.log(`[Solana Coordinator] ERC-8004 reputation: DISABLED (need ERC8004_PRIVATE_KEY + ERC8004_AGENT_ID)`);
+  console.log(`[Solana Coordinator] ERC-8004 reputation: DISABLED (need ERC8004_PRIVATE_KEY)`);
 }
 
 // ── BOLT staking (optional) ────────────────────
