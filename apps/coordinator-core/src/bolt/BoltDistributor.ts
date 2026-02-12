@@ -42,8 +42,8 @@ export class BoltDistributor {
   private settling = false;
 
   // Settlement thresholds
-  private readonly JOBS_THRESHOLD = 5;
-  private readonly SETTLE_INTERVAL_MS = 60_000;
+  private readonly JOBS_THRESHOLD = 1;
+  private readonly SETTLE_INTERVAL_MS = 30_000;
 
   constructor(opts: {
     connection: Connection;

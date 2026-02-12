@@ -64,7 +64,9 @@ function ActivityRow({
 }
 
 export function ActivityList({ jobs, isConnected = false }: ActivityListProps) {
-  const [selectedJob, setSelectedJob] = useState<CompletedJob | null>(null);
+  const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
+  // Derive from jobs prop so the modal updates when payment_posted/feedback_posted mutate the job
+  const selectedJob = selectedJobId ? jobs.find(j => j.jobId === selectedJobId) ?? null : null;
 
   if (jobs.length === 0) {
     if (isConnected) {
@@ -91,14 +93,14 @@ export function ActivityList({ jobs, isConnected = false }: ActivityListProps) {
         data={jobs}
         keyExtractor={(item) => item.jobId}
         renderItem={({ item }) => (
-          <ActivityRow job={item} onPress={() => setSelectedJob(item)} />
+          <ActivityRow job={item} onPress={() => setSelectedJobId(item.jobId)} />
         )}
         ItemSeparatorComponent={() => <View style={styles.separator} />}
       />
       <JobDetailModal
         job={selectedJob}
-        visible={selectedJob !== null}
-        onClose={() => setSelectedJob(null)}
+        visible={selectedJobId !== null}
+        onClose={() => setSelectedJobId(null)}
       />
     </View>
   );
