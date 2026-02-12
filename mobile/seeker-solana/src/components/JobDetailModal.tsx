@@ -1,8 +1,8 @@
 /**
- * JobDetailModal: Bottom sheet modal showing full details for a completed job.
+ * JobDetailModal: Bottom sheet showing job details.
  *
- * Slides up from the bottom with a semi-transparent overlay.
- * Displays: Job ID, Task Type, Timestamp, Duration, Result, Earnings.
+ * Simplified: shows earnings, timestamp, duration, job ID,
+ * and explorer buttons. No jargon, no task type labels.
  */
 import React from "react";
 import {
@@ -11,7 +11,9 @@ import {
   Modal,
   Pressable,
   Linking,
+  ScrollView,
   StyleSheet,
+  Clipboard,
 } from "react-native";
 import type { CompletedJob } from "../services/WebSocketService";
 import { colors, spacing, borderRadius, fontSize, fontFamily } from "../theme";
@@ -21,13 +23,6 @@ interface JobDetailModalProps {
   visible: boolean;
   onClose: () => void;
 }
-
-const TASK_DISPLAY_NAMES: Record<string, string> = {
-  summarize: "Summary",
-  classify: "Classify",
-  extract_json: "Extract",
-  TASK: "AI Task",
-};
 
 // ── Helpers ────────────────────────────────────
 
@@ -48,14 +43,18 @@ function truncateId(id: string, maxLen = 16): string {
 }
 
 function formatDuration(ms: number): string {
-  if (ms < 1000) return `${ms}ms`;
-  return `${(ms / 1000).toFixed(2)}s`;
+  return `${(ms / 1000).toFixed(1)} seconds`;
 }
 
 // ── Component ──────────────────────────────────
 
 export function JobDetailModal({ job, visible, onClose }: JobDetailModalProps) {
   if (!job) return null;
+
+  const title = job.success ? "Job Completed" : "Job Failed";
+  const hasFeedbackTx = !!job.feedbackTxHash;
+  const hasPaymentTx = !!job.paymentTxHash;
+  const pendingTx = !hasFeedbackTx && !hasPaymentTx && !job.feedbackFailed && !job.paymentFailed;
 
   return (
     <Modal
@@ -72,99 +71,69 @@ export function JobDetailModal({ job, visible, onClose }: JobDetailModalProps) {
           </Pressable>
 
           {/* Title */}
-          <Text style={styles.sheetTitle}>Job Details</Text>
+          <Text style={styles.sheetTitle}>{title}</Text>
 
-          {/* Detail rows */}
-          <View style={styles.rows}>
-            <DetailRow label="Job ID" value={truncateId(job.jobId)} mono />
-            <DetailRow label="Task Type" value={TASK_DISPLAY_NAMES[job.taskType] ?? job.taskType} />
-            {job.prompt && (
-              <View style={styles.detailRow}>
-                <Text style={styles.detailLabel}>Task</Text>
-                <Text style={[styles.detailValue, styles.promptText]}>{job.prompt}</Text>
-              </View>
-            )}
-            <DetailRow label="Timestamp" value={formatTimestamp(job.timestamp)} />
-            <DetailRow label="Duration" value={formatDuration(job.durationMs)} />
-            <View style={styles.detailRow}>
-              <Text style={styles.detailLabel}>Result</Text>
-              <View style={styles.resultContainer}>
-                <View
-                  style={[
-                    styles.resultDot,
-                    {
-                      backgroundColor: job.success
-                        ? colors.success
-                        : colors.error,
-                    },
-                  ]}
-                />
-                <Text
-                  style={[
-                    styles.detailValue,
-                    { color: job.success ? colors.success : colors.error },
-                  ]}
-                >
-                  {job.success ? "Success" : "Failed"}
+          {/* Big earnings display */}
+          <Text style={job.success ? styles.earningsBig : styles.earningsFailed}>
+            {job.success ? "0.001 BOLT" : "No earnings"}
+          </Text>
+
+          <ScrollView style={styles.scrollArea} showsVerticalScrollIndicator={false}>
+            {/* Info rows */}
+            <View style={styles.rows}>
+              <DetailRow label="Time" value={formatTimestamp(job.timestamp)} />
+              <DetailRow label="Duration" value={formatDuration(job.durationMs)} />
+              <Pressable
+                style={styles.detailRow}
+                onPress={() => {
+                  try { Clipboard.setString(job.jobId); } catch {}
+                }}
+              >
+                <Text style={styles.detailLabel}>Job ID</Text>
+                <Text style={[styles.detailValue, styles.mono]}>
+                  {truncateId(job.jobId)}
                 </Text>
-              </View>
+              </Pressable>
             </View>
-            <DetailRow label="Earnings" value="0.001 BOLT (devnet)" accent />
 
-            {/* Solana BOLT payment transaction */}
-            {job.paymentTxHash ? (
-              <Pressable
-                style={styles.detailRow}
-                onPress={() => {
-                  if (job.paymentExplorerUrl) {
-                    Linking.openURL(job.paymentExplorerUrl);
-                  }
-                }}
-              >
-                <Text style={styles.detailLabel}>Payment Tx</Text>
-                <View style={styles.txLinkContainer}>
-                  <Text style={styles.solanaTxHash}>
-                    {job.paymentTxHash.slice(0, 6)}...{job.paymentTxHash.slice(-4)}
+            {/* Onchain section */}
+            <View style={styles.onchainSection}>
+              {hasPaymentTx && (
+                <Pressable
+                  style={({ pressed }) => [
+                    styles.explorerButton,
+                    styles.paymentButton,
+                    pressed && { opacity: 0.8 },
+                  ]}
+                  onPress={() => job.paymentExplorerUrl && Linking.openURL(job.paymentExplorerUrl)}
+                >
+                  <Text style={styles.paymentButtonText}>
+                    View on Solana Explorer
                   </Text>
-                  <Text style={styles.solanaLinkIcon}>↗</Text>
-                </View>
-              </Pressable>
-            ) : (
-              <View style={styles.detailRow}>
-                <Text style={styles.detailLabel}>Payment Tx</Text>
-                <Text style={[styles.detailValue, { color: colors.textDim }]}>Batching...</Text>
-              </View>
-            )}
-            <DetailRow label="Payment Network" value="Solana Devnet" />
-
-            {/* Monad reputation transaction */}
-            {job.feedbackTxHash ? (
-              <Pressable
-                style={styles.detailRow}
-                onPress={() => {
-                  if (job.feedbackExplorerUrl) {
-                    Linking.openURL(job.feedbackExplorerUrl);
-                  }
-                }}
-              >
-                <Text style={styles.detailLabel}>Reputation Tx</Text>
-                <View style={styles.txLinkContainer}>
-                  <Text style={styles.txHash}>
-                    {job.feedbackTxHash.slice(0, 6)}...{job.feedbackTxHash.slice(-4)}
+                </Pressable>
+              )}
+              {hasFeedbackTx && (
+                <Pressable
+                  style={({ pressed }) => [
+                    styles.explorerButton,
+                    styles.reputationButton,
+                    pressed && { opacity: 0.8 },
+                  ]}
+                  onPress={() => job.feedbackExplorerUrl && Linking.openURL(job.feedbackExplorerUrl)}
+                >
+                  <Text style={styles.reputationButtonText}>
+                    View on Monad Explorer
                   </Text>
-                  <Text style={styles.linkIcon}>↗</Text>
-                </View>
-              </Pressable>
-            ) : (
-              <View style={styles.detailRow}>
-                <Text style={styles.detailLabel}>Reputation Tx</Text>
-                <Text style={[styles.detailValue, { color: colors.textDim }]}>Pending...</Text>
-              </View>
-            )}
-            {job.feedbackNetwork && (
-              <DetailRow label="Reputation Network" value={job.feedbackNetwork === "monad-testnet" ? "Monad Testnet" : job.feedbackNetwork} />
-            )}
-          </View>
+                </Pressable>
+              )}
+              {pendingTx && job.success && (
+                <Text style={styles.pendingText}>Transaction processing...</Text>
+              )}
+              {(job.feedbackFailed || job.paymentFailed) && (
+                <Text style={styles.failedText}>Transaction failed</Text>
+              )}
+            </View>
+          </ScrollView>
         </Pressable>
       </Pressable>
     </Modal>
@@ -176,26 +145,14 @@ export function JobDetailModal({ job, visible, onClose }: JobDetailModalProps) {
 function DetailRow({
   label,
   value,
-  mono,
-  accent,
 }: {
   label: string;
   value: string;
-  mono?: boolean;
-  accent?: boolean;
 }) {
   return (
     <View style={styles.detailRow}>
       <Text style={styles.detailLabel}>{label}</Text>
-      <Text
-        style={[
-          styles.detailValue,
-          mono && styles.mono,
-          accent && styles.accentValue,
-        ]}
-      >
-        {value}
-      </Text>
+      <Text style={styles.detailValue}>{value}</Text>
     </View>
   );
 }
@@ -215,6 +172,7 @@ const styles = StyleSheet.create({
     padding: spacing.lg,
     paddingTop: spacing.md,
     paddingBottom: spacing.xl,
+    maxHeight: "70%",
   },
   closeButton: {
     position: "absolute",
@@ -237,10 +195,25 @@ const styles = StyleSheet.create({
     fontSize: fontSize.xl,
     fontFamily: fontFamily.semibold,
     color: colors.text,
+    marginBottom: spacing.xs,
+  },
+  earningsBig: {
+    fontSize: 32,
+    fontFamily: fontFamily.bold,
+    color: colors.accent,
     marginBottom: spacing.lg,
   },
+  earningsFailed: {
+    fontSize: 32,
+    fontFamily: fontFamily.bold,
+    color: colors.error,
+    marginBottom: spacing.lg,
+  },
+  scrollArea: {
+    flexShrink: 1,
+  },
   rows: {
-    gap: spacing.md,
+    gap: spacing.xs,
   },
   detailRow: {
     flexDirection: "row",
@@ -260,49 +233,46 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily.medium,
     color: colors.text,
   },
-  resultContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: spacing.sm,
-  },
-  resultDot: {
-    width: 8,
-    height: 8,
-    borderRadius: borderRadius.full,
-  },
   mono: {
     fontFamily: "monospace",
   },
-  accentValue: {
-    color: colors.accent,
-    fontFamily: fontFamily.semibold,
+  onchainSection: {
+    marginTop: spacing.lg,
+    gap: spacing.sm,
   },
-  txLinkContainer: {
-    flexDirection: "row",
+  explorerButton: {
+    borderRadius: borderRadius.md,
+    paddingVertical: spacing.md,
     alignItems: "center",
-    gap: spacing.xs,
   },
-  txHash: {
-    fontSize: fontSize.sm,
-    fontFamily: "monospace",
-    color: "#8b5cf6",
+  paymentButton: {
+    backgroundColor: "#d4a24620",
   },
-  linkIcon: {
+  paymentButtonText: {
     fontSize: fontSize.sm,
-    color: "#8b5cf6",
-  },
-  solanaTxHash: {
-    fontSize: fontSize.sm,
-    fontFamily: "monospace",
+    fontFamily: fontFamily.semibold,
     color: "#d4a246",
   },
-  solanaLinkIcon: {
-    fontSize: fontSize.sm,
-    color: "#d4a246",
+  reputationButton: {
+    backgroundColor: "#8b5cf620",
   },
-  promptText: {
-    flex: 1,
-    textAlign: "right",
-    marginLeft: spacing.md,
+  reputationButtonText: {
+    fontSize: fontSize.sm,
+    fontFamily: fontFamily.semibold,
+    color: "#8b5cf6",
+  },
+  pendingText: {
+    fontSize: fontSize.sm,
+    fontFamily: fontFamily.regular,
+    color: colors.textDim,
+    textAlign: "center",
+    paddingVertical: spacing.sm,
+  },
+  failedText: {
+    fontSize: fontSize.sm,
+    fontFamily: fontFamily.medium,
+    color: colors.error,
+    textAlign: "center",
+    paddingVertical: spacing.sm,
   },
 });

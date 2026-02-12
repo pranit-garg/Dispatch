@@ -25,12 +25,68 @@ const tiers = [
 
 const flywheelSteps = [
   "More jobs",
-  "USDC \u2192 $BOLT",
+  "USDC → $BOLT",
   "Buy pressure",
   "Workers stake",
   "Supply locks",
   "5% burned",
 ];
+
+function AnimatedChevron({ delay }: { delay: number }) {
+  return (
+    <motion.div
+      className="hidden shrink-0 md:flex items-center"
+      initial={{ opacity: 0 }}
+      whileInView={{ opacity: 1 }}
+      viewport={{ once: true }}
+      transition={{ delay }}
+    >
+      <motion.svg
+        className="h-5 w-5 text-accent/60"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+        strokeWidth={2}
+        animate={{ x: [0, 4, 0] }}
+        transition={{ duration: 1.5, repeat: Infinity, delay }}
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M8.25 4.5l7.5 7.5-7.5 7.5"
+        />
+      </motion.svg>
+    </motion.div>
+  );
+}
+
+function MobileChevron({ delay }: { delay: number }) {
+  return (
+    <motion.div
+      className="flex shrink-0 items-center justify-center md:hidden py-1"
+      initial={{ opacity: 0 }}
+      whileInView={{ opacity: 1 }}
+      viewport={{ once: true }}
+      transition={{ delay }}
+    >
+      <motion.svg
+        className="h-4 w-4 text-accent/50"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+        strokeWidth={2}
+        animate={{ y: [0, 3, 0] }}
+        transition={{ duration: 1.5, repeat: Infinity, delay }}
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M19.5 8.25l-7.5 7.5-7.5-7.5"
+        />
+      </motion.svg>
+    </motion.div>
+  );
+}
 
 export function Tokenomics() {
   return (
@@ -88,105 +144,163 @@ export function Tokenomics() {
           </p>
         </motion.div>
 
-        {/* Value accrual flywheel — planned, visually subdued */}
+        {/* Value Accrual Flywheel — horizontal connected flow */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.97 }}
-          whileInView={{ opacity: 1, scale: 1 }}
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="mb-20 rounded-2xl border border-dashed border-border p-8 md:p-10 opacity-80"
+          className="mb-20"
         >
-          <div className="mb-10 flex items-center justify-center gap-3 text-center">
-            <h3 className="text-lg font-semibold text-text-muted">
-              Value Accrual Flywheel
-            </h3>
+          <div className="mb-8 flex items-center justify-center gap-3">
+            <h3 className="text-lg font-semibold">Value Accrual Flywheel</h3>
             <span className="rounded-full border border-accent/30 bg-accent/10 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-accent">
               Planned
             </span>
           </div>
 
-          {/* Ring layout on desktop, stacked on mobile */}
-          <div className="relative mx-auto max-w-lg">
-            {/* Connecting circle line (desktop only) */}
-            <div className="pointer-events-none absolute inset-0 hidden md:flex items-center justify-center">
-              <div className="h-48 w-48 rounded-full border border-dashed border-accent/20" />
-            </div>
-
-            <div className="grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-6">
-              {flywheelSteps.map((step, i) => (
+          {/* Desktop: horizontal strip */}
+          <div className="hidden md:flex items-center justify-center gap-2">
+            {flywheelSteps.map((step, i) => (
+              <div key={step} className="contents">
                 <motion.div
-                  key={step}
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
+                  initial={{ opacity: 0, y: 12 }}
+                  whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ delay: i * 0.08 }}
-                  className="flex flex-col items-center gap-2"
+                  transition={{ delay: i * 0.1 }}
+                  className="flex shrink-0 items-center gap-3 rounded-xl border border-border bg-bg-card px-4 py-3 hover:border-accent/30 transition-colors"
                 >
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full border border-accent/30 bg-accent/10 text-sm font-bold text-accent">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-accent/10 text-xs font-bold text-accent">
                     {i + 1}
                   </div>
-                  <span className="text-center text-sm font-medium">{step}</span>
+                  <span className="text-sm font-medium whitespace-nowrap">
+                    {step}
+                  </span>
                 </motion.div>
-              ))}
-            </div>
-
-            {/* Loop indicator */}
+                {i < flywheelSteps.length - 1 && (
+                  <AnimatedChevron delay={i * 0.1} />
+                )}
+              </div>
+            ))}
+            {/* Loop-back indicator */}
             <motion.div
-              animate={{ opacity: [0.4, 1, 0.4] }}
-              transition={{ duration: 2, repeat: Infinity }}
-              className="mt-6 flex items-center justify-center gap-2 text-xs text-accent"
+              className="flex shrink-0 items-center gap-1.5 pl-2"
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.7 }}
             >
-              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182" />
-              </svg>
-              Continuous cycle
+              <motion.svg
+                className="h-5 w-5 text-accent"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                animate={{ rotate: [0, -20, 0] }}
+                transition={{ duration: 2, repeat: Infinity }}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3"
+                />
+              </motion.svg>
+              <span className="text-xs font-medium text-accent/70">
+                Repeats
+              </span>
+            </motion.div>
+          </div>
+
+          {/* Mobile: vertical compact list */}
+          <div className="flex flex-col items-center md:hidden">
+            {flywheelSteps.map((step, i) => (
+              <div key={step} className="contents">
+                <motion.div
+                  initial={{ opacity: 0, x: -10 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.08 }}
+                  className="flex w-full max-w-xs items-center gap-3 rounded-xl border border-border bg-bg-card px-4 py-3"
+                >
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent/10 text-xs font-bold text-accent">
+                    {i + 1}
+                  </div>
+                  <span className="text-sm font-medium">{step}</span>
+                </motion.div>
+                {i < flywheelSteps.length - 1 && (
+                  <MobileChevron delay={i * 0.08} />
+                )}
+              </div>
+            ))}
+            {/* Loop-back indicator mobile */}
+            <motion.div
+              className="mt-3 flex items-center gap-1.5"
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.6 }}
+            >
+              <motion.svg
+                className="h-4 w-4 text-accent"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                animate={{ rotate: [0, -20, 0] }}
+                transition={{ duration: 2, repeat: Infinity }}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3"
+                />
+              </motion.svg>
+              <span className="text-xs font-medium text-accent/70">
+                Repeats
+              </span>
             </motion.div>
           </div>
         </motion.div>
 
-        <div className="mx-auto max-w-xl rounded-2xl border border-dashed border-border p-8 opacity-80">
-          {/* Staking tiers — planned */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.97 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-          >
-            <div className="mb-6 flex items-center gap-3">
-              <h3 className="text-lg font-semibold">Staking Tiers</h3>
-              <span className="rounded-full border border-accent/30 bg-accent/10 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-accent">
-                Planned
-              </span>
-            </div>
-            <p className="mb-4 text-sm text-text-muted">
-              Staking is optional. Anyone can earn with zero stake. Higher tiers
-              unlock priority matching and reputation multipliers.
-            </p>
-            <p className="mb-6 rounded-lg border border-border bg-bg-card/50 px-4 py-2.5 text-xs text-text-dim">
-              Staking tiers activate when BOLT launches on Solana.
-            </p>
-            <div className="space-y-4">
-              {tiers.map((tier, i) => (
-                <motion.div
-                  key={tier.name}
-                  initial={{ opacity: 0, scale: 0.97 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.1 }}
-                  className="card-hover rounded-xl border border-border bg-bg-card p-4 hover:border-accent/30"
-                >
-                  <div className="flex items-center justify-between mb-2">
-                    <span className={`font-semibold ${tier.color}`}>
-                      {tier.name}
-                    </span>
-                    <span className="font-mono text-sm text-text-dim">
-                      {tier.stake}
-                    </span>
-                  </div>
-                  <p className="text-sm text-text-muted">{tier.benefits}</p>
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
-        </div>
+        {/* Staking Tiers — solid border, no redundant callout */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.97 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+          className="mx-auto max-w-xl rounded-2xl border border-border bg-bg-card/30 p-8"
+        >
+          <div className="mb-6 flex items-center gap-3">
+            <h3 className="text-lg font-semibold">Staking Tiers</h3>
+            <span className="rounded-full border border-accent/30 bg-accent/10 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-accent">
+              Planned
+            </span>
+          </div>
+          <p className="mb-6 text-sm text-text-muted">
+            Staking is optional. Anyone can earn with zero stake. Higher tiers
+            unlock priority matching and reputation multipliers.
+          </p>
+          <div className="space-y-4">
+            {tiers.map((tier, i) => (
+              <motion.div
+                key={tier.name}
+                initial={{ opacity: 0, scale: 0.97 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1 }}
+                className="card-hover rounded-xl border border-border bg-bg-card p-4 hover:border-accent/30"
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <span className={`font-semibold ${tier.color}`}>
+                    {tier.name}
+                  </span>
+                  <span className="font-mono text-sm text-text-dim">
+                    {tier.stake}
+                  </span>
+                </div>
+                <p className="text-sm text-text-muted">{tier.benefits}</p>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
       </div>
     </section>
   );

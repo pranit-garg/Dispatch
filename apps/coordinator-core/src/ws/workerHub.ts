@@ -194,7 +194,16 @@ export class WorkerHub {
               explorer_url: `https://testnet.monadexplorer.com/tx/${txHash}`,
             });
           }
-        }).catch((err) => { console.error(`[ERC-8004] Feedback tx FAILED for demo job ${msg.job_id}:`, err instanceof Error ? err.message : err); });
+        }).catch((err) => {
+          console.error(`[ERC-8004] Feedback tx FAILED for demo job ${msg.job_id}:`, err instanceof Error ? err.message : err);
+          if (worker.ws.readyState === WebSocket.OPEN) {
+            this.send(worker.ws, {
+              type: "feedback_failed",
+              job_id: msg.job_id,
+              error: err instanceof Error ? err.message : "Transaction failed",
+            });
+          }
+        });
       }
       // Queue BOLT payout for demo job
       this.boltDistributor?.queuePayout(worker.pubkey, msg.job_id, 0.001);
@@ -236,7 +245,16 @@ export class WorkerHub {
             explorer_url: `https://testnet.monadexplorer.com/tx/${txHash}`,
           });
         }
-      }).catch((err) => { console.error(`[ERC-8004] Feedback tx FAILED for job ${msg.job_id}:`, err instanceof Error ? err.message : err); });
+      }).catch((err) => {
+        console.error(`[ERC-8004] Feedback tx FAILED for job ${msg.job_id}:`, err instanceof Error ? err.message : err);
+        if (worker.ws.readyState === WebSocket.OPEN) {
+          this.send(worker.ws, {
+            type: "feedback_failed",
+            job_id: msg.job_id,
+            error: err instanceof Error ? err.message : "Transaction failed",
+          });
+        }
+      });
     }
 
     // Queue BOLT payout

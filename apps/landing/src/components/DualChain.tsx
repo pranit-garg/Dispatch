@@ -119,16 +119,6 @@ export function DualChain() {
           </motion.div>
         </div>
 
-        <motion.p
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.3 }}
-          className="mx-auto mt-10 max-w-2xl text-center text-sm text-text-dim"
-        >
-          You can&apos;t run ERC-8004 on Solana (it&apos;s EVM-only). You can&apos;t reach
-          Seeker phones on Monad (they have Solana wallets). Each chain does what it&apos;s best at.
-        </motion.p>
       </div>
     </section>
   );

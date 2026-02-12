@@ -10,6 +10,7 @@ import {
   createTransferInstruction,
   TOKEN_PROGRAM_ID,
 } from "@solana/spl-token";
+import { Buffer } from "buffer";
 
 interface PendingPayout {
   workerPubkey: string;
@@ -32,6 +33,7 @@ export class BoltDistributor {
   private boltMint: PublicKey;
   private decimals: number;
   private onSettled?: (result: BoltSettlementResult) => void;
+  private onFailed?: (workerPubkey: string, jobIds: string[], error: string) => void;
 
   // Settlement thresholds
   private readonly JOBS_THRESHOLD = 5;
@@ -43,12 +45,14 @@ export class BoltDistributor {
     boltMint: PublicKey;
     decimals?: number;
     onSettled?: (result: BoltSettlementResult) => void;
+    onFailed?: (workerPubkey: string, jobIds: string[], error: string) => void;
   }) {
     this.connection = opts.connection;
     this.authority = opts.authority;
     this.boltMint = opts.boltMint;
     this.decimals = opts.decimals ?? 9;
     this.onSettled = opts.onSettled;
+    this.onFailed = opts.onFailed;
 
     // Start periodic settlement timer
     this.timer = setInterval(() => {
@@ -78,6 +82,7 @@ export class BoltDistributor {
   /** Settle all pending payouts */
   private async settleAll(): Promise<void> {
     const workers = [...this.pendingPayouts.keys()];
+    console.log("[BOLT] Periodic settle check:", workers.length, "pending workers");
     for (const workerPubkey of workers) {
       await this.settleWorker(workerPubkey);
     }
@@ -92,7 +97,10 @@ export class BoltDistributor {
     this.pendingPayouts.delete(workerPubkey);
 
     try {
-      const workerPk = new PublicKey(workerPubkey);
+      const isHex = /^[0-9a-f]{64}$/i.test(workerPubkey);
+      const workerPk = isHex
+        ? new PublicKey(Buffer.from(workerPubkey, "hex"))
+        : new PublicKey(workerPubkey);
 
       // Get or create the worker's associated token account
       const workerAta = await getOrCreateAssociatedTokenAccount(
@@ -155,6 +163,7 @@ export class BoltDistributor {
       } else {
         this.pendingPayouts.set(workerPubkey, payout);
       }
+      this.onFailed?.(workerPubkey, payout.jobIds, err instanceof Error ? err.message : "Settlement failed");
     }
   }
 

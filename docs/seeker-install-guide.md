@@ -66,10 +66,12 @@ If it shows `unauthorized`, re-check the RSA key prompt on the phone.
 adb install /Users/pranitgarg/Vibecoding/Dispatch/mobile/seeker-solana/build-1770731703429.apk
 ```
 
-**Option B: Download and install**
+**Option B: Download latest from EAS**
 ```bash
-curl -L -o /tmp/dispatch.apk https://expo.dev/artifacts/eas/pRku9ZWEqdSGS2poEU9VjN.apk
-adb install /tmp/dispatch.apk
+# Get the URL from: npx eas build:list --platform android --status finished
+# Then download and install:
+# curl -L -o /tmp/dispatch.apk <URL_FROM_EAS>
+# adb install /tmp/dispatch.apk
 ```
 
 ### 6. Launch and Connect

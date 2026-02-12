@@ -10,7 +10,7 @@ const features = [
       </svg>
     ),
     title: "Passive Income, Zero Effort",
-    description: "Your phone picks up AI tasks over WebSocket while you sleep. USDC earnings accumulate automatically, no interaction needed.",
+    description: "Your phone picks up AI tasks over WebSocket while you sleep. BOLT earnings accumulate automatically, no interaction needed.",
   },
   {
     icon: (
@@ -95,8 +95,8 @@ function PhoneMockup() {
             <div className="flex-1">
               <div className="text-[7px] font-semibold uppercase tracking-wide text-[#64748b]">Earnings</div>
               <div className="flex items-baseline gap-1">
-                <span className="font-mono text-lg font-bold text-[#f8fafc]">$12.40</span>
-                <span className="text-[10px] font-semibold text-[#34d399]">USDC</span>
+                <span className="font-mono text-lg font-bold text-[#f8fafc]">12.40</span>
+                <span className="text-[10px] font-semibold text-[#34d399]">BOLT</span>
               </div>
             </div>
             <div className="mx-3 h-8 w-px bg-[#2a2a45]" />
@@ -176,7 +176,7 @@ export function Seeker() {
               className="mt-3 inline-flex items-center gap-2 rounded-full border border-border bg-bg-card px-3 py-1 text-xs text-text-dim"
             >
               <span className="inline-block h-1.5 w-1.5 rounded-full bg-accent" />
-              Built for Solana Seeker
+              Built for Solana Seeker · Available on dApp Store
             </motion.div>
 
             <motion.p
@@ -187,7 +187,7 @@ export function Seeker() {
               className="mt-4 text-text-muted leading-relaxed"
             >
               The Seeker app turns any idle phone into a worker node. Connect to
-              the network, process AI tasks in the background, and earn USDC for
+              the network, process AI tasks in the background, and earn BOLT for
               every completed job. All from your pocket.
             </motion.p>
 

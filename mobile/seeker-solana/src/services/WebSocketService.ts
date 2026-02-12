@@ -49,6 +49,8 @@ export interface CompletedJob {
   paymentTxHash?: string;
   paymentExplorerUrl?: string;
   paymentAmount?: string;
+  feedbackFailed?: boolean;
+  paymentFailed?: boolean;
 }
 
 type EventMap = {
@@ -304,6 +306,12 @@ class WebSocketService {
       case "payment_posted":
         this.handlePaymentPosted(msg as unknown as PaymentPostedMsg);
         break;
+      case "feedback_failed":
+        this.handleFeedbackFailed(msg as any);
+        break;
+      case "payment_failed":
+        this.handlePaymentFailed(msg as any);
+        break;
       default:
         console.warn("[WS] Unknown message type:", (msg as Record<string, unknown>).type);
     }
@@ -425,6 +433,7 @@ class WebSocketService {
       job.feedbackTxHash = msg.tx_hash;
       job.feedbackExplorerUrl = msg.explorer_url;
       job.feedbackNetwork = msg.network;
+      this.emit("jobCompleted", job);
       this.emit("feedbackPosted", msg);
     }
   }
@@ -436,6 +445,7 @@ class WebSocketService {
         job.paymentTxHash = msg.tx_hash;
         job.paymentExplorerUrl = msg.explorer_url;
         job.paymentAmount = msg.amount + " BOLT";
+        this.emit("jobCompleted", job);
       }
     }
     this.emit("paymentPosted", {
@@ -444,6 +454,25 @@ class WebSocketService {
       amount: msg.amount,
       explorer_url: msg.explorer_url,
     });
+  }
+
+  private handleFeedbackFailed(msg: { job_id: string; error: string }): void {
+    const job = this._jobHistory.find(j => j.jobId === msg.job_id);
+    if (job) {
+      job.feedbackFailed = true;
+      // Re-emit so UI updates
+      this.emit("jobCompleted", job);
+    }
+  }
+
+  private handlePaymentFailed(msg: { job_ids: string[]; error: string }): void {
+    for (const jobId of msg.job_ids) {
+      const job = this._jobHistory.find(j => j.jobId === jobId);
+      if (job) {
+        job.paymentFailed = true;
+        this.emit("jobCompleted", job);
+      }
+    }
   }
 
   // ── Heartbeat ──────────────────────────────

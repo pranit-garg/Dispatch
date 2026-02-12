@@ -1,20 +1,15 @@
 /**
- * JobHistory: Scrollable list of recently completed jobs.
+ * ActivityList: Simple flat list of completed jobs.
  *
- * Each row shows:
- * - Task type icon/badge
- * - Timestamp (relative, e.g. "2m ago")
- * - Duration in ms
- * - Success/fail status
- * - Chevron indicator (tappable for detail modal)
+ * Each row shows: checkmark/X, "Earned 0.001 BOLT" or "Job failed", relative time.
+ * Tap to open detail modal.
  */
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
   FlatList,
   Pressable,
-  LayoutAnimation,
   StyleSheet,
 } from "react-native";
 import type { CompletedJob } from "../services/WebSocketService";
@@ -22,7 +17,7 @@ import { colors, spacing, borderRadius, fontSize, fontFamily } from "../theme";
 import { EmptyState } from "./EmptyState";
 import { JobDetailModal } from "./JobDetailModal";
 
-interface JobHistoryProps {
+interface ActivityListProps {
   jobs: CompletedJob[];
   isConnected?: boolean;
 }
@@ -41,89 +36,35 @@ function formatRelativeTime(timestamp: number): string {
   return `${days}d ago`;
 }
 
-const TASK_DISPLAY_NAMES: Record<string, string> = {
-  summarize: "Summary",
-  classify: "Classify",
-  extract_json: "Extract",
-  TASK: "AI Task",
-};
-
-const TASK_TYPE_COLORS: Record<string, string> = {
-  summarize: "#d4a246",
-  classify: "#8b5cf6",
-  extract_json: "#ec4899",
-  TASK: "#d4a246",
-};
-
 // ── Components ─────────────────────────────────
 
-function JobRow({
+function ActivityRow({
   job,
   onPress,
 }: {
   job: CompletedJob;
   onPress: () => void;
 }) {
-  const badgeColor = TASK_TYPE_COLORS[job.taskType] ?? colors.textDim;
-
   return (
     <Pressable
       style={({ pressed }) => [styles.row, pressed && styles.rowPressed]}
       onPress={onPress}
     >
-      <View style={styles.leftSection}>
-        <View style={styles.leftContent}>
-          <View style={styles.topRow}>
-            <View style={[styles.typeBadge, { backgroundColor: badgeColor + "20" }]}>
-              <Text style={[styles.typeText, { color: badgeColor }]}>
-                {TASK_DISPLAY_NAMES[job.taskType] ?? job.taskType}
-              </Text>
-            </View>
-            <Text style={styles.timestamp}>{formatRelativeTime(job.timestamp)}</Text>
-          </View>
-          {job.prompt && (
-            <Text style={styles.promptPreview} numberOfLines={1}>
-              {job.prompt.length > 50 ? job.prompt.slice(0, 50) + "..." : job.prompt}
-            </Text>
-          )}
-        </View>
+      <View style={styles.rowLeft}>
+        <Text style={job.success ? styles.checkmark : styles.failmark}>
+          {job.success ? "✓" : "✗"}
+        </Text>
+        <Text style={job.success ? styles.rowLabel : styles.rowLabelFailed}>
+          {job.success ? "Earned 0.001 BOLT" : "Job failed"}
+        </Text>
       </View>
-
-      <View style={styles.rightSection}>
-        <Text style={styles.duration}>{job.durationMs}ms</Text>
-        <View
-          style={[
-            styles.statusDot,
-            { backgroundColor: job.success ? colors.success : colors.error },
-          ]}
-        />
-        {job.feedbackTxHash && (
-          <View style={styles.txBadge}>
-            <Text style={styles.txBadgeText}>TX</Text>
-          </View>
-        )}
-        {job.paymentTxHash && (
-          <View style={styles.paymentBadge}>
-            <Text style={styles.paymentBadgeText}>BOLT</Text>
-          </View>
-        )}
-        <Text style={styles.chevron}>{"\u203A"}</Text>
-      </View>
+      <Text style={styles.rowTime}>{formatRelativeTime(job.timestamp)}</Text>
     </Pressable>
   );
 }
 
-export function JobHistory({ jobs, isConnected = false }: JobHistoryProps) {
+export function ActivityList({ jobs, isConnected = false }: ActivityListProps) {
   const [selectedJob, setSelectedJob] = useState<CompletedJob | null>(null);
-  const prevJobCount = useRef(jobs.length);
-
-  // Animate when new jobs arrive
-  useEffect(() => {
-    if (jobs.length !== prevJobCount.current) {
-      LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-      prevJobCount.current = jobs.length;
-    }
-  }, [jobs.length]);
 
   if (jobs.length === 0) {
     if (isConnected) {
@@ -138,22 +79,20 @@ export function JobHistory({ jobs, isConnected = false }: JobHistoryProps) {
     return (
       <EmptyState
         icon={"\u26A1"}
-        title="Ready when you are"
-        subtitle="Tap Go Live to start earning BOLT"
+        title="No activity yet"
+        subtitle="Go to Dashboard and tap Go Live to start earning"
       />
     );
   }
 
   return (
     <View style={styles.container}>
-      <Text style={styles.sectionTitle}>Job History</Text>
       <FlatList
         data={jobs}
         keyExtractor={(item) => item.jobId}
         renderItem={({ item }) => (
-          <JobRow job={item} onPress={() => setSelectedJob(item)} />
+          <ActivityRow job={item} onPress={() => setSelectedJob(item)} />
         )}
-        scrollEnabled={false}
         ItemSeparatorComponent={() => <View style={styles.separator} />}
       />
       <JobDetailModal
@@ -165,16 +104,12 @@ export function JobHistory({ jobs, isConnected = false }: JobHistoryProps) {
   );
 }
 
+// Keep legacy export name for backwards compat during transition
+export { ActivityList as JobHistory };
+
 const styles = StyleSheet.create({
   container: {
-    gap: spacing.md,
-  },
-  sectionTitle: {
-    fontSize: fontSize.sm,
-    fontFamily: fontFamily.semibold,
-    color: colors.textDim,
-    textTransform: "uppercase",
-    letterSpacing: 1,
+    flex: 1,
   },
   row: {
     flexDirection: "row",
@@ -182,93 +117,43 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: colors.surface,
     borderRadius: borderRadius.md,
-    padding: spacing.md,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.md,
   },
   rowPressed: {
     backgroundColor: colors.surfaceLight,
   },
-  leftSection: {
+  rowLeft: {
     flexDirection: "row",
     alignItems: "center",
-    gap: spacing.md,
-    flex: 1,
+    gap: spacing.sm,
   },
-  leftContent: {
-    flex: 1,
-    gap: spacing.xs,
-  },
-  topRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: spacing.md,
-  },
-  promptPreview: {
-    fontSize: fontSize.xs,
-    fontFamily: fontFamily.regular,
-    color: colors.textDim,
-  },
-  rightSection: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: spacing.md,
-  },
-  typeBadge: {
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs,
-    borderRadius: borderRadius.sm,
-  },
-  typeText: {
-    fontSize: fontSize.xs,
+  checkmark: {
+    fontSize: fontSize.md,
     fontFamily: fontFamily.bold,
-    textTransform: "uppercase",
-    letterSpacing: 0.5,
+    color: colors.success,
   },
-  timestamp: {
-    fontSize: fontSize.sm,
-    fontFamily: fontFamily.regular,
-    color: colors.textDim,
+  failmark: {
+    fontSize: fontSize.md,
+    fontFamily: fontFamily.bold,
+    color: colors.error,
   },
-  duration: {
-    fontSize: fontSize.sm,
+  rowLabel: {
+    fontSize: fontSize.md,
     fontFamily: fontFamily.medium,
-    color: colors.textSecondary,
-    fontVariant: ["tabular-nums"],
+    color: colors.text,
   },
-  statusDot: {
-    width: 8,
-    height: 8,
-    borderRadius: borderRadius.full,
+  rowLabelFailed: {
+    fontSize: fontSize.md,
+    fontFamily: fontFamily.medium,
+    color: colors.error,
   },
-  chevron: {
-    fontSize: fontSize.lg,
+  rowTime: {
+    fontSize: fontSize.sm,
     fontFamily: fontFamily.regular,
     color: colors.textDim,
   },
   separator: {
-    height: spacing.sm,
-  },
-  txBadge: {
-    backgroundColor: "#8b5cf620",
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: borderRadius.sm,
-  },
-  txBadgeText: {
-    fontSize: fontSize.xs,
-    fontFamily: fontFamily.bold,
-    color: "#8b5cf6",
-    letterSpacing: 0.5,
-  },
-  paymentBadge: {
-    backgroundColor: "#d4a24620",
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: borderRadius.sm,
-  },
-  paymentBadgeText: {
-    fontSize: fontSize.xs,
-    fontFamily: fontFamily.bold,
-    color: "#d4a246",
-    letterSpacing: 0.5,
+    height: spacing.xs,
   },
 });

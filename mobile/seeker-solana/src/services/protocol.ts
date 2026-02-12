@@ -141,6 +141,18 @@ export interface PaymentPostedMsg {
   explorer_url: string;
 }
 
+export interface FeedbackFailedMsg {
+  type: "feedback_failed";
+  job_id: string;
+  error: string;
+}
+
+export interface PaymentFailedMsg {
+  type: "payment_failed";
+  job_ids: string[];
+  error: string;
+}
+
 // ── Union Types ───────────────────────────────
 
 export type WorkerToCoordinator =
@@ -156,7 +168,9 @@ export type CoordinatorToWorker =
   | JobAssignMsg
   | ErrorMsg
   | FeedbackPostedMsg
-  | PaymentPostedMsg;
+  | PaymentPostedMsg
+  | FeedbackFailedMsg
+  | PaymentFailedMsg;
 
 export type WSMessage = WorkerToCoordinator | CoordinatorToWorker;
 

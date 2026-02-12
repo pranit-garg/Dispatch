@@ -4,7 +4,6 @@ import { paymentMiddleware, x402ResourceServer } from "@x402/express";
 import { ExactSvmScheme } from "@x402/svm/exact/server";
 import { HTTPFacilitatorClient } from "@x402/core/server";
 import { privateKeyToAccount } from "viem/accounts";
-import { keccak256, toBytes } from "viem";
 
 const config = configFromEnv({
   port: parseInt(process.env.PORT ?? "4020", 10),
@@ -35,18 +34,17 @@ if (!testnetMode) {
 let erc8004: ERC8004Config | undefined;
 
 const erc8004Key = process.env.ERC8004_PRIVATE_KEY;
-if (erc8004Key) {
+const erc8004AgentId = process.env.ERC8004_AGENT_ID;
+if (erc8004Key && erc8004AgentId) {
   const account = privateKeyToAccount(erc8004Key as `0x${string}`);
-
-  /** Derive a deterministic agentId from a worker pubkey */
-  function pubkeyToAgentId(pubkey: string): bigint {
-    return BigInt(keccak256(toBytes(pubkey))) & ((1n << 128n) - 1n);
-  }
+  const agentId = BigInt(erc8004AgentId);
+  const coordinatorEndpoint = process.env.RAILWAY_PUBLIC_DOMAIN
+    ? `https://${process.env.RAILWAY_PUBLIC_DOMAIN}`
+    : `http://localhost:${config.port}`;
 
   erc8004 = {
-    async getReputationScore(pubkey: string): Promise<number | null> {
+    async getReputationScore(_pubkey: string): Promise<number | null> {
       try {
-        const agentId = pubkeyToAgentId(pubkey);
         const summary = await getReputationSummary(agentId);
         if (summary.count === 0n) return null;
         const raw = Number(summary.summaryValue) / (10 ** summary.summaryValueDecimals);
@@ -56,13 +54,12 @@ if (erc8004Key) {
       }
     },
 
-    async postFeedback(workerPubkey: string, jobId: string, success: boolean): Promise<string> {
-      const agentId = pubkeyToAgentId(workerPubkey);
+    async postFeedback(_workerPubkey: string, jobId: string, success: boolean): Promise<string> {
       const entry = buildJobFeedback({
         agentId,
         score: success ? 80 : 20,
         jobType: "COMPUTE",
-        endpoint: `http://localhost:${config.port}`,
+        endpoint: coordinatorEndpoint,
       });
       const txHash = await giveFeedback(entry, account);
       console.log(`[ERC-8004] Feedback tx: ${txHash} for job ${jobId}`);
@@ -70,9 +67,9 @@ if (erc8004Key) {
     },
   };
 
-  console.log(`[Solana Coordinator] ERC-8004 reputation: ENABLED (account: ${account.address})`);
+  console.log(`[Solana Coordinator] ERC-8004 reputation: ENABLED (agent: ${agentId}, account: ${account.address})`);
 } else {
-  console.log(`[Solana Coordinator] ERC-8004 reputation: DISABLED (no ERC8004_PRIVATE_KEY)`);
+  console.log(`[Solana Coordinator] ERC-8004 reputation: DISABLED (need ERC8004_PRIVATE_KEY + ERC8004_AGENT_ID)`);
 }
 
 // ── BOLT staking (optional) ────────────────────
@@ -152,6 +149,13 @@ if (boltMint && boltAuthorityKey) {
         amount: String(result.amount),
         network: "solana-devnet",
         explorer_url: `https://explorer.solana.com/tx/${result.txHash}?cluster=devnet`,
+      });
+    },
+    onFailed(workerPubkey: string, jobIds: string[], error: string) {
+      serverRef?.hub.sendToWorker(workerPubkey, {
+        type: "payment_failed",
+        job_ids: jobIds,
+        error,
       });
     },
   });

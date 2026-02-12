@@ -1,11 +1,10 @@
 /**
- * Dashboard screen, the main screen of the app.
+ * Dashboard screen — clean control panel.
  *
  * Layout (top to bottom):
  * 1. StatusCard: connection status + worker ID
  * 2. EarningsCard: BOLT earned + jobs completed
  * 3. WorkerToggle: big start/stop button
- * 4. JobHistory: recent completed jobs
  */
 import React, { useCallback, useEffect, useRef } from "react";
 import {
@@ -24,7 +23,6 @@ import { useWorker } from "../../src/hooks/useWorker";
 import { StatusCard } from "../../src/components/StatusCard";
 import { EarningsCard } from "../../src/components/EarningsCard";
 import { WorkerToggle } from "../../src/components/WorkerToggle";
-import { JobHistory } from "../../src/components/JobHistory";
 import { ErrorToast } from "../../src/components/ErrorToast";
 import { DashboardSkeleton } from "../../src/components/Skeleton";
 import { colors, spacing, fontSize, fontFamily } from "../../src/theme";
@@ -81,9 +79,6 @@ export default function DashboardScreen() {
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
       <ErrorToast />
-      <View style={styles.testnetBanner}>
-        <Text style={styles.testnetText}>Testnet · Settling in SOL</Text>
-      </View>
       <ScrollView
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
@@ -105,6 +100,11 @@ export default function DashboardScreen() {
           <Text style={styles.title}>Dispatch</Text>
           <Text style={styles.subtitle}>Compute Node</Text>
           <View style={styles.headerDivider} />
+        </View>
+
+        <View style={styles.testnetBanner}>
+          <Text style={styles.testnetText}>Devnet · Earning BOLT</Text>
+          <Text style={styles.testnetSubText}>Reputation on Monad Testnet</Text>
         </View>
 
         {/* Wallet connection banner */}
@@ -153,12 +153,6 @@ export default function DashboardScreen() {
           signingMode={worker.signingMode}
           walletConnected={!!worker.walletAddress}
         />
-
-        {/* Job History */}
-        <JobHistory
-          jobs={worker.jobHistory}
-          isConnected={worker.status === "connected"}
-        />
       </ScrollView>
     </SafeAreaView>
   );
@@ -176,7 +170,7 @@ const styles = StyleSheet.create({
   },
   header: {
     alignItems: "center",
-    gap: spacing.xs,
+    gap: spacing.sm,
     paddingTop: spacing.sm,
   },
   title: {
@@ -235,8 +229,6 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.xs,
     paddingHorizontal: spacing.md,
     alignItems: "center",
-    marginHorizontal: spacing.lg,
-    marginTop: spacing.sm,
   },
   testnetText: {
     fontSize: fontSize.xs,
@@ -244,6 +236,14 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily.semibold,
     letterSpacing: 1,
     textTransform: "uppercase",
+  },
+  testnetSubText: {
+    fontSize: fontSize.xs - 1,
+    color: colors.warning,
+    fontFamily: fontFamily.regular,
+    letterSpacing: 0.5,
+    opacity: 0.7,
+    marginTop: 2,
   },
   loadingContainer: {
     flex: 1,

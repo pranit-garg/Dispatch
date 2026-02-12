@@ -57,7 +57,7 @@ export function LiveDemo() {
           </p>
         </motion.div>
 
-        <div className="grid gap-6 lg:grid-cols-2">
+        <div className="grid gap-6 md:grid-cols-2">
           {/* Request side */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
@@ -72,7 +72,7 @@ export function LiveDemo() {
                 dispatch agent run
               </span>
             </div>
-            <div className="code-block relative p-5">
+            <div className="code-block relative p-5 overflow-x-auto">
               <pre className="text-xs leading-relaxed">
                 <code className="text-text-muted">{cliCommand}</code>
               </pre>
@@ -124,7 +124,7 @@ export function LiveDemo() {
               </span>
               <span className="font-mono text-sm text-text-muted">Output</span>
             </div>
-            <div className="code-block relative p-5 min-h-[300px]">
+            <div className="code-block relative p-5 overflow-x-auto min-h-[200px] md:min-h-[300px]">
               {submitted ? (
                 <pre className="text-xs leading-relaxed whitespace-pre-wrap">
                   <code className="text-green">
@@ -135,7 +135,7 @@ export function LiveDemo() {
                   )}
                 </pre>
               ) : (
-                <div className="flex h-full min-h-[260px] items-center justify-center text-text-dim text-sm">
+                <div className="flex h-full min-h-[160px] md:min-h-[260px] items-center justify-center text-text-dim text-sm">
                   Click &ldquo;Run Command&rdquo; to see the output
                 </div>
               )}

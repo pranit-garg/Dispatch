@@ -159,7 +159,7 @@ function CopyButton({ text }: { text: string }) {
   return (
     <button
       onClick={handleCopy}
-      className="absolute right-3 top-3 rounded p-1.5 text-text-dim transition-colors hover:text-text"
+      className="absolute right-3 top-3 rounded p-2 min-w-[44px] min-h-[44px] flex items-center justify-center text-text-dim transition-colors hover:text-text"
       aria-label="Copy code"
     >
       {copied ? (
@@ -213,7 +213,7 @@ export function CodePreview() {
           </p>
         </motion.div>
 
-        <div className="grid gap-6 lg:grid-cols-2">
+        <div className="grid gap-6 md:grid-cols-2">
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             whileInView={{ opacity: 1, x: 0 }}

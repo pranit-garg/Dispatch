@@ -93,28 +93,27 @@ export function CTA() {
             </svg>
             Install the CLI
           </a>
-          <a
-            href="https://expo.dev/artifacts/eas/pRku9ZWEqdSGS2poEU9VjN.apk"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 rounded-lg border border-border px-6 py-3 font-medium text-text-muted transition-colors hover:border-border-bright hover:text-text"
-          >
-            {/* Phone icon */}
-            <svg
-              className="h-4 w-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"
-              />
-            </svg>
-            Download Seeker App
-          </a>
+          <div className="flex flex-col items-center gap-2">
+            <div className="inline-flex items-center gap-2 rounded-lg bg-accent/10 border border-accent/30 px-6 py-3 font-medium text-accent">
+              <svg
+                className="h-4 w-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"
+                />
+              </svg>
+              Live on Solana dApp Store
+            </div>
+            <span className="text-xs text-text-dim">
+              Search &quot;Dispatch&quot; in the dApp Store app
+            </span>
+          </div>
         </motion.div>
       </div>
     </section>

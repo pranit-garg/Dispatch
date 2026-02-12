@@ -28,8 +28,17 @@ export function Hero() {
           className="mb-8 inline-flex items-center gap-2 rounded-full border border-border bg-bg-card px-4 py-1.5 text-sm text-text-muted"
         >
           <span className="inline-block h-2 w-2 rounded-full bg-green animate-pulse" />
-          Live on Monad + Solana testnet
+          Live on Monad Testnet + Solana Devnet
         </motion.div>
+
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="mt-2 text-xs text-text-dim"
+        >
+          Available on the Solana dApp Store
+        </motion.p>
 
         <motion.h1
           initial={{ opacity: 0, y: 20 }}
@@ -51,7 +60,7 @@ export function Hero() {
           transition={{ duration: 0.6, delay: 0.2 }}
           className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-text-muted md:text-xl"
         >
-          Agents pay pennies per job via HTTP. Workers earn USDC from idle
+          Agents pay pennies per job via HTTP. Workers earn BOLT from idle
           phones and laptops. Every result is cryptographically verified.
         </motion.p>
 
