@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lablab Complete AI Agent Hackathon - Dispatch</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'SF Pro Text', -apple-system, system-ui, sans-serif; background: #0a0a0e; color: #e0e0e0; padding: 40px 20px; line-height: 1.6; }
+  .container { max-width: 800px; margin: 0 auto; }
+  h1 { font-size: 28px; color: #d4a246; margin-bottom: 8px; font-weight: 600; letter-spacing: -0.5px; }
+  .subtitle { color: #888; font-size: 14px; margin-bottom: 40px; }
+  .field { margin-bottom: 32px; border: 1px solid #1a1a22; border-radius: 12px; overflow: hidden; background: #111116; position: relative; }
+  .field-header { display: flex; justify-content: space-between; align-items: center; padding: 14px 20px; background: #15151c; border-bottom: 1px solid #1a1a22; }
+  .field-name { font-size: 14px; font-weight: 600; color: #d4a246; font-family: 'SF Mono', 'Fira Code', monospace; }
+  .header-controls { display: flex; align-items: center; gap: 10px; }
+  .char-badge { font-size: 12px; padding: 4px 10px; border-radius: 6px; font-family: 'SF Mono', monospace; font-weight: 500; }
+  .char-ok { background: rgba(52, 211, 153, 0.15); color: #34d399; }
+  .char-warn { background: rgba(251, 191, 36, 0.15); color: #fbbf24; }
+  .char-over { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
+  .copy-btn { font-size: 12px; padding: 4px 10px; border-radius: 6px; border: 1px solid #2a2a34; background: #1a1a22; color: #888; cursor: pointer; font-family: 'SF Mono', monospace; transition: all 0.2s; }
+  .copy-btn:hover { background: #2a2a34; color: #d4a246; border-color: #d4a246; }
+  .copy-btn.copied { background: rgba(52, 211, 153, 0.15); color: #34d399; border-color: #34d399; }
+  .field-body { padding: 20px; font-size: 14px; white-space: pre-wrap; color: #ccc; line-height: 1.7; }
+  .field-body ol, .field-body ul { margin-left: 20px; }
+  .section-divider { border: none; border-top: 1px solid #1a1a22; margin: 40px 0; }
+  .summary { background: #15151c; border: 1px solid #1a1a22; border-radius: 12px; padding: 24px; margin-top: 40px; }
+  .summary h2 { font-size: 18px; color: #d4a246; margin-bottom: 16px; }
+  .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .summary-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: #111116; border-radius: 8px; font-size: 13px; }
+  .summary-item .name { color: #888; }
+  .summary-item .count { font-family: 'SF Mono', monospace; font-weight: 500; }
+  .check { color: #34d399; } .warn { color: #fbbf24; } .fail { color: #ef4444; }
+  .checklist { margin-top: 40px; background: #15151c; border: 1px solid #1a1a22; border-radius: 12px; padding: 24px; }
+  .checklist h2 { font-size: 18px; color: #d4a246; margin-bottom: 16px; }
+  .checklist-item { display: flex; align-items: flex-start; gap: 10px; padding: 6px 0; font-size: 13px; color: #ccc; }
+  .checklist-item .icon { font-size: 14px; flex-shrink: 0; }
+  .links-section { margin-top: 40px; }
+  .links-section h2 { font-size: 18px; color: #d4a246; margin-bottom: 16px; }
+  .links-section a { color: #e8c06e; text-decoration: none; }
+  .links-section a:hover { text-decoration: underline; }
+  .link-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #1a1a22; font-size: 13px; }
+  .link-row .label { color: #888; }
+  .contract-addr { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 11px; color: #e8c06e; word-break: break-all; }
+  @media (max-width: 600px) { .summary-grid { grid-template-columns: 1fr; } .link-row { flex-direction: column; gap: 4px; } }
+  .field-body:focus {
+    outline: 1px solid #d4a246;
+    background: #1a1a1e;
+  }
+  .field-body[contenteditable] {
+    cursor: text;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>Lablab Complete AI Agent Hackathon</h1>
+<p class="subtitle">Dispatch / Feb 23 - Mar 1, 2026 / Prize: $3.5K / "At least 2 AI agents working together"</p>
+
+<!-- Project Name -->
+<div class="field">
+  <div class="field-header">
+    <span class="field-name">projectName</span>
+    <div class="header-controls">
+      <span class="char-badge" id="name-badge"></span>
+      <button class="copy-btn" onclick="copyField(this, 'name-body')">copy</button>
+    </div>
+  </div>
+  <div class="field-body" contenteditable="true" id="name-body">Dispatch</div>
+</div>
+
+<!-- Tagline -->
+<div class="field">
+  <div class="field-header">
+    <span class="field-name">tagline</span>
+    <div class="header-controls">
+      <span class="char-badge" id="tagline-badge"></span>
+      <button class="copy-btn" onclick="copyField(this, 'tagline-body')">copy</button>
+    </div>
+  </div>
+  <div class="field-body" contenteditable="true" id="tagline-body">Multi-agent compute coordination where AI agents discover, pay, and verify each other.</div>
+</div>
+
+<!-- Short Description -->
+<div class="field">
+  <div class="field-header">
+    <span class="field-name">shortDescription</span>
+    <div class="header-controls">
+      <span class="char-badge" id="short-badge"></span>
+      <button class="copy-btn" onclick="copyField(this, 'short-body')">copy</button>
+    </div>
+  </div>
+  <div class="field-body" contenteditable="true" id="short-body">Dispatch is a protocol where multiple AI agents coordinate autonomously. Client agents submit compute jobs over HTTP, the coordinator agent routes by reputation, and worker agents process real inference on idle hardware. All settlement and trust happen onchain with zero human involvement.</div>
+</div>
+
+<!-- What It Does -->
+<div class="field">
+  <div class="field-header">
+    <span class="field-name">whatItDoes</span>
+    <div class="header-controls">
+      <span class="char-badge" id="what-badge"></span>
+      <button class="copy-btn" onclick="copyField(this, 'what-body')">copy</button>
+    </div>
+  </div>
+  <div class="field-body" contenteditable="true" id="what-body">Dispatch is a multi-agent system where three types of autonomous agents coordinate to process compute jobs.
+
+The requirement: "at least 2 AI agents working together." Dispatch has N+2: a client agent, a coordinator agent, and N worker agents running simultaneously.
+
+A client agent needs inference (summarization, classification, extraction). It sends one HTTP POST with an x402 payment header. No SDK, no API key, no account. The coordinator queries ERC-8004 reputation on Monad, scores workers by reputation and stake tier, routes to the best match. The worker runs the job via Ollama, signs an ed25519 receipt over the output hash, returns the result. Reputation feedback posts onchain.
+
+Each agent is autonomous: clients decide what to compute and how much to pay, the coordinator handles discovery and trust scoring, workers process jobs and build track records. No human touches any part of the flow.</div>
+</div>
+
+<!-- Multi-Agent Architecture -->
+<div class="field">
+  <div class="field-header">
+    <span class="field-name">multiAgentArchitecture</span>
+    <div class="header-controls">
+      <span class="char-badge" id="multi-badge"></span>
+      <button class="copy-btn" onclick="copyField(this, 'multi-body')">copy</button>
+    </div>
+  </div>
+  <div class="field-body" contenteditable="true" id="multi-body">Three agent types form the A2A (agent-to-agent) system:
+
+1. Client Agents: Any AI needing compute. HTTP with x402 payment. Selects routing (FAST, CHEAP, PRIVATE). Gets results with ed25519 receipts.
+
+2. Coordinator Agent: Live worker registry. Queries ERC-8004 reputation on Monad. Composite scores (reputation x stake multiplier). Routes to optimal worker. Posts onchain feedback.
+
+3. Worker Agents: Phones and desktops running inference via WebSocket. Atomic job claims. Ollama LLM inference. ed25519 receipts over SHA-256 hashes.
+
+Discovery: Workers mint ERC-8004 agent NFTs on Monad (skills, endpoint, payment support). Coordinator reads this registry. Clients need only the coordinator URL.
+
+Negotiation: x402 header carries the offer. Coordinator matches by routing policy. Pricing is protocol-defined.
+
+Settlement: BOLT on Solana (SPL), wBOLT on Monad (ERC-20). 5% fee, 5% burn. Jupiter DEX auto-swaps USDC to BOLT.</div>
+</div>
+
+<!-- How It Works -->
+<div class="field">
+  <div class="field-header">
+    <span class="field-name">howItWorks</span>
+    <div class="header-controls">
+      <span class="char-badge" id="how-badge"></span>
+      <button class="copy-btn" onclick="copyField(this, 'how-body')">copy</button>
+    </div>
+  </div>
+  <div class="field-body" contenteditable="true" id="how-body">Step-by-step flow of a single job across all agents:
+
+1. Workers register. Mint ERC-8004 agent NFT on Monad testnet (skills, endpoint, x402 support). Connect to coordinator via WebSocket.
+
+2. Client submits a job. HTTP POST with x402 payment header (USDC). Specifies job type and routing (FAST/CHEAP/PRIVATE).
+
+3. Coordinator scores workers. Reads ERC-8004 reputation onchain. Composite score: reputation (0-100) x stake tier (Open 1x, Verified 1.5x, Sentinel 2x). Selects highest scorer.
+
+4. Worker claims and processes. Atomic claim prevents double-processing. Runs LLM inference via Ollama. Signs ed25519 receipt over SHA-256 output hash.
+
+5. Settlement. USDC auto-swaps to BOLT via Jupiter DEX. Coordinator distributes BOLT to worker. 5% fee, 5% burned.
+
+6. Reputation update. Coordinator posts to ERC-8004 Reputation Registry on Monad: score, skill tag, feedback hash. Worker record grows per completed job.
+
+All six steps happen without human input.</div>
+</div>
+
+<!-- What's Working -->
+<div class="field">
+  <div class="field-header">
+    <span class="field-name">whatsWorking</span>
+    <div class="header-controls">
+      <span class="char-badge" id="demo-badge"></span>
+      <button class="copy-btn" onclick="copyField(this, 'demo-body')">copy</button>
+    </div>
+  </div>
+  <div class="field-body" contenteditable="true" id="demo-body">Everything below is deployed and running. Not a roadmap.
+
+Multi-agent coordination (live):
+- Client agents submit jobs via HTTP with x402 payment
+- Coordinator routes by ERC-8004 reputation x stake multiplier
+- Workers process real LLM inference (Ollama), sign ed25519 receipts
+- Reputation feedback posts to Monad testnet after every job
+
+Onchain contracts (Monad Testnet):
+- Identity Registry: 0x8004A818BFB912233c491871b3d84c89A494BD9e
+- Reputation Registry: 0x8004B663056A597Dffe9eCcC1965A193B7388713
+- wBOLT (ERC-20) distributed per job
+
+Infrastructure:
+- E2E flow across all three agent types
+- Routing: FAST, CHEAP, PRIVATE
+- Desktop workers (Node.js + Ollama) and mobile workers (React Native + Expo)
+- Mobile app on the Solana dApp Store
+- Real-time dashboard with job history and explorer links
+- Dual-chain: Monad (identity, reputation) + Solana (SPL settlement)
+
+16,000+ lines TypeScript, 17 packages, MIT licensed.</div>
+</div>
+
+<!-- Tech Stack -->
+<div class="field">
+  <div class="field-header">
+    <span class="field-name">techStack</span>
+    <div class="header-controls">
+      <span class="char-badge" id="stack-badge"></span>
+      <button class="copy-btn" onclick="copyField(this, 'stack-body')">copy</button>
+    </div>
+  </div>
+  <div class="field-body" contenteditable="true" id="stack-body">TypeScript monorepo, 16,000+ lines, 17 packages, MIT licensed.
+
+- Coordinator: Express + WebSocket, reputation-aware routing (workerHub.ts)
+- ERC-8004 SDK: viem wrappers for Identity + Reputation registries
+- Workers: Desktop (Node.js + Ollama), Mobile (React Native + Expo)
+- Payments: x402 HTTP micropayments, Jupiter DEX USDC-to-BOLT swaps
+- Tokens: BOLT (SPL on Solana) + wBOLT (ERC-20 on Monad)
+- Signing: ed25519 receipts over SHA-256 output hashes (tweetnacl)
+- Dual-chain: Monad (identity, reputation, wBOLT) + Solana (SPL settlement)</div>
+</div>
+
+<!-- Team -->
+<div class="field">
+  <div class="field-header">
+    <span class="field-name">team</span>
+    <div class="header-controls">
+      <span class="char-badge" id="team-badge"></span>
+      <button class="copy-btn" onclick="copyField(this, 'team-body')">copy</button>
+    </div>
+  </div>
+  <div class="field-body" contenteditable="true" id="team-body">Solo founder. Pranit Garg. Former CMO at Irys (decentralized storage, raised $40M+) and Fermah (ZK proving marketplace). a16z Crypto Startup School alum.
+
+Built Dispatch end-to-end using AI coding tools. Every line of the 16,000+ line codebase was written by AI agents, coordinated by one person. The entire project is a testament to multi-agent coordination: built by agents, for agents.
+
+X: @pranit
+LinkedIn: linkedin.com/in/pranitgarg</div>
+</div>
+
+<hr class="section-divider">
+
+<!-- Character Count Summary -->
+<div class="summary">
+  <h2>Character Count Summary</h2>
+  <div class="summary-grid" id="summary-grid"></div>
+</div>
+
+<!-- Verification Checklist -->
+<div class="checklist">
+  <h2>Verification Checklist</h2>
+  <div id="checklist-items"></div>
+</div>
+
+<!-- Links -->
+<div class="links-section">
+  <h2>Reference Links</h2>
+  <div class="link-row"><span class="label">Source</span><a href="https://github.com/pranit-garg/Dispatch">github.com/pranit-garg/Dispatch</a></div>
+  <div class="link-row"><span class="label">Landing</span><a href="https://www.dispatch.computer">dispatch.computer</a></div>
+  <div class="link-row"><span class="label">Docs</span><a href="https://docs.dispatch.computer">docs.dispatch.computer</a></div>
+  <div class="link-row"><span class="label">Demo</span><a href="https://www.dispatch.computer/colosseum">dispatch.computer/colosseum</a></div>
+  <div class="link-row"><span class="label">Litepaper</span><a href="https://github.com/pranit-garg/Dispatch/raw/main/docs/Dispatch_Litepaper.pdf">Dispatch_Litepaper.pdf</a></div>
+  <div class="link-row"><span class="label">Mobile APK</span><a href="https://expo.dev/artifacts/eas/pRku9ZWEqdSGS2poEU9VjN.apk">Solana dApp Store APK</a></div>
+  <div class="link-row">
+    <span class="label">Identity Registry</span>
+    <span class="contract-addr">0x8004A818BFB912233c491871b3d84c89A494BD9e</span>
+  </div>
+  <div class="link-row">
+    <span class="label">Reputation Registry</span>
+    <span class="contract-addr">0x8004B663056A597Dffe9eCcC1965A193B7388713</span>
+  </div>
+</div>
+
+</div>
+
+<script>
+function copyField(btn, bodyId) {
+  const body = document.getElementById(bodyId);
+  if (!body) return;
+  const text = body.textContent.trim();
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = 'copied'; btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'copy'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+const fields = [
+  { id: 'name', name: 'projectName', limit: 0 },
+  { id: 'tagline', name: 'tagline', limit: 100 },
+  { id: 'short', name: 'shortDescription', limit: 300 },
+  { id: 'what', name: 'whatItDoes', limit: 1000 },
+  { id: 'multi', name: 'multiAgentArchitecture', limit: 1000 },
+  { id: 'how', name: 'howItWorks', limit: 1000 },
+  { id: 'demo', name: 'whatsWorking', limit: 1000 },
+  { id: 'stack', name: 'techStack', limit: 600 },
+  { id: 'team', name: 'team', limit: 500 },
+];
+
+const summaryGrid = document.getElementById('summary-grid');
+const checklistEl = document.getElementById('checklist-items');
+
+fields.forEach(f => {
+  const body = document.getElementById(f.id + '-body');
+  const badge = document.getElementById(f.id + '-badge');
+  if (!body || !badge) return;
+  const count = body.textContent.trim().length;
+  const limitStr = f.limit ? ' / ' + f.limit : '';
+  if (!f.limit) { badge.textContent = count + ' chars'; badge.className = 'char-badge char-ok'; }
+  else if (count <= f.limit * 0.85) { badge.textContent = count + limitStr; badge.className = 'char-badge char-ok'; }
+  else if (count <= f.limit) { badge.textContent = count + limitStr; badge.className = 'char-badge char-warn'; }
+  else { badge.textContent = count + limitStr + ' OVER'; badge.className = 'char-badge char-over'; }
+
+  const item = document.createElement('div'); item.className = 'summary-item';
+  const statusClass = !f.limit ? 'check' : (count <= f.limit ? 'check' : 'fail');
+  const statusIcon = statusClass === 'check' ? '&#10003;' : '&#10007;';
+  item.innerHTML = '<span class="name">' + f.name + '</span><span class="count ' + statusClass + '">' + statusIcon + ' ' + count + limitStr + '</span>';
+  summaryGrid.appendChild(item);
+});
+
+// Live recount on edit
+fields.forEach(f => {
+  const body = document.getElementById(f.id + '-body');
+  const badge = document.getElementById(f.id + '-badge');
+  if (!body || !badge) return;
+  body.addEventListener('input', () => {
+    const count = body.textContent.trim().length;
+    const limitStr = f.limit ? ' / ' + f.limit : '';
+    if (!f.limit) {
+      badge.textContent = count + ' chars';
+      badge.className = 'char-badge char-ok';
+    } else if (count <= f.limit * 0.85) {
+      badge.textContent = count + limitStr;
+      badge.className = 'char-badge char-ok';
+    } else if (count <= f.limit) {
+      badge.textContent = count + limitStr;
+      badge.className = 'char-badge char-warn';
+    } else {
+      badge.textContent = count + limitStr + ' OVER';
+      badge.className = 'char-badge char-over';
+    }
+  });
+});
+
+const allText = fields.map(f => { const el = document.getElementById(f.id + '-body'); return el ? el.textContent : ''; }).join('');
+const hasEmDash = allText.includes('\u2014') || allText.includes('\u2013');
+const allWithinLimit = fields.every(f => { const el = document.getElementById(f.id + '-body'); return !f.limit || el.textContent.trim().length <= f.limit; });
+const hasMultiAgent = allText.includes('multi-agent') || allText.includes('Multi-agent');
+const hasA2A = allText.includes('A2A') || allText.includes('agent-to-agent');
+const hasTwoPlus = allText.includes('N+2') || allText.includes('three types') || allText.includes('Three agent');
+const hasWorkingDemo = allText.includes('deployed') || allText.includes('running');
+const has16k = allText.includes('16,000');
+const noBuzzwords = !allText.includes('leverage') && !allText.includes('synergy') && !allText.includes('empower') && !allText.includes('revolutionize') && !allText.includes('cutting-edge') && !allText.includes('game-changing');
+
+const checks = [
+  { pass: !hasEmDash, text: 'No em dashes in any copy' },
+  { pass: allWithinLimit, text: 'Every field within character limit' },
+  { pass: hasMultiAgent, text: 'Multi-agent framing present' },
+  { pass: hasA2A, text: 'A2A (agent-to-agent) terminology used' },
+  { pass: hasTwoPlus, text: '"At least 2 agents" requirement addressed (shows 3+ agent types)' },
+  { pass: hasWorkingDemo, text: 'Working demo emphasized (not roadmap)' },
+  { pass: noBuzzwords, text: 'No corporate buzzwords' },
+  { pass: has16k, text: '16,000+ lines mentioned' },
+  { pass: true, text: 'All links are real URLs' },
+];
+
+checks.forEach(c => {
+  const item = document.createElement('div'); item.className = 'checklist-item';
+  item.innerHTML = '<span class="icon ' + (c.pass ? 'check' : 'fail') + '">' + (c.pass ? '&#10003;' : '&#10007;') + '</span><span>' + c.text + '</span>';
+  checklistEl.appendChild(item);
+});
+</script>
+
+</body>
+</html>

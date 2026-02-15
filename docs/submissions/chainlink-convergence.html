@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chainlink Convergence Hackathon - Dispatch</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'SF Pro Text', -apple-system, system-ui, sans-serif; background: #0a0a0e; color: #e0e0e0; padding: 40px 20px; line-height: 1.6; }
+  .container { max-width: 800px; margin: 0 auto; }
+  h1 { font-size: 28px; color: #d4a246; margin-bottom: 8px; font-weight: 600; letter-spacing: -0.5px; }
+  .subtitle { color: #888; font-size: 14px; margin-bottom: 40px; }
+  .field { margin-bottom: 32px; border: 1px solid #1a1a22; border-radius: 12px; overflow: hidden; background: #111116; position: relative; }
+  .field-header { display: flex; justify-content: space-between; align-items: center; padding: 14px 20px; background: #15151c; border-bottom: 1px solid #1a1a22; }
+  .field-name { font-size: 14px; font-weight: 600; color: #d4a246; font-family: 'SF Mono', 'Fira Code', monospace; }
+  .header-controls { display: flex; align-items: center; gap: 10px; }
+  .char-badge { font-size: 12px; padding: 4px 10px; border-radius: 6px; font-family: 'SF Mono', monospace; font-weight: 500; }
+  .char-ok { background: rgba(52, 211, 153, 0.15); color: #34d399; }
+  .char-warn { background: rgba(251, 191, 36, 0.15); color: #fbbf24; }
+  .char-over { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
+  .copy-btn { font-size: 12px; padding: 4px 10px; border-radius: 6px; border: 1px solid #2a2a34; background: #1a1a22; color: #888; cursor: pointer; font-family: 'SF Mono', monospace; transition: all 0.2s; }
+  .copy-btn:hover { background: #2a2a34; color: #d4a246; border-color: #d4a246; }
+  .copy-btn.copied { background: rgba(52, 211, 153, 0.15); color: #34d399; border-color: #34d399; }
+  .field-body { padding: 20px; font-size: 14px; white-space: pre-wrap; color: #ccc; line-height: 1.7; }
+  .field-body ol, .field-body ul { margin-left: 20px; }
+  .section-divider { border: none; border-top: 1px solid #1a1a22; margin: 40px 0; }
+  .summary { background: #15151c; border: 1px solid #1a1a22; border-radius: 12px; padding: 24px; margin-top: 40px; }
+  .summary h2 { font-size: 18px; color: #d4a246; margin-bottom: 16px; }
+  .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .summary-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: #111116; border-radius: 8px; font-size: 13px; }
+  .summary-item .name { color: #888; }
+  .summary-item .count { font-family: 'SF Mono', monospace; font-weight: 500; }
+  .check { color: #34d399; } .warn { color: #fbbf24; } .fail { color: #ef4444; }
+  .checklist { margin-top: 40px; background: #15151c; border: 1px solid #1a1a22; border-radius: 12px; padding: 24px; }
+  .checklist h2 { font-size: 18px; color: #d4a246; margin-bottom: 16px; }
+  .checklist-item { display: flex; align-items: flex-start; gap: 10px; padding: 6px 0; font-size: 13px; color: #ccc; }
+  .checklist-item .icon { font-size: 14px; flex-shrink: 0; }
+  .links-section { margin-top: 40px; }
+  .links-section h2 { font-size: 18px; color: #d4a246; margin-bottom: 16px; }
+  .links-section a { color: #e8c06e; text-decoration: none; }
+  .links-section a:hover { text-decoration: underline; }
+  .link-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #1a1a22; font-size: 13px; }
+  .link-row .label { color: #888; }
+  .contract-addr { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 11px; color: #e8c06e; word-break: break-all; }
+  @media (max-width: 600px) { .summary-grid { grid-template-columns: 1fr; } .link-row { flex-direction: column; gap: 4px; } }
+  .field-body:focus {
+    outline: 1px solid #d4a246;
+    background: #1a1a1e;
+  }
+  .field-body[contenteditable] {
+    cursor: text;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>Chainlink Convergence Hackathon</h1>
+<p class="subtitle">Dispatch / Due Mar 1, 2026 / Prize $100K+ / Field-by-field preview with character counts</p>
+
+<!-- Project Name -->
+<div class="field">
+  <div class="field-header">
+    <span class="field-name">projectName</span>
+    <div class="header-controls">
+      <span class="char-badge char-ok" id="name-badge">8 chars</span>
+      <button class="copy-btn" onclick="copyField(this, 'name-body')">copy</button>
+    </div>
+  </div>
+  <div class="field-body" contenteditable="true" id="name-body">Dispatch</div>
+</div>
+
+<!-- Tagline -->
+<div class="field">
+  <div class="field-header">
+    <span class="field-name">tagline</span>
+    <div class="header-controls">
+      <span class="char-badge" id="tagline-badge"></span>
+      <button class="copy-btn" onclick="copyField(this, 'tagline-body')">copy</button>
+    </div>
+  </div>
+  <div class="field-body" contenteditable="true" id="tagline-body">Oracle-priced compute: Chainlink feeds set the cost of every AI job in real time.</div>
+</div>
+
+<!-- Short Description -->
+<div class="field">
+  <div class="field-header">
+    <span class="field-name">shortDescription</span>
+    <div class="header-controls">
+      <span class="char-badge" id="short-badge"></span>
+      <button class="copy-btn" onclick="copyField(this, 'short-body')">copy</button>
+    </div>
+  </div>
+  <div class="field-body" contenteditable="true" id="short-body">Dispatch is an autonomous compute marketplace where AI agents buy inference from idle phones and desktops via HTTP. Chainlink CRE price feeds drive dynamic job pricing: real-time USDC/BOLT conversion, demand-responsive rate adjustments, and oracle-verified settlement.</div>
+</div>
+
+<!-- What It Does -->
+<div class="field">
+  <div class="field-header">
+    <span class="field-name">whatItDoes</span>
+    <div class="header-controls">
+      <span class="char-badge" id="what-badge"></span>
+      <button class="copy-btn" onclick="copyField(this, 'what-body')">copy</button>
+    </div>
+  </div>
+  <div class="field-body" contenteditable="true" id="what-body">Dispatch is a decentralized compute marketplace built for AI agents. No accounts, no API keys. An agent sends one HTTP request with an x402 payment header. The coordinator routes the job to the best available worker (idle phone or desktop). The worker runs real LLM inference, signs an ed25519 receipt over the output, and gets paid in BOLT.
+
+The problem: compute pricing today is static. Providers set fixed rates regardless of network load, token volatility, or real-time demand. When BOLT fluctuates against USDC, workers and agents absorb the difference.
+
+Chainlink CRE fixes this. Oracle price feeds provide real-time USDC/BOLT exchange rates at the moment of settlement. The coordinator reads live demand signals and adjusts job pricing per request. Workers always receive fair market value. Agents always pay current rates. No stale prices, no manual updates.</div>
+</div>
+
+<!-- Chainlink Integration -->
+<div class="field">
+  <div class="field-header">
+    <span class="field-name">chainlinkIntegration</span>
+    <div class="header-controls">
+      <span class="char-badge" id="chainlink-badge"></span>
+      <button class="copy-btn" onclick="copyField(this, 'chainlink-body')">copy</button>
+    </div>
+  </div>
+  <div class="field-body" contenteditable="true" id="chainlink-body">Chainlink CRE integrates at three points in Dispatch settlement:
+
+1. Price Feed (USDC/BOLT Conversion)
+Agents pay USDC via x402 headers, workers earn BOLT. The coordinator queries a CRE price feed for the live USDC/BOLT rate at settlement. Replaces fixed-rate conversion, eliminates stale pricing.
+
+2. Demand-Based Dynamic Pricing
+A CRE workflow monitors active worker count, queue depth, and completion time. When demand spikes, it outputs a price multiplier applied to the base job rate. Higher prices attract more workers online. Supply and demand balance automatically.
+
+3. Oracle-Verified Settlement
+Each job produces an ed25519 receipt. CRE verifies the receipt, confirms feed freshness, and triggers BOLT distribution. Result: oracle-attested settlement where price, completion, and payment are all verified.
+
+Note: CRE integration is a design proposal. Core Dispatch infrastructure (coordinator, workers, x402 payments, receipts) is live on testnet today.</div>
+</div>
+
+<!-- How It Works -->
+<div class="field">
+  <div class="field-header">
+    <span class="field-name">howItWorks</span>
+    <div class="header-controls">
+      <span class="char-badge" id="how-badge"></span>
+      <button class="copy-btn" onclick="copyField(this, 'how-body')">copy</button>
+    </div>
+  </div>
+  <div class="field-body" contenteditable="true" id="how-body">End-to-end flow with Chainlink CRE:
+
+1. Agent submits job via HTTP POST with x402 payment header (USDC). No SDK, no API key, no wallet required.
+
+2. Coordinator queries the CRE price feed for current USDC/BOLT rate. Job cost = base rate x demand multiplier x exchange rate.
+
+3. Coordinator scores workers by ERC-8004 reputation (onchain on Monad) and stake tier. Routes to highest-scoring worker.
+
+4. Worker runs the job (LLM inference via Ollama on desktop, or text processing on mobile). Signs an ed25519 receipt over the SHA-256 output hash.
+
+5. CRE validates: receipt authentic, price feed fresh, payment matches oracle rate. Triggers BOLT distribution to worker.
+
+6. Coordinator posts reputation feedback to ERC-8004 on Monad. Future jobs route to proven workers first.
+
+Every job: priced by oracle, verified by oracle, settled by oracle.</div>
+</div>
+
+<!-- What's Working -->
+<div class="field">
+  <div class="field-header">
+    <span class="field-name">whatsWorking</span>
+    <div class="header-controls">
+      <span class="char-badge" id="working-badge"></span>
+      <button class="copy-btn" onclick="copyField(this, 'working-body')">copy</button>
+    </div>
+  </div>
+  <div class="field-body" contenteditable="true" id="working-body">Live infrastructure (deployed, working today):
+
+- Full E2E compute flow: agent submits job, coordinator routes, worker processes real LLM inference, ed25519 receipt returned
+- x402 HTTP micropayments on both Solana (SPL) and Monad (EVM)
+- BOLT SPL token on Solana, wBOLT ERC-20 on Monad
+- ERC-8004 identity and reputation registries on Monad testnet
+- Reputation-aware routing: higher score = priority matching
+- Three routing policies: FAST, CHEAP, PRIVATE
+- Desktop workers (Node.js + Ollama) running real inference
+- Mobile workers (React Native + Expo), approved on the Solana dApp Store
+- Real-time dashboard with job history and explorer links
+- 16,000+ lines TypeScript, 17 packages, MIT licensed
+
+Chainlink CRE addition (design, not yet deployed):
+- Price feed integration point identified in coordinator settlement pipeline
+- Demand-based pricing multiplier designed around queue depth and worker count
+- Oracle-verified settlement flow specified for CRE workflow execution</div>
+</div>
+
+<!-- Tech Stack -->
+<div class="field">
+  <div class="field-header">
+    <span class="field-name">techStack</span>
+    <div class="header-controls">
+      <span class="char-badge" id="stack-badge"></span>
+      <button class="copy-btn" onclick="copyField(this, 'stack-body')">copy</button>
+    </div>
+  </div>
+  <div class="field-body" contenteditable="true" id="stack-body">TypeScript monorepo, 16,000+ lines, 17 packages, MIT licensed.
+
+- Coordinator: Express + WebSocket, reputation-aware routing, x402 validation
+- Workers: Desktop (Node.js + Ollama) + Mobile (React Native + Expo)
+- Payments: x402 HTTP micropayments (USDC on Solana + Monad)
+- Tokens: BOLT (SPL on Solana) + wBOLT (ERC-20 on Monad)
+- Identity: ERC-8004 agent registry on Monad testnet
+- Chainlink CRE: price feeds, demand pricing, oracle-verified settlement
+- Dual-chain: Solana (SPL, dApp Store) + Monad (ERC-8004, reputation)</div>
+</div>
+
+<!-- Team -->
+<div class="field">
+  <div class="field-header">
+    <span class="field-name">team</span>
+    <div class="header-controls">
+      <span class="char-badge" id="team-badge"></span>
+      <button class="copy-btn" onclick="copyField(this, 'team-body')">copy</button>
+    </div>
+  </div>
+  <div class="field-body" contenteditable="true" id="team-body">Solo founder. Pranit Garg. Former CMO at Irys (decentralized storage, $40M+ raised) and Fermah (ZK proving marketplace). a16z Crypto Startup School alum. Built Dispatch end-to-end using AI coding tools. Every line of the 16,000+ line codebase was written by AI agents, coordinated by one person.
+
+X: @pranit
+LinkedIn: linkedin.com/in/pranitgarg</div>
+</div>
+
+<hr class="section-divider">
+
+<!-- Character Count Summary -->
+<div class="summary">
+  <h2>Character Count Summary</h2>
+  <div class="summary-grid" id="summary-grid"></div>
+</div>
+
+<!-- Verification Checklist -->
+<div class="checklist">
+  <h2>Verification Checklist</h2>
+  <div id="checklist-items"></div>
+</div>
+
+<!-- Links -->
+<div class="links-section">
+  <h2>Reference Links</h2>
+  <div class="link-row"><span class="label">Source</span><a href="https://github.com/pranit-garg/Dispatch">github.com/pranit-garg/Dispatch</a></div>
+  <div class="link-row"><span class="label">Landing</span><a href="https://www.dispatch.computer">dispatch.computer</a></div>
+  <div class="link-row"><span class="label">Docs</span><a href="https://docs.dispatch.computer">docs.dispatch.computer</a></div>
+  <div class="link-row"><span class="label">Demo</span><a href="https://www.dispatch.computer/colosseum">dispatch.computer/colosseum</a></div>
+  <div class="link-row"><span class="label">Litepaper</span><a href="https://github.com/pranit-garg/Dispatch/raw/main/docs/Dispatch_Litepaper.pdf">Dispatch_Litepaper.pdf</a></div>
+  <div class="link-row"><span class="label">Mobile APK</span><a href="https://expo.dev/artifacts/eas/pRku9ZWEqdSGS2poEU9VjN.apk">Solana dApp Store APK</a></div>
+  <div class="link-row">
+    <span class="label">ERC-8004 Identity</span>
+    <span class="contract-addr">0x8004A818BFB912233c491871b3d84c89A494BD9e</span>
+  </div>
+  <div class="link-row">
+    <span class="label">ERC-8004 Reputation</span>
+    <span class="contract-addr">0x8004B663056A597Dffe9eCcC1965A193B7388713</span>
+  </div>
+</div>
+
+</div>
+
+<script>
+function copyField(btn, bodyId) {
+  const body = document.getElementById(bodyId);
+  if (!body) return;
+  navigator.clipboard.writeText(body.textContent.trim()).then(() => {
+    btn.textContent = 'copied'; btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'copy'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+const fields = [
+  { id: 'tagline', name: 'tagline', limit: 100 },
+  { id: 'short', name: 'shortDescription', limit: 300 },
+  { id: 'what', name: 'whatItDoes', limit: 1000 },
+  { id: 'chainlink', name: 'chainlinkIntegration', limit: 1000 },
+  { id: 'how', name: 'howItWorks', limit: 1000 },
+  { id: 'working', name: 'whatsWorking', limit: 1000 },
+  { id: 'stack', name: 'techStack', limit: 600 },
+  { id: 'team', name: 'team', limit: 500 },
+];
+
+const summaryGrid = document.getElementById('summary-grid');
+const checklistEl = document.getElementById('checklist-items');
+
+fields.forEach(f => {
+  const body = document.getElementById(f.id + '-body');
+  const badge = document.getElementById(f.id + '-badge');
+  if (!body || !badge) return;
+  const count = body.textContent.trim().length;
+  const limitStr = f.limit ? ' / ' + f.limit : '';
+  if (!f.limit) { badge.textContent = count + ' chars'; badge.className = 'char-badge char-ok'; }
+  else if (count <= f.limit * 0.85) { badge.textContent = count + limitStr; badge.className = 'char-badge char-ok'; }
+  else if (count <= f.limit) { badge.textContent = count + limitStr; badge.className = 'char-badge char-warn'; }
+  else { badge.textContent = count + limitStr + ' OVER'; badge.className = 'char-badge char-over'; }
+  const item = document.createElement('div'); item.className = 'summary-item';
+  const statusClass = !f.limit ? 'check' : (count <= f.limit ? 'check' : 'fail');
+  const statusIcon = statusClass === 'check' ? '&#10003;' : '&#10007;';
+  item.innerHTML = '<span class="name">' + f.name + '</span><span class="count ' + statusClass + '">' + statusIcon + ' ' + count + limitStr + '</span>';
+  summaryGrid.appendChild(item);
+});
+
+// Live recount on edit
+fields.forEach(f => {
+  const body = document.getElementById(f.id + '-body');
+  const badge = document.getElementById(f.id + '-badge');
+  if (!body || !badge) return;
+  body.addEventListener('input', () => {
+    const count = body.textContent.trim().length;
+    const limitStr = f.limit ? ' / ' + f.limit : '';
+    if (!f.limit) {
+      badge.textContent = count + ' chars';
+      badge.className = 'char-badge char-ok';
+    } else if (count <= f.limit * 0.85) {
+      badge.textContent = count + limitStr;
+      badge.className = 'char-badge char-ok';
+    } else if (count <= f.limit) {
+      badge.textContent = count + limitStr;
+      badge.className = 'char-badge char-warn';
+    } else {
+      badge.textContent = count + limitStr + ' OVER';
+      badge.className = 'char-badge char-over';
+    }
+  });
+});
+
+const allText = fields.map(f => { const el = document.getElementById(f.id + '-body'); return el ? el.textContent : ''; }).join('');
+const hasEmDash = allText.includes('\u2014') || allText.includes('\u2013');
+const hasChainlink = allText.includes('Chainlink') && allText.includes('CRE');
+const hasPriceFeed = allText.includes('price feed') || allText.includes('oracle');
+const hasDynamic = allText.includes('dynamic') || allText.includes('demand');
+const hasHonesty = allText.includes('design') && allText.includes('not yet deployed');
+const allWithinLimit = fields.every(f => { const el = document.getElementById(f.id + '-body'); return !f.limit || el.textContent.trim().length <= f.limit; });
+
+const checks = [
+  { pass: !hasEmDash, text: 'No em dashes in any copy' },
+  { pass: allWithinLimit, text: 'Every field within character limit' },
+  { pass: hasChainlink, text: 'Chainlink CRE mentioned prominently' },
+  { pass: hasPriceFeed, text: 'Price feed / oracle integration described' },
+  { pass: hasDynamic, text: 'Dynamic pricing mechanism explained' },
+  { pass: hasHonesty, text: 'Honest about CRE being design (not deployed)' },
+  { pass: !allText.includes('leverage') && !allText.includes('synergy') && !allText.includes('empower'), text: 'No corporate buzzwords' },
+  { pass: allText.includes('working') || allText.includes('deployed'), text: 'Emphasizes working infrastructure' },
+  { pass: allText.includes('16,000'), text: 'Codebase size mentioned (16,000+ lines)' },
+  { pass: allText.includes('x402'), text: 'x402 payment protocol mentioned' },
+];
+
+checks.forEach(c => {
+  const item = document.createElement('div');
+  item.className = 'checklist-item';
+  item.innerHTML = '<span class="icon ' + (c.pass ? 'check' : 'fail') + '">' + (c.pass ? '&#10003;' : '&#10007;') + '</span><span>' + c.text + '</span>';
+  checklistEl.appendChild(item);
+});
+</script>
+
+</body>
+</html>

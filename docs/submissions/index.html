@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dispatch Hackathon Submissions Dashboard</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'SF Pro Text', -apple-system, system-ui, sans-serif;
+    background: #0a0a0e;
+    color: #e0e0e0;
+    padding: 40px 20px;
+    line-height: 1.6;
+  }
+  .container { max-width: 960px; margin: 0 auto; }
+  h1 {
+    font-size: 32px;
+    color: #d4a246;
+    margin-bottom: 6px;
+    font-weight: 600;
+    letter-spacing: -0.5px;
+  }
+  .subtitle { color: #888; font-size: 14px; margin-bottom: 12px; }
+  .stats-row {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 40px;
+    flex-wrap: wrap;
+  }
+  .stat-card {
+    background: #15151c;
+    border: 1px solid #1a1a22;
+    border-radius: 10px;
+    padding: 16px 24px;
+    flex: 1;
+    min-width: 140px;
+  }
+  .stat-number {
+    font-size: 28px;
+    font-weight: 700;
+    color: #d4a246;
+    font-family: 'SF Mono', monospace;
+  }
+  .stat-label { font-size: 12px; color: #888; margin-top: 2px; }
+
+  .section-title {
+    font-size: 18px;
+    color: #d4a246;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #1a1a22;
+  }
+
+  .submission-card {
+    background: #111116;
+    border: 1px solid #1a1a22;
+    border-radius: 12px;
+    margin-bottom: 16px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .submission-card:hover { border-color: #d4a246; }
+  .submission-card a { text-decoration: none; color: inherit; }
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    background: #15151c;
+    border-bottom: 1px solid #1a1a22;
+  }
+  .card-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #e0e0e0;
+  }
+  .card-badges { display: flex; gap: 8px; align-items: center; }
+
+  .badge {
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-family: 'SF Mono', monospace;
+    font-weight: 500;
+  }
+  .badge-urgent { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
+  .badge-open { background: rgba(52, 211, 153, 0.15); color: #34d399; }
+  .badge-late { background: rgba(251, 191, 36, 0.15); color: #fbbf24; }
+  .badge-rolling { background: rgba(96, 165, 250, 0.15); color: #60a5fa; }
+  .badge-prize { background: rgba(212, 162, 70, 0.1); color: #d4a246; border: 1px solid rgba(212, 162, 70, 0.2); }
+
+  .card-body { padding: 16px 20px; }
+  .card-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 0;
+    font-size: 13px;
+  }
+  .card-row .label { color: #666; }
+  .card-row .value { color: #ccc; }
+  .card-angle {
+    margin-top: 8px;
+    padding: 10px 14px;
+    background: #0d0d12;
+    border-radius: 8px;
+    font-size: 13px;
+    color: #e8c06e;
+    font-style: italic;
+    border-left: 3px solid #d4a246;
+  }
+  .card-link {
+    display: inline-block;
+    margin-top: 12px;
+    padding: 6px 16px;
+    background: rgba(212, 162, 70, 0.1);
+    border: 1px solid rgba(212, 162, 70, 0.3);
+    border-radius: 8px;
+    color: #d4a246;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.2s;
+  }
+  .card-link:hover { background: rgba(212, 162, 70, 0.2); border-color: #d4a246; }
+
+  .timeline {
+    position: relative;
+    margin: 40px 0;
+  }
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: #1a1a22;
+  }
+  .timeline-item {
+    position: relative;
+    padding-left: 24px;
+    margin-bottom: 20px;
+  }
+  .timeline-dot {
+    position: absolute;
+    left: -5px;
+    top: 4px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid;
+  }
+  .dot-urgent { border-color: #ef4444; background: rgba(239, 68, 68, 0.4); animation: pulse 1.5s infinite; }
+  .dot-past { border-color: #ef4444; background: rgba(239, 68, 68, 0.2); }
+  .dot-soon { border-color: #fbbf24; background: rgba(251, 191, 36, 0.2); }
+  .dot-future { border-color: #34d399; background: rgba(52, 211, 153, 0.2); }
+  .dot-rolling { border-color: #60a5fa; background: rgba(96, 165, 250, 0.2); }
+  .timeline-date { font-size: 12px; color: #888; font-family: 'SF Mono', monospace; }
+  .timeline-name { font-size: 14px; color: #e0e0e0; }
+  .timeline-prize { font-size: 12px; color: #d4a246; }
+
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+    50% { box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
+  }
+
+  .action-section {
+    background: #15151c;
+    border: 1px solid #1a1a22;
+    border-radius: 12px;
+    padding: 24px;
+    margin-top: 40px;
+  }
+  .action-section h2 { font-size: 18px; color: #d4a246; margin-bottom: 16px; }
+  .action-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid #0d0d12;
+    font-size: 13px;
+  }
+  .action-item:last-child { border-bottom: none; }
+  .action-priority {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-family: 'SF Mono', monospace;
+    flex-shrink: 0;
+    width: 60px;
+    text-align: center;
+  }
+  .priority-now { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
+  .priority-soon { background: rgba(251, 191, 36, 0.15); color: #fbbf24; }
+  .priority-later { background: rgba(52, 211, 153, 0.15); color: #34d399; }
+
+  @media (max-width: 600px) {
+    .stats-row { flex-direction: column; }
+    .card-header { flex-direction: column; gap: 8px; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>Dispatch Hackathon Dashboard</h1>
+<p class="subtitle">11 submissions sorted by deadline. 8 open + 3 late entries. All drafts ready for review.</p>
+
+<div class="stats-row">
+  <div class="stat-card">
+    <div class="stat-number">11</div>
+    <div class="stat-label">Total Submissions</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-number">8</div>
+    <div class="stat-label">Open / Upcoming</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-number">3</div>
+    <div class="stat-label">Late (Outreach Needed)</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-number">$739K+</div>
+    <div class="stat-label">Total Prize Pool</div>
+  </div>
+</div>
+
+<!-- TIMELINE -->
+<h2 class="section-title">Deadline Timeline</h2>
+<div class="timeline">
+  <div class="timeline-item">
+    <div class="timeline-dot dot-urgent"></div>
+    <div class="timeline-date">Feb 15 (TOMORROW)</div>
+    <div class="timeline-name">Monad Moltiverse</div>
+    <div class="timeline-prize">Agent Track</div>
+  </div>
+  <div class="timeline-item">
+    <div class="timeline-dot dot-past"></div>
+    <div class="timeline-date">Deadline Passed</div>
+    <div class="timeline-name">x402 Agentic Commerce</div>
+    <div class="timeline-prize">$50K, late entry needed</div>
+  </div>
+  <div class="timeline-item">
+    <div class="timeline-dot dot-past"></div>
+    <div class="timeline-date">Feb 17-21 (PASSED)</div>
+    <div class="timeline-name">ETHDenver 2026</div>
+    <div class="timeline-prize">Late entry needed</div>
+  </div>
+  <div class="timeline-item">
+    <div class="timeline-dot dot-past"></div>
+    <div class="timeline-date">Feb 11 (PASSED)</div>
+    <div class="timeline-name">ETHGlobal HackMoney</div>
+    <div class="timeline-prize">Late entry needed</div>
+  </div>
+  <div class="timeline-item">
+    <div class="timeline-dot dot-soon"></div>
+    <div class="timeline-date">Feb 23 - Mar 1</div>
+    <div class="timeline-name">Lablab.ai Complete AI Agent</div>
+    <div class="timeline-prize">$3.5K</div>
+  </div>
+  <div class="timeline-item">
+    <div class="timeline-dot dot-soon"></div>
+    <div class="timeline-date">Feb 27</div>
+    <div class="timeline-name">Solana Graveyard Hack</div>
+    <div class="timeline-prize">$75K</div>
+  </div>
+  <div class="timeline-item">
+    <div class="timeline-dot dot-soon"></div>
+    <div class="timeline-date">Mar 1</div>
+    <div class="timeline-name">Chainlink Convergence</div>
+    <div class="timeline-prize">$100K+</div>
+  </div>
+  <div class="timeline-item">
+    <div class="timeline-dot dot-future"></div>
+    <div class="timeline-date">Mar 9</div>
+    <div class="timeline-name">Solana MONOLITH Mobile</div>
+    <div class="timeline-prize">$125K+</div>
+  </div>
+  <div class="timeline-item">
+    <div class="timeline-dot dot-future"></div>
+    <div class="timeline-date">Mar 9-22</div>
+    <div class="timeline-name">Lablab.ai Trustless Financial Agents</div>
+    <div class="timeline-prize">$50K</div>
+  </div>
+  <div class="timeline-item">
+    <div class="timeline-dot dot-future"></div>
+    <div class="timeline-date">Mar 24</div>
+    <div class="timeline-name">Polkadot Solidity</div>
+    <div class="timeline-prize">$30K</div>
+  </div>
+  <div class="timeline-item">
+    <div class="timeline-dot dot-rolling"></div>
+    <div class="timeline-date">Rolling</div>
+    <div class="timeline-name">Colosseum Eternal</div>
+    <div class="timeline-prize">$250K pre-seed</div>
+  </div>
+</div>
+
+<!-- URGENT: MONAD MOLTIVERSE -->
+<h2 class="section-title">Urgent: Due Tomorrow</h2>
+
+<div class="submission-card" style="border-color: rgba(239, 68, 68, 0.3);">
+  <a href="monad-moltiverse.html">
+  <div class="card-header" style="background: rgba(239, 68, 68, 0.05);">
+    <span class="card-title">Monad Moltiverse</span>
+    <div class="card-badges">
+      <span class="badge badge-urgent">DUE TOMORROW</span>
+      <span class="badge badge-prize">Agent Track</span>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="card-row"><span class="label">Deadline</span><span class="value">Feb 15, 2026</span></div>
+    <div class="card-row"><span class="label">Track</span><span class="value">Agent Track, ERC-8004 integration</span></div>
+    <div class="card-row"><span class="label">Chain</span><span class="value">Monad Testnet</span></div>
+    <div class="card-angle">"The trust layer for autonomous agents on Monad"</div>
+    <span class="card-link">Open Submission Draft</span>
+  </div>
+  </a>
+</div>
+
+<!-- LATE SUBMISSIONS -->
+<h2 class="section-title" style="margin-top: 40px;">Late Submissions (Outreach Required)</h2>
+
+<div class="submission-card" style="border-color: rgba(251, 191, 36, 0.2);">
+  <a href="x402-agentic-commerce.html">
+  <div class="card-header" style="background: rgba(251, 191, 36, 0.05);">
+    <span class="card-title">x402 Agentic Commerce</span>
+    <div class="card-badges">
+      <span class="badge badge-late">LATE</span>
+      <span class="badge badge-prize">$50K</span>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="card-row"><span class="label">Platform</span><span class="value">DoraHacks</span></div>
+    <div class="card-row"><span class="label">Outreach</span><span class="value">DoraHacks support + @dorahacksofficial Telegram</span></div>
+    <div class="card-row"><span class="label">Chance</span><span class="value">Medium (strong product fit)</span></div>
+    <div class="card-angle">"The most complete x402 implementation in production"</div>
+    <span class="card-link">Open Draft + Outreach Messages</span>
+  </div>
+  </a>
+</div>
+
+<div class="submission-card" style="border-color: rgba(251, 191, 36, 0.2);">
+  <a href="ethdenver-2026.html">
+  <div class="card-header" style="background: rgba(251, 191, 36, 0.05);">
+    <span class="card-title">ETHDenver 2026</span>
+    <div class="card-badges">
+      <span class="badge badge-late">LATE</span>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="card-row"><span class="label">Dates</span><span class="value">Feb 17-21, 2026</span></div>
+    <div class="card-row"><span class="label">Outreach</span><span class="value">hello@ethdenver.com + SporkDAO Discord</span></div>
+    <div class="card-row"><span class="label">Chance</span><span class="value">Low (they historically refuse late entries)</span></div>
+    <div class="card-angle">"Decentralized coordination protocol for the agent economy"</div>
+    <span class="card-link">Open Draft + Outreach Messages</span>
+  </div>
+  </a>
+</div>
+
+<div class="submission-card" style="border-color: rgba(251, 191, 36, 0.2);">
+  <a href="ethglobal-hackmoney.html">
+  <div class="card-header" style="background: rgba(251, 191, 36, 0.05);">
+    <span class="card-title">ETHGlobal HackMoney</span>
+    <div class="card-badges">
+      <span class="badge badge-late">LATE</span>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="card-row"><span class="label">Ended</span><span class="value">Feb 11, 2026</span></div>
+    <div class="card-row"><span class="label">Outreach</span><span class="value">events@ethglobal.com + event Discord</span></div>
+    <div class="card-row"><span class="label">Chance</span><span class="value">Lowest (likely in judging phase)</span></div>
+    <div class="card-angle">"DeFi infrastructure for machine economies"</div>
+    <span class="card-link">Open Draft + Outreach Messages</span>
+  </div>
+  </a>
+</div>
+
+<!-- OPEN SUBMISSIONS (sorted by deadline) -->
+<h2 class="section-title" style="margin-top: 40px;">Open / Upcoming Submissions</h2>
+
+<div class="submission-card">
+  <a href="lablab-complete-ai-agent.html">
+  <div class="card-header">
+    <span class="card-title">Lablab.ai Complete AI Agent</span>
+    <div class="card-badges">
+      <span class="badge badge-open">OPEN</span>
+      <span class="badge badge-prize">$3.5K</span>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="card-row"><span class="label">Deadline</span><span class="value">Feb 23 - Mar 1, 2026</span></div>
+    <div class="card-row"><span class="label">Requirement</span><span class="value">At least 2 AI agents working together</span></div>
+    <div class="card-angle">"Multi-agent coordination at the protocol level"</div>
+    <span class="card-link">Open Submission Draft</span>
+  </div>
+  </a>
+</div>
+
+<div class="submission-card">
+  <a href="solana-graveyard-hack.html">
+  <div class="card-header">
+    <span class="card-title">Solana Graveyard Hack</span>
+    <div class="card-badges">
+      <span class="badge badge-open">OPEN</span>
+      <span class="badge badge-prize">$75K</span>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="card-row"><span class="label">Deadline</span><span class="value">Feb 27, 2026</span></div>
+    <div class="card-row"><span class="label">Theme</span><span class="value">Dead/abandoned things coming back to life</span></div>
+    <div class="card-angle">"Reviving idle hardware into a living compute network"</div>
+    <span class="card-link">Open Submission Draft</span>
+  </div>
+  </a>
+</div>
+
+<div class="submission-card">
+  <a href="chainlink-convergence.html">
+  <div class="card-header">
+    <span class="card-title">Chainlink Convergence</span>
+    <div class="card-badges">
+      <span class="badge badge-open">OPEN</span>
+      <span class="badge badge-prize">$100K+</span>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="card-row"><span class="label">Deadline</span><span class="value">Mar 1, 2026</span></div>
+    <div class="card-row"><span class="label">Requirement</span><span class="value">Must use Chainlink Runtime Environment (CRE)</span></div>
+    <div class="card-angle">"Chainlink price feeds for dynamic compute pricing"</div>
+    <span class="card-link">Open Submission Draft</span>
+  </div>
+  </a>
+</div>
+
+<div class="submission-card">
+  <a href="solana-monolith-mobile.html">
+  <div class="card-header">
+    <span class="card-title">Solana MONOLITH Mobile</span>
+    <div class="card-badges">
+      <span class="badge badge-open">OPEN</span>
+      <span class="badge badge-prize">$125K+</span>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="card-row"><span class="label">Deadline</span><span class="value">Mar 9, 2026</span></div>
+    <div class="card-row"><span class="label">Focus</span><span class="value">Agentic mobile apps encouraged</span></div>
+    <div class="card-angle">"Your Seeker is an autonomous agent, not just a wallet"</div>
+    <span class="card-link">Open Submission Draft</span>
+  </div>
+  </a>
+</div>
+
+<div class="submission-card">
+  <a href="lablab-trustless-financial-agents.html">
+  <div class="card-header">
+    <span class="card-title">Lablab.ai Trustless Financial Agents</span>
+    <div class="card-badges">
+      <span class="badge badge-open">OPEN</span>
+      <span class="badge badge-prize">$50K</span>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="card-row"><span class="label">Deadline</span><span class="value">Mar 9-22, 2026</span></div>
+    <div class="card-row"><span class="label">Focus</span><span class="value">ERC-8004 (literally the theme)</span></div>
+    <div class="card-angle">"ERC-8004 reputation as the trust backbone for financial agents"</div>
+    <span class="card-link">Open Submission Draft</span>
+  </div>
+  </a>
+</div>
+
+<div class="submission-card">
+  <a href="polkadot-solidity.html">
+  <div class="card-header">
+    <span class="card-title">Polkadot Solidity</span>
+    <div class="card-badges">
+      <span class="badge badge-open">OPEN</span>
+      <span class="badge badge-prize">$30K</span>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="card-row"><span class="label">Deadline</span><span class="value">Mar 24, 2026</span></div>
+    <div class="card-row"><span class="label">Track</span><span class="value">EVM Track (deploy Solidity on PolkaVM)</span></div>
+    <div class="card-angle">"Portable agent reputation across EVM chains via ERC-8004"</div>
+    <span class="card-link">Open Submission Draft</span>
+  </div>
+  </a>
+</div>
+
+<div class="submission-card">
+  <a href="colosseum-eternal.html">
+  <div class="card-header">
+    <span class="card-title">Colosseum Eternal</span>
+    <div class="card-badges">
+      <span class="badge badge-rolling">ROLLING</span>
+      <span class="badge badge-prize">$250K pre-seed</span>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="card-row"><span class="label">Deadline</span><span class="value">Rolling (no deadline)</span></div>
+    <div class="card-row"><span class="label">Type</span><span class="value">Full pitch, strongest version</span></div>
+    <div class="card-angle">"The complete autonomous compute marketplace"</div>
+    <span class="card-link">Open Submission Draft</span>
+  </div>
+  </a>
+</div>
+
+<!-- ACTION PLAN -->
+<div class="action-section">
+  <h2>Action Plan (Priority Order)</h2>
+
+  <div class="action-item">
+    <span class="action-priority priority-now">NOW</span>
+    <div>
+      <strong>Submit Monad Moltiverse</strong> (Feb 15, TOMORROW). Review draft, copy fields into the Agent Track form.
+    </div>
+  </div>
+
+  <div class="action-item">
+    <span class="action-priority priority-now">NOW</span>
+    <div>
+      <strong>Send 3 late outreach messages</strong> (x402, ETHDenver, ETHGlobal). Open each file, copy the outreach messages, and send today. x402 has the best chance.
+    </div>
+  </div>
+
+  <div class="action-item">
+    <span class="action-priority priority-now">NOW</span>
+    <div>
+      <strong>Submit Lablab.ai Complete AI Agent</strong> (Feb 23 - Mar 1). Next closest deadline. Review draft, copy fields into the form.
+    </div>
+  </div>
+
+  <div class="action-item">
+    <span class="action-priority priority-soon">SOON</span>
+    <div>
+      <strong>Submit Solana Graveyard Hack</strong> (Feb 27). Review draft, customize form-specific fields, submit.
+    </div>
+  </div>
+
+  <div class="action-item">
+    <span class="action-priority priority-soon">SOON</span>
+    <div>
+      <strong>Submit Chainlink Convergence</strong> (Mar 1). Note: CRE integration is a design proposal. Review draft for accuracy.
+    </div>
+  </div>
+
+  <div class="action-item">
+    <span class="action-priority priority-soon">SOON</span>
+    <div>
+      <strong>Submit Solana MONOLITH Mobile</strong> (Mar 9) and <strong>Lablab.ai Trustless Financial Agents</strong> (Mar 9-22). Both due early-mid March.
+    </div>
+  </div>
+
+  <div class="action-item">
+    <span class="action-priority priority-later">LATER</span>
+    <div>
+      <strong>Submit Polkadot Solidity</strong> (Mar 24). Lowest priority open hackathon. EVM track reframe of existing work.
+    </div>
+  </div>
+
+  <div class="action-item">
+    <span class="action-priority priority-later">LATER</span>
+    <div>
+      <strong>Update Colosseum Eternal</strong> (rolling). No deadline pressure. Use the strongest version of the pitch.
+    </div>
+  </div>
+</div>
+
+</div>
+</body>
+</html>
